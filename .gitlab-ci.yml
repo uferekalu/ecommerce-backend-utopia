@@ -30,4 +30,3 @@ production:
   environment: production
   only: 
     - master
-  

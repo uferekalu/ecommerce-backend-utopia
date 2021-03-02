@@ -1,7 +1,7 @@
-service: gitlab-example
+service: test-app
 provider:
   name: aws
-  runtime: nodejs10.x
+  runtime: nodejs14.x
 
 functions:
   hello:

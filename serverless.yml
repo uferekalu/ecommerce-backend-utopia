@@ -8,3 +8,8 @@ functions:
     handler: src/handler.hello
     events:
       - http: GET hello
+    cors: true
+
+
+plugins:
+  - serverless-offline

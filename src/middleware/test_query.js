@@ -1,26 +1,7 @@
 'use strict';
 
 // Require and initialize outside of your main handler
-const mysql = require('serverless-mysql')({
-    config: {
-      database: process.env.DB_NAME,
-      user: process.env.USERNAME,
-      password: process.env.PASSWORD,
-      host: process.env.MYSQL_HOST,
-      port: process.env.MYSQL_PORT
-    }
-});
-
-// const dbConn = require('serverless-mysql') ({
-//     config : {
-//         database: "testapp",
-//         host: "database-1.cmj8spxpnzjj.us-east-2.rds.amazonaws.com",
-//         port:3306,
-//         password: "password",
-//         user: "admin"
-
-//     }
-// });
+const connection = require('../db_connection')
 
 
 let Employee = employee => {
@@ -38,9 +19,9 @@ let Employee = employee => {
   
   
   Employee.findAll = async function(event, context ) {
-      let results = mysql.query("SELECT * FROM employees");
+      let results = connection.query("SELECT * FROM employees");
       console.log(results);
-      await mysql.end();
+      await connection.end();
       return results;
   };
   

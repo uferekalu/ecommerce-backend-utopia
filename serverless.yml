@@ -5,7 +5,45 @@ provider:
   region: ${file(./secrets.json):DefaultRegion}
   stage: production
 
+functions:
+  ######################################################### below are examples
 
+  bye: #This Is an example
+    handler: src/middleware/test_res.bye
+    events:
+      - http:
+          path: /bye
+          method: get
+    cors: true
+
+  hello: #This Is an example
+    handler: src/middleware/test_res.hello
+    # vpc:
+    #   securityGroupIds:
+    #     - Fn::GetAtt: ServerlessVPC.DefaultSecurityGroup
+    #   subnetIds:
+    #     - Ref: ServerlessSubnetA
+    events:
+      - http:
+          path: /hello
+          method: get
+    cors: true
+
+  crud: #This Is an example
+    handler: src/middleware/test_query.query
+    # vpc:
+    #   securityGroupIds:
+    #     - Fn::GetAtt: ServerlessVPC.DefaultSecurityGroup
+    #   subnetIds:
+    #     - Ref: ServerlessSubnetA
+    events:
+      - http:
+          path: /query
+          method: get
+
+plugins:
+  - serverless-offline
+  - serverless-pseudo-parameters
 #   environment:
 #     #mysql
 #     MYSQL_HOST: ${self:custom.MYSQL.HOST}
@@ -25,8 +63,6 @@ provider:
 #       PORT:
 #         Fn::GetAtt: [MySqlRDSInstance, Endpoint.Port]
 
-
-
 # resources:
 #   Resources:
 #     LambdaRole: ${file(./resource/LambdaRole.yml)}
@@ -40,35 +76,6 @@ provider:
 #     RoutePublic: ${file(./resource/RoutePublic.yml)}
 #     RouteTableAssociationSubnetA: ${file(./resource/RouteTableAssociationSubnetA.yml)}
 #     MySqlRDSInstance: ${file(./resource/MySqlRDSInstance.yml)}
-
-
-functions:
-  hello:
-    handler: src/handler.hello
-    # vpc:
-    #   securityGroupIds:
-    #     - Fn::GetAtt: ServerlessVPC.DefaultSecurityGroup
-    #   subnetIds:
-    #     - Ref: ServerlessSubnetA
-    events:
-      - http: 
-          path: /hello
-          method: get
-    cors: true
-  
-  
-  crud:
-    handler: src/aurora.query
-    # vpc:
-    #   securityGroupIds:
-    #     - Fn::GetAtt: ServerlessVPC.DefaultSecurityGroup
-    #   subnetIds:
-    #     - Ref: ServerlessSubnetA
-    events:
-      - http:
-          path: /query
-          method: get
-
 
 # # VPC config
 #     ServerlessVPC:
@@ -156,8 +163,3 @@ functions:
 #           Ref: AuroraRDSInstanceParameter
 #         DBClusterIdentifier:
 #           Ref: AuroraRDSCluster
-
-
-plugins:
-  - serverless-offline
-  - serverless-pseudo-parameters

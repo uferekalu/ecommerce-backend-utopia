@@ -6,7 +6,15 @@ provider:
   stage: production
 
 functions:
-  ######################################################### below are examples
+
+  getUserName:
+    handler: src/lambda/getUserName.handler
+    events:
+      - http:
+          path: /api/user-first-last-get-all
+          method: get
+    cors: true
+######################################################### below are examples
 
   bye: #This Is an example
     handler: src/middleware/test_res.bye

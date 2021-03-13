@@ -12,7 +12,7 @@ functions:
     events:
       - http:
           path: /api/user-first-last-get-all
-          method: get
+          method: post
     cors: true
 ######################################################### below are examples
 
@@ -52,6 +52,9 @@ functions:
 plugins:
   - serverless-offline
   - serverless-pseudo-parameters
+
+
+
 #   environment:
 #     #mysql
 #     MYSQL_HOST: ${self:custom.MYSQL.HOST}

@@ -6,6 +6,14 @@ provider:
   stage: staging
 
 functions:
+  user_create:
+    handler: src/middleware/user/user_create.handler
+    events:
+      - http:
+          path: /api/user_create
+          method: post
+    cors: true
+    origin: '*'
 
   getUserName:
     handler: src/lambda/getUserName.handler

@@ -19,7 +19,7 @@ let Employee = employee => {
   
   
   Employee.findAll = async function(event, context ) {
-      let results = connection.query("SELECT * FROM employees");
+      let results = connection.query("SELECT * FROM users");
       console.log(results);
       await connection.end();
       return results;

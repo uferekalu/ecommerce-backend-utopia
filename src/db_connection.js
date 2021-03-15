@@ -1,7 +1,7 @@
 "use strict";
 console.log("testing")
 
-
+/*
 console.log({//TODO: Need to setup a dev mysql db
   config: {
     database: process.env.DB_NAME,
@@ -10,7 +10,7 @@ console.log({//TODO: Need to setup a dev mysql db
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
   },
-})
+})*/
 var connection
 //this will check if live on producion server. And change the db connection accordingly
 if (Object.keys(process.env).includes("AWS_LAMBDA_FUNCTION_VERSION")) {
@@ -26,11 +26,11 @@ if (Object.keys(process.env).includes("AWS_LAMBDA_FUNCTION_VERSION")) {
 } else {
   connection = require("serverless-mysql")({//TODO: Need to setup a dev mysql db
     config: {
-      database: process.env.DB_NAME,
-      user: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
+      database:"utopia",
+      user: "admin",
+      password: "password",
+      host: "ahmed.cmj8spxpnzjj.us-east-2.rds.amazonaws.com",
+      port: "3306",
     },
   });
 }

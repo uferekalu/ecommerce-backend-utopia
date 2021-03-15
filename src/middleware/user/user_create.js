@@ -1,10 +1,9 @@
-const parser = require("body-parser-for-serverless");
 const handler = require('../handler')
 
 exports.handler = async (event, context) => {
     try {
         var datetime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        const body = event
+        const body = await handler.url_to_json(event.body)
         var api_name = 'User create'
         const data = {
             user_first_name: body.user_first_name,

@@ -16,6 +16,17 @@ exports.returner = async (result, api_name) => {
         ),
     };
 }
+exports.url_to_json = async (url) => {
+    var hash;
+    var myJson = {};
+    var hashes = url.slice(url.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        myJson[hash[0]] = hash[1];
+    }
+    return myJson;
+
+}
 
 async function object_size(object) {
     //this returns the size of a given object
@@ -30,21 +41,21 @@ async function object_size(object) {
     return await Object.size(object)
 }
 exports.db_insert = async (data) => {//this builds the insert query // From there it will process the query
-        const object_size_var = await object_size(data)
-        var columns = 'INSERT INTO users (' + Object.keys(data) + ')'
-        var query_value_spots = "VALUES ("
-        for (let index = 0; index < object_size_var; index++) {
-            const key = Object.keys(data)[index];
-            const value = Object.values(data)[index];
-            query_value_spots = query_value_spots + "?,"
-        }
-        query_value_spots = query_value_spots.slice(0, -1) + ")"
-        var full_query = columns + query_value_spots
-        var table = Object.values(data);
-        full_query = mysql.format(full_query, table);
-        const result = await query(full_query)
-        // console.log("full_query: ", full_query)
-        return result
+    const object_size_var = await object_size(data)
+    var columns = 'INSERT INTO users (' + Object.keys(data) + ')'
+    var query_value_spots = "VALUES ("
+    for (let index = 0; index < object_size_var; index++) {
+        const key = Object.keys(data)[index];
+        const value = Object.values(data)[index];
+        query_value_spots = query_value_spots + "?,"
+    }
+    query_value_spots = query_value_spots.slice(0, -1) + ")"
+    var full_query = columns + query_value_spots
+    var table = Object.values(data);
+    full_query = mysql.format(full_query, table);
+    const result = await query(full_query)
+    // console.log("full_query: ", full_query)
+    return result
 }
 
 async function query(full_query) {// this processes the query

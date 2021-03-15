@@ -5,10 +5,10 @@ console.log("testing")
 console.log({//TODO: Need to setup a dev mysql db
   config: {
     database: process.env.DB_NAME,
-    user: process.env.USERNAME,
-    password: process.env.PASSWORD,
-    host: process.env.MYSQL_HOST,
-    port: process.env.MYSQL_PORT,
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
   },
 })
 var connection
@@ -17,20 +17,20 @@ if (Object.keys(process.env).includes("AWS_LAMBDA_FUNCTION_VERSION")) {
   connection = require("serverless-mysql")({
     config: {
       database: process.env.DB_NAME,
-      user: process.env.USERNAME,
-      password: process.env.PASSWORD,
-      host: process.env.MYSQL_HOST,
-      port: process.env.MYSQL_PORT,
+      user: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
     },
   });
 } else {
   connection = require("serverless-mysql")({//TODO: Need to setup a dev mysql db
     config: {
       database: process.env.DB_NAME,
-      user: process.env.USERNAME,
-      password: process.env.PASSWORD,
-      host: process.env.MYSQL_HOST,
-      port: process.env.MYSQL_PORT,
+      user: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
     },
   });
 }

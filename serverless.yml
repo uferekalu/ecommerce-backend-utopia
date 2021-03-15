@@ -3,7 +3,7 @@ provider:
   name: aws
   runtime: nodejs14.x
   region: ${file(./secrets.json):DefaultRegion}
-  stage: production
+  stage: staging
 
 functions:
   ######################################################### below are examples
@@ -15,6 +15,7 @@ functions:
           path: /bye
           method: get
     cors: true
+    origin: '*'
 
   hello: #This Is an example
     handler: src/middleware/test_res.hello
@@ -28,6 +29,7 @@ functions:
           path: /hello
           method: get
     cors: true
+    origin: '*'
 
   crud: #This Is an example
     handler: src/middleware/test_query.query

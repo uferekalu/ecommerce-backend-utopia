@@ -12,8 +12,8 @@ functions:
       - http:
           path: /api/user_create
           method: post
-    cors: true
-    origin: '*'
+    cors: 
+      origin: '*'
 
   getUserName:
     handler: src/lambda/getUserName.handler
@@ -21,8 +21,8 @@ functions:
       - http:
           path: /api/user-first-last-get-all
           method: post
-    cors: true
-    origin: '*'
+    cors:
+      origin: '*'
 ######################################################### below are examples
 
   bye: #This Is an example
@@ -31,8 +31,8 @@ functions:
       - http:
           path: /bye
           method: get
-    cors: true
-    origin: '*'
+    cors:
+      origin: '*'
 
   hello: #This Is an example
     handler: src/middleware/test_res.hello
@@ -45,8 +45,8 @@ functions:
       - http:
           path: /hello
           method: get
-    cors: true
-    origin: '*'
+    cors: 
+      origin: '*'
 
   crud: #This Is an example
     handler: src/middleware/test_query.query
@@ -59,6 +59,8 @@ functions:
       - http:
           path: /query
           method: get
+    cors: 
+      origin: '*'
 
 plugins:
   - serverless-offline

@@ -2,8 +2,13 @@ const parser = require("body-parser-for-serverless");
 const handler = require('../handler')
 
 exports.handler = async (event, context) => {
+    console.log("dddddddddddddddddddddddddddddddddddddddd",event)
+
+    console.log("dddddddddddddddddddddddddddddddddddddddd",typeof(event))
+
+
     var datetime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    const body = await parser(event);
+    const body = event
     var api_name = 'User create'
     const data = {
         user_first_name: body.user_first_name,

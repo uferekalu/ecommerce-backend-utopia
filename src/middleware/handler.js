@@ -5,7 +5,9 @@ exports.returner = async (result, api_name) => {
     return await {
         statusCode: 200,
         headers: {
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': '*',
+            "Access-Control-Allow-Methods": "*"
         },
         body: JSON.stringify(
             {
@@ -28,21 +30,21 @@ async function object_size(object) {
     return await Object.size(object)
 }
 exports.db_insert = async (data) => {//this builds the insert query // From there it will process the query
-    const object_size_var = await object_size(data)
-    var columns = 'INSERT INTO users (' + Object.keys(data) + ')'
-    var query_value_spots = "VALUES ("
-    for (let index = 0; index < object_size_var; index++) {
-        const key = Object.keys(data)[index];
-        const value = Object.values(data)[index];
-        query_value_spots = query_value_spots + "?,"
-    }
-    query_value_spots = query_value_spots.slice(0, -1) + ")"
-    var full_query = columns + query_value_spots
-    var table = Object.values(data);
-    full_query = mysql.format(full_query, table);
-    const result = await query(full_query)
-    // console.log("full_query: ", full_query)
-    return result
+        const object_size_var = await object_size(data)
+        var columns = 'INSERT INTO users (' + Object.keys(data) + ')'
+        var query_value_spots = "VALUES ("
+        for (let index = 0; index < object_size_var; index++) {
+            const key = Object.keys(data)[index];
+            const value = Object.values(data)[index];
+            query_value_spots = query_value_spots + "?,"
+        }
+        query_value_spots = query_value_spots.slice(0, -1) + ")"
+        var full_query = columns + query_value_spots
+        var table = Object.values(data);
+        full_query = mysql.format(full_query, table);
+        const result = await query(full_query)
+        // console.log("full_query: ", full_query)
+        return result
 }
 
 async function query(full_query) {// this processes the query

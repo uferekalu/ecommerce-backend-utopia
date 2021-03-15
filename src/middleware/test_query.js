@@ -1,4 +1,5 @@
 'use strict';
+const handler = require('./handler')
 
 // Require and initialize outside of your main handler
 const connection = require('../db_connection')
@@ -27,32 +28,35 @@ Employee.findAll = async function (event, context) {
 
 
 exports.query = async (event, context) => {
-  // Get your query
-  const data = event.body ? JSON.parse(event.body) : {};
-  console.log(data);
-  // Run your query
-  const [result1] = await Promise.all([Employee.findAll()]);
-  //let dataresult = Object.values(JSON.parse(JSON.stringify(result1)));
-  console.log(result1)
-  // Return the results
-  return {
-    statusCode: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': '*',
-      "Access-Control-Allow-Headers": "*",
-      "Access-Control-Allow-Methods": "*"
-    },
-    body: JSON.stringify(
-      {
-        message: result1
+  try {
+
+    // Get your query
+    const data = event.body ? JSON.parse(event.body) : {};
+    console.log(data);
+    // Run your query
+    const [result1] = await Promise.all([Employee.findAll()]);
+    //let dataresult = Object.values(JSON.parse(JSON.stringify(result1)));
+    console.log(result1)
+    // Return the results
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        "Access-Control-Allow-Methods": "*"
       },
-      null,
-      2
-    ),
-  };
-};
+      body: JSON.stringify(
+        {
+          message: result1
+        },
+        null,
+        2
+      ),
+    };
+  } catch (e) {
+    return handler.returner([false, e], "api_name")
+  }
 
 
-
+}
 

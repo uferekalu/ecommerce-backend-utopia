@@ -1,9 +1,14 @@
 var mysql = require("mysql");
 const connection = require('../db_connection')
 
-exports.returner = async (result, api_name) => {
+exports.returner = async (result, api_name,statusCode) => {
+
+    if (statusCode == undefined){
+        statusCode = 200
+    }
+    
     return await {
-        statusCode: 200,
+        statusCode: statusCode,
         headers: {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Headers': '*',
@@ -16,6 +21,9 @@ exports.returner = async (result, api_name) => {
         ),
     };
 }
+exports.datetime = async () => {
+ return new Date().toISOString().slice(0, 19).replace('T', ' ');
+}
 exports.url_to_json = async (url) => {
     var hash;
     var myJson = {};
@@ -23,9 +31,8 @@ exports.url_to_json = async (url) => {
     for (var i = 0; i < hashes.length; i++) {
         hash = hashes[i].split('=');
         myJson[hash[0]] = hash[1];
-    }
+    } 
     return myJson;
-
 }
 
 async function object_size(object) {
@@ -40,9 +47,9 @@ async function object_size(object) {
     };
     return await Object.size(object)
 }
-exports.db_insert = async (data) => {//this builds the insert query // From there it will process the query
+exports.db_insert = async (data,table) => {//this builds the insert query // From there it will process the query
     const object_size_var = await object_size(data)
-    var columns = 'INSERT INTO users (' + Object.keys(data) + ')'
+    var columns = 'INSERT INTO '+table+' (' + Object.keys(data) + ')'
     var query_value_spots = "VALUES ("
     for (let index = 0; index < object_size_var; index++) {
         const key = Object.keys(data)[index];

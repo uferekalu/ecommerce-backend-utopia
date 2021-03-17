@@ -1,5 +1,5 @@
 "use strict";
-console.log("testing")
+//console.log("testing")
 
 /*
 console.log({//TODO: Need to setup a dev mysql db

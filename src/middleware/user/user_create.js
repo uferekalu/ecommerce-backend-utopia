@@ -1,10 +1,12 @@
 const handler = require('../handler')
-
 exports.handler = async (event, context) => {
+    const api_name = 'User create'
+
     try {
-        var datetime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        var datetime = await  handler.datetime()
         const body = await handler.url_to_json(event.body)
-        var api_name = 'User create'
+        const table = "users"
+       // console.log("fffffffff: ",body)
         const data = {
             user_first_name: body.user_first_name,
             user_middle_name: body.user_middle_name,
@@ -18,9 +20,10 @@ exports.handler = async (event, context) => {
             id_user_access_level: 0,
             id_user_title: 1,
         }
-        const result = await handler.db_insert(data)//this creates the query and processes // returns [success bool,data object]
+        const result = await handler.db_insert(data,table)//this creates the query and processes // returns [success bool,data object]
         return handler.returner(result, api_name)//Sends response to caller - Must be at bottom of handler
-    } catch (e) {
-        return handler.returner([false, e], api_name)
+    }
+    catch (e) {
+        return handler.returner([false, e], api_name,500)
     }
 };

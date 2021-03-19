@@ -65,7 +65,19 @@ exports.db_insert = async (data,table) => {//this builds the insert query // Fro
     return result
 }
 
-async function query(full_query) {// this processes the query
+export async function query(full_query) {// this processes the query
+    return new Promise(function (resolve, reject) {
+        connection.query(full_query, function (err, rows) {
+            if (err) {
+                resolve([false, err])
+            } else {
+                resolve([true, rows])
+            }
+        })
+    })
+}
+
+exports.query = async (full_query) => {// this processes the query 
     return new Promise(function (resolve, reject) {
         connection.query(full_query, function (err, rows) {
             if (err) {

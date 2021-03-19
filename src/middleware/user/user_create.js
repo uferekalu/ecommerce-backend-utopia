@@ -7,7 +7,7 @@ exports.handler = async (event, context) => {
         const body = await handler.url_to_json(event.body)
         const table = "users"
        // console.log("fffffffff: ",body)
-        const data = {
+        const data = {//data = {["name of column"]: "value to insert"}
             user_first_name: body.user_first_name,
             user_middle_name: body.user_middle_name,
             user_last_name: body.user_last_name,

@@ -6,6 +6,17 @@ provider:
   stage: staging
 
 functions:
+ 
+  user_access_level_get:
+    handler: src/lambda/user/user_access_level_get.handler
+    events:
+      - http:
+          path: /api/user_access_level_get
+          method: post
+    cors: true
+    origin: '*'
+#-------------------------------------------------------------------------
+ 
   user_create:
     handler: src/lambda/user/user_create.handler
     events:
@@ -14,6 +25,7 @@ functions:
           method: post
     cors: true
     origin: '*'
+#-------------------------------------------------------------------------
 
   user_email_verify:
     handler: src/lambda/user/user_email_verify.handler
@@ -23,6 +35,7 @@ functions:
           method: get
     cors: true
     origin: '*'
+#-------------------------------------------------------------------------
 
   user_login:
     handler: src/lambda/user/user_login.handler
@@ -33,6 +46,7 @@ functions:
     cors: true
     origin: '*'
     
+#-------------------------------------------------------------------------
 
   user_name_get:
     handler: src/lambda/user/user_name_get.handler

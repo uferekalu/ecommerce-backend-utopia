@@ -6,26 +6,36 @@ provider:
   stage: staging
 
 functions:
-  user_access_level_get:
-    handler: src/middleware/user/user_access_level_get.handler
-    events:
-      - http:
-          path: /api/user_access_level_get
-          method: post
-    cors: true
-    origin: '*'
-#-------------------------------------------------------------------------
   user_create:
-    handler: src/middleware/user/user_create.handler
+    handler: src/lambda/user/user_create.handler
     events:
       - http:
           path: /api/user_create
           method: post
     cors: true
     origin: '*'
-#-------------------------------------------------------------------------
-  getUserName:
-    handler: src/lambda/getUserName.handler
+
+  user_email_verify:
+    handler: src/lambda/user/user_email_verify.handler
+    events:
+      - http:
+          path: /api/user_email_verify/{id+}
+          method: get
+    cors: true
+    origin: '*'
+
+  user_login:
+    handler: src/lambda/user/user_login.handler
+    events:
+      - http:
+          path: /api/user_login
+          method: post
+    cors: true
+    origin: '*'
+    
+
+  user_name_get:
+    handler: src/lambda/user/user_name_get.handler
     events:
       - http:
           path: /api/user-first-last-get-all

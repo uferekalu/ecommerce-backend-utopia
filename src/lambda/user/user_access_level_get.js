@@ -2,32 +2,11 @@ const handler = require('../../middleware/handler')
 exports.handler = async (event, context) => {
     const api_name = 'User Access Level Get'
 
-    try {
+    try {//TODO: This needs to be connected to the db. currently returns hard coded data
         var datetime = await handler.datetime()
         const body = await handler.url_to_json(event.body)
         const table = "users"
         console.log("fffffffff: ", body)
-        /*
-        const data = {//data = {[name of column]: "value to insert"}
-            token: "test_token",
-            id_user: "id_user"
-        }*/
-        //   const result = await handler.db_insert(data,table)//this creates the query and processes // returns [success bool,data object]
-
-        /*
-             var query = "SELECT * FROM user_access_level where ?? = ??;";
-        
-             var table = ["job_listings","job_titles","job_listings.job_title_id","job_titles.job_title_id"];
-         
-             query = mysql.format(query,table);
-        
-        
-        
-               const result = handler.query(full_qury)
-        
-               */
-
-
         /*
         use an id below for id_user
         dev id: 0
@@ -59,3 +38,25 @@ exports.handler = async (event, context) => {
         return handler.returner([false, e], api_name, 500)
     }
 };
+
+
+
+        /*
+        const data = {//data = {[name of column]: "value to insert"}
+            token: "test_token",
+            id_user: "id_user"
+        }*/
+        //   const result = await handler.db_insert(data,table)//this creates the query and processes // returns [success bool,data object]
+
+        /*
+             var query = "SELECT * FROM user_access_level where ?? = ??;";
+        
+             var table = ["job_listings","job_titles","job_listings.job_title_id","job_titles.job_title_id"];
+         
+             query = mysql.format(query,table);
+        
+        
+        
+               const result = handler.query(full_qury)
+        
+               */

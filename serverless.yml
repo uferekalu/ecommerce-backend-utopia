@@ -70,14 +70,7 @@ functions:
     origin: '*'
 #-------------------------------------------------------------------------
 
-  product_search:
-    handler: src/lambda/product/product_search.handler
-    events:
-      - http:
-          path: /api/product_search
-          method: get
-    cors: true
-    origin: '*'    
+   
 ######################################################### below are examples
 
   bye: #This Is an example

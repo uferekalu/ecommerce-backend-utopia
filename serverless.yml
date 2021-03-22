@@ -4,12 +4,11 @@ provider:
   runtime: nodejs14.x
   region: ${file(./secrets.json):DefaultRegion}
   stage: staging
-  environment:
-    JWT_KEY: ${env:JWT_KEY}
+
 
 functions:
 
-  product_search: #//fake endpoint
+  product_search_fake: #//fake endpoint
     handler: src/lambda/product/product_search.handler
     events:
       - http:

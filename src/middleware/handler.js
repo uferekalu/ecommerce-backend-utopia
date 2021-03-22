@@ -1,5 +1,5 @@
 var mysql = require("mysql");
-const connection = require('../lib/database/db_connection')
+const connection = require('../lib/database/connect')
 
 exports.returner = async (result, api_name,statusCode) => {
 

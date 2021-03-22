@@ -1,5 +1,5 @@
 const handler = require('../../middleware/handler')
-const db = require('../../lib/database/db_query')
+const db = require('../../lib/database/query')
 const token = require('../../middleware/verify_token')
 const bcrypt = require('bcryptjs');
 const qs = require('querystring')
@@ -8,8 +8,8 @@ const qs = require('querystring')
 const api_name = "User login"
 exports.handler = async (event, context) => {
     try {
-        const body = await qs.parse(event.body)
-        const user_exist = await db.search_email(body.user_email)
+        const body = JSON.parse(event.body)
+        const user_exist = await db.search_one( "users","user_email",body.user_email)
         
         if (user_exist.length == 0)
             return handler.returner([false, { message: "User is not found" }], api_name, 404)

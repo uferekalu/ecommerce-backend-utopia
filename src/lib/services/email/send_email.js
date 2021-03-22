@@ -1,8 +1,5 @@
-/*user: 'do-not-reply@utopiatech.io',
-    pass: '2pGURgmM'*/
-
 const nodemailer = require('nodemailer');
-const handler = require('../../middleware/handler')
+const handler = require('../../../middleware/handler')
 
 module.exports = {
     send_email: async (user, email) => {

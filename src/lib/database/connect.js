@@ -12,7 +12,7 @@ console.log({//TODO: Need to setup a dev mysql db
 })*/
 var connection
 //this will check if live on producion server. And change the db connection accordingly
-if (Object.keys(process.env).includes("AWS_LAMBDA_FUNCTION_VERSION")) {
+if (Object.keys(process.env).includes("AWS_LAMBDA_FUNCTION_VERSION 111111111")) {
   connection = require("serverless-mysql")({
     config: {
       database: process.env.DB_NAME,

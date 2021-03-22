@@ -8,8 +8,18 @@ provider:
     JWT_KEY: ${env:JWT_KEY}
 
 functions:
+
+  product_search: #//fake endpoint
+    handler: src/lambda/product/product_search.handler
+    events:
+      - http:
+          path: /api/product_search
+          method: post
+    cors: true
+    origin: '*'
+#-------------------------------------------------------------------------
  
-  user_access_level_get:
+  user_access_level_get: #//fake endpoint
     handler: src/lambda/user/user_access_level_get.handler
     events:
       - http:

@@ -9,6 +9,7 @@ exports.handler = async (event, context) => {
   try {
     const body = JSON.parse(event.body);
     //const user_exist = await db.search_one( "users","body.user_email",body.user_email)
+    const id_user_access_level = 0;
     const data1 = {
       user_first_name: "nameOne",
       user_middle_name: "middileOne",
@@ -112,12 +113,19 @@ exports.handler = async (event, context) => {
     };
 
     const result = await db.insert_new(data, "user_tokens");
+    console.log("user_access_level ", user_exist[0].id_user_access_level);
+    console.log("user_dob ", user_exist[0].user_dob);
     return handler.returner(
       [
         true,
         {
           token: created_token,
-          // user_access_level: user_exist[0].id_user_access_level,
+          user_access_level:
+            user_exist[0].id_user % 3 == 0
+              ? [2, 3, 4, 5]
+              : user_exist[0].id_user % 2 == 0
+              ? [1, 3, 4, 5]
+              : [0, 1, 2, 3, 4, 5], //[2, 3, 4, 5], //user_exist[0].id_user_access_level,
         },
       ],
       api_name,

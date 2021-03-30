@@ -3,93 +3,57 @@ const db = require("../../lib/database/query");
 const token = require("../../middleware/verify_token");
 const bcrypt = require("bcryptjs");
 const qs = require("querystring");
-
+// will get post req with user_email and user_password  encrypted
+//------TODO
+//-----currently sending plain text user_password it shouls be encrypted and export
 const api_name = "User login";
 exports.handler = async (event, context) => {
   try {
     const body = JSON.parse(event.body);
-    //const user_exist = await db.search_one( "users","body.user_email",body.user_email)
-    const id_user_access_level = 0;
-    const data1 = {
-      user_first_name: "nameOne",
-      user_middle_name: "middileOne",
-      user_last_name: "lastOne",
-      user_dob: "01-01-2000",
-      user_address_shipping: "addressOne",
-      user_address_billing: "billingAddressOne",
-      user_gender: "Male",
-      user_email: "helloOne@gmail.com",
-      user_password: "helloOne",
-      user_datetime_created: "27-03-2021",
-      id_user_status: 1,
-      //id_user_access_level: 0,
-      id_user_title: 1,
-      email_verified: 0,
-    };
-    const data2 = {
-      user_first_name: "nameTwo",
-      user_middle_name: "middileTwo",
-      user_last_name: "lastTwo",
-      user_dob: "02-02-2000",
-      user_address_shipping: "addressTwo",
-      user_address_billing: "billingAddressTwo",
-      user_gender: "Male",
-      user_email: "helloTwo@gmail.com",
-      user_password: "helloTwo",
-      user_datetime_created: "27-03-2021",
-      id_user_status: 1,
-      // id_user_access_level: 0,
-      id_user_title: 1,
-      email_verified: 0,
-    };
-    const data3 = {
-      user_first_name: "nameThree",
-      user_middle_name: "middileThree",
-      user_last_name: "lastThree",
-      user_dob: "03-03-2000",
-      user_address_shipping: "addressThree",
-      user_address_billing: "billingAddressThree",
-      user_gender: "Female",
-      user_email: "helloThree@gmail.com",
-      user_password: "helloThree",
-      user_datetime_created: "27-03-2021",
-      id_user_status: 1,
-      // id_user_access_level: 0,
-      id_user_title: 1,
-      email_verified: 0,
-    };
-    //inserting 3 users manually into users table
-    //const delete_all_data = await db.delete_all("users");
-    const userOne = await db.insert_new(data1, "users");
-    const userTwo = await db.insert_new(data2, "users");
-    const userThree = await db.insert_new(data3, "users");
+    /********************************************************************************** 
+    login deatils:
+    1. "user_email":"john@gmail.com",
+        "user_password":"john"
+        2. "user_email":"anna@gmail.com",
+        "user_password":"anna"
+        3. "user_email":"raj@hotmail.com",
+        "user_password":"raj"
 
-    console.log("const userOne", userOne);
-    console.log("const userTwo", userTwo);
-    console.log("const userThree", userThree);
-    // const reqData = {
-    //   user_email: body.user_email,
-    //   user_password: body.user_password,
-    // };
-    const user_exist = await db.search_two(
+*********************************************************************************************/
+
+    const user_exist = await db.search_one(
       "users",
       "user_email",
-      "user_password",
-      body.user_email,
-      body.user_password
+      //"user_password",
+      body.user_email
+      //body.user_password
     );
 
-    if (user_exist.length == 0)
+    if (user_exist.length != 0) {
+      //if (user_exist[0].email_verified != 1) {
+      // const pass_valid = await bcrypt.compare(
+      //   body.user_password,
+      //   user_exist[0].user_password
+      // );
+
+      console.log("user_exist[0].user_password", user_exist[0].user_password);
+      // console.log("pass_valid:", pass_valid);
+      if (user_exist[0].user_password != body.user_password)
+        return handler.returner(
+          [false, { message: "Password is invalid" }],
+          api_name,
+          400
+        );
+    } else {
       return handler.returner(
-        [false, { message: "User Email or Passworoed is not found" }],
+        [false, { message: "Email is invalid" }],
         api_name,
-        404
+        400
       );
+    }
+
     console.log("user_exist.length ", user_exist);
-    /*const pass_valid = await bcrypt.compare(
-      body.user_password,
-      user_exist[0].user_password
-    );
+    /*
     if (!pass_valid)
       return handler.returner(
         [false, { message: "Password is invalid" }],
@@ -113,19 +77,43 @@ exports.handler = async (event, context) => {
     };
 
     const result = await db.insert_new(data, "user_tokens");
-    console.log("user_access_level ", user_exist[0].id_user_access_level);
+    //console.log("user_access_level ", user_exist[0].id_user_access_level);
     console.log("user_dob ", user_exist[0].user_dob);
+    //-------- get users access levels from tables with sub queries
+    //     const user_access_level=select id_user_access_level from user_access_level_m2m_users
+    // where id_id_user =(select id_user from users where user_email="anna@gmail.com");
+    const id = await db.select_oneColumn(
+      "users",
+      id_user,
+      user_email,
+      user_exist[0].user_email
+    );
+    const currentuser_access_level = await db.select_oneColumn(
+      "user_access_level_m2m_users",
+      id_user_access_level,
+      id_id_user,
+      id
+    );
+    const access_level = null;
+    if (currentuser_access_level == 0) {
+      access_level = [0, 1, 2, 3, 4, 5];
+    } else if (currentuser_access_level == 1) {
+      access_level = [1, 3, 4, 5];
+    } else if (currentuser_access_level == 2) {
+      access_level = [2, 3, 4, 5];
+    }
     return handler.returner(
       [
         true,
         {
           token: created_token,
-          user_access_level:
-            user_exist[0].id_user % 3 == 0
-              ? [2, 3, 4, 5]
-              : user_exist[0].id_user % 2 == 0
-              ? [1, 3, 4, 5]
-              : [0, 1, 2, 3, 4, 5], //[2, 3, 4, 5], //user_exist[0].id_user_access_level,
+          //hard coded access_levels
+          user_access_level: access_level,
+          // user_exist[0].id_user % 3 == 0
+          //   ? [2, 3, 4, 5]
+          //   : user_exist[0].id_user % 2 == 0
+          //   ? [1, 3, 4, 5]
+          //   : [0, 1, 2, 3, 4, 5], //[2, 3, 4, 5], //user_exist[0].id_user_access_level,
         },
       ],
       api_name,

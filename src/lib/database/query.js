@@ -13,7 +13,7 @@ module.exports = {
 
   search_two: async (table, column_one, column_two, data1, data2) => {
     let result = await connection.query(
-      `SELECT * FROM ${table} WHERE ${column_one} = ? AND ${column_two} = ?`,
+      `SELECT * FROM ${table} WHERE ${column_one} = ? OR ${column_two} = ?`,
       [data1, data2]
     );
     return result;

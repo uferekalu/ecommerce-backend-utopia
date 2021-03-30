@@ -11,7 +11,7 @@ exports.handler = async (event, context) => {
     const body = JSON.parse(event.body);
 
     const token_exist = await db.search_one("user_tokens", "token", body.token);
-    //*******if the token don't exist sendback false, { message: "User is not found" }
+    //*******if the token doesn't exist sendback false, { message: "User is not found" }
     //*******if exists delete it from the user_tokens table send a success bool back
     console.log("token_existin logout", token_exist);
     console.log("token_exist.length logout", token_exist.length);

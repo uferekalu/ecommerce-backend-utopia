@@ -5,9 +5,7 @@ provider:
   region: ${file(./secrets.json):DefaultRegion}
   stage: staging
 
-
 functions:
-
   product_search_fake: #//fake endpoint
     handler: src/lambda/product/product_search.handler
     events:
@@ -15,9 +13,9 @@ functions:
           path: /api/product_search
           method: post
     cors: true
-    origin: '*'
-#-------------------------------------------------------------------------
- 
+    origin: "*"
+  #-------------------------------------------------------------------------
+
   user_access_level_get: #//fake endpoint
     handler: src/lambda/user/user_access_level_get.handler
     events:
@@ -25,9 +23,9 @@ functions:
           path: /api/user_access_level_get
           method: post
     cors: true
-    origin: '*'
-#-------------------------------------------------------------------------
- 
+    origin: "*"
+  #-------------------------------------------------------------------------
+
   user_create:
     handler: src/lambda/user/user_create.handler
     events:
@@ -35,18 +33,18 @@ functions:
           path: /api/user_create
           method: post
     cors: true
-    origin: '*'
-#-------------------------------------------------------------------------
+    origin: "*"
+  #-------------------------------------------------------------------------
 
   user_email_verify:
-    handler: src/lambda/user/user_email_verify.handler
+    handler: src/lambda/user/user_email_verify_id_user.handler
     events:
       - http:
           path: /api/user_email_verify/{id_user}
           method: get
     cors: true
-    origin: '*'
-#-------------------------------------------------------------------------
+    origin: "*"
+  #-------------------------------------------------------------------------
 
   user_login:
     handler: src/lambda/user/user_login.handler
@@ -55,9 +53,9 @@ functions:
           path: /api/user_login
           method: post
     cors: true
-    origin: '*'
-    
-#-------------------------------------------------------------------------
+    origin: "*"
+
+  #-------------------------------------------------------------------------
 
   user_name_get:
     handler: src/lambda/user/user_name_get.handler
@@ -66,11 +64,10 @@ functions:
           path: /api/user-first-last-get-all
           method: post
     cors: true
-    origin: '*'
-#-------------------------------------------------------------------------
+    origin: "*"
+  #-------------------------------------------------------------------------
 
-   
-######################################################### below are examples
+  ######################################################### below are examples
 
   bye: #This Is an example
     handler: src/middleware/test_res.bye
@@ -79,7 +76,7 @@ functions:
           path: /bye
           method: get
     cors: true
-    origin: '*'
+    origin: "*"
 
   hello: #This Is an example
     handler: src/middleware/test_res.hello
@@ -93,7 +90,7 @@ functions:
           path: /hello
           method: get
     cors: true
-    origin: '*'
+    origin: "*"
 
   crud: #This Is an example
     handler: src/middleware/test_query.query
@@ -107,15 +104,12 @@ functions:
           path: /query
           method: post
     cors: true
-    origin: '*'
-    headers: '*'
+    origin: "*"
+    headers: "*"
 
 plugins:
   - serverless-offline
   - serverless-pseudo-parameters
-
-
-
 #   environment:
 #     #mysql
 #     MYSQL_HOST: ${self:custom.MYSQL.HOST}

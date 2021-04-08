@@ -77,6 +77,16 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
+  shipping_update:
+    handler: src/lambda/shipping/shipping_update.handler
+    events:
+      - http:
+          path: /api/shipping_update
+          method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+
   ######################################################### below are examples
 
   bye: #This Is an example

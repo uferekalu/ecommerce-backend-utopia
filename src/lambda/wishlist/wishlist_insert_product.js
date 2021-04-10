@@ -38,7 +38,27 @@ exports.handler = async (event, context) => {
         404
       );
     //3.insert product title
-    //let id_wishlist = 4;
+    //check if the the id_wishlist is already exists(which is a PK)
+    //throwing error if tries to enter duplicate id_wishlist
+    const id_wishlist_exist = await db.search_get_one_column_oncondition(
+      "wishlists",
+      "id_wishlist",
+      "id_wishlist",
+      body.id_wishlist
+    );
+    console.log("id_wishlist_exist:", id_wishlist_exist);
+    if (id_wishlist_exist.length != 0)
+      return handler.returner(
+        [
+          false,
+          {
+            message:
+              "Product not inserted. Wishlist is already existed can't insert duplicate id_wishlist",
+          },
+        ],
+        api_name,
+        404
+      );
     let data = {
       id_wishlist: body.id_wishlist,
       id_user: id_user[0].id_user,
@@ -69,6 +89,6 @@ exports.handler = async (event, context) => {
     );
   } catch (e) {
     console.log("Error: ", e);
-    return handler.returner([false, e.message], api_name);
+    return handler.returner([false, e], api_name);
   }
 };

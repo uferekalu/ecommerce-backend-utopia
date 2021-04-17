@@ -64,7 +64,22 @@ exports.handler = async (event, context) => {
     // };
 
     // const result = await db.insert_new(data, "user_toksens");
-    return handler.returner([true], api_name, 201);
+    return handler.returner(
+      [true, { phone_number: user_id_exist[0].user_phone_number }],
+      api_name,
+      201
+    );
+    // return handler.returner(
+    //   [
+    //     true,
+    //     {
+    //       token: created_token,
+    //       user_access_level: user_exist[0].id_user_access_level,
+    //     },
+    //   ],
+    //   api_name,
+    //   201
+    // );
   } catch (e) {
     console.log("Error: ", e);
     return handler.returner([false, e], api_name);

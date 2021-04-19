@@ -71,7 +71,7 @@ functions:
     handler: src/lambda/product/product_create.handler
     events:
       - http:
-          path: /api/product_create
+          path: /api/product-create
           method: post
     cors: true
     origin: "*"

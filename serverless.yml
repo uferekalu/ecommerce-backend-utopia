@@ -71,7 +71,7 @@ functions:
     handler: src/lambda/shipping/shipping_create.handler
     events:
       - http:
-          path: /api/shipping_create
+          path: /api/shipping-create
           method: post
     cors: true
     origin: "*"

@@ -81,7 +81,7 @@ functions:
     handler: src/lambda/shipping/shipping_update.handler
     events:
       - http:
-          path: /api/shipping_update
+          path: /api/shipping-update
           method: post
     cors: true
     origin: "*"

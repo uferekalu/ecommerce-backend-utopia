@@ -36,6 +36,7 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
+
   user_create:
     handler: src/lambda/user/user_create.handler
     events:
@@ -44,6 +45,7 @@ functions:
           method: post
     cors: true
     origin: "*"
+
   #--------------------------------------------------------------------------
 
   user_login_emailorphone:
@@ -61,6 +63,18 @@ functions:
     events:
       - http:
           path: /api/wishlist_insert_product
+          method: post
+    cors: true
+    origin: "*"
+
+
+  #-------------------------------------------------------------------------
+
+  user_email_or_phone_verify:
+    handler: src/lambda/user/user_email_or_phone_verify.handler
+    events:
+      - http:
+          path: /api/user_email_or_phone_verify
           method: post
     cors: true
     origin: "*"
@@ -98,6 +112,7 @@ functions:
     cors: true
     origin: "*"
 
+<<<<<<< HEAD
   #------------------------------------------------------------------------
 
 

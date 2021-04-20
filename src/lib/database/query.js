@@ -10,13 +10,10 @@ module.exports = {
     );
     return result;
   },
-<<<<<<< HEAD
-<<<<<<< HEAD
+
   search_get_one_column: async (table, column) => {
     let result = await connection.query(`SELECT ${column} FROM ${table}`);
-=======
-=======
->>>>>>> origin/madhu-order-update
+  },
   search_two: async (table, column_one, column_two, data1, data2) => {
     let result = await connection.query(
       `SELECT * FROM ${table} WHERE ${column_one} = ? AND ${column_two} = ?`,
@@ -24,28 +21,36 @@ module.exports = {
     );
     return result;
   },
-<<<<<<< HEAD
+
   select_oneColumn: async (table, column1, column2, data) => {
     let result = await connection.query(
       `SELECT ${column1} FROM ${table} WHERE ${column2} = ?`,
       [data]
     );
->>>>>>> origin/madhu-login-EmailOrPhoneAndPassword
+
     return result;
   },
 
+  search_with_regexp: async (table, column, data) => {
+    let result = await connection.query(
+      `SELECT * FROM ${table} WHERE ${column} REGEXP ?`,
+      [data]
+    );
+    return result;
+  },
   insert_new: async (data, table) => {
     const result = await connection.query(`INSERT INTO ${table} SET ?`, data);
     return result;
   },
 
-=======
-  insert_new: async (data, table) => {
-    const result = await connection.query(`INSERT INTO ${table} SET ?`, data);
+  search_get_one_column_oncondition: async (table, column1, column2, data) => {
+    let result = await connection.query(
+      `SELECT ${column1} FROM ${table} WHERE ${column2} = ?`,
+      [data]
+    );
     return result;
   },
 
->>>>>>> origin/madhu-order-update
   update_one: async (table, updated_data, column, condition) => {
     const result = await connection.query(
       `UPDATE ${table} SET ? WHERE ${column} = ?`,

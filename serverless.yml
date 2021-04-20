@@ -26,6 +26,20 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
+<<<<<<< HEAD
+  product_details_get:
+    handler: src/lambda/product/products_get.handler
+    events:
+      - http:
+          path: /api/products_get/{keyword}
+          method: get
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+
+
+=======
+>>>>>>> origin/madhu-wishlist-insert-product
   user_create:
     handler: src/lambda/user/user_create.handler
     events:
@@ -36,15 +50,28 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
+<<<<<<< HEAD
+
   user_login_emailorphone:
     handler: src/lambda/user/user_login_emailorphone.handler
     events:
       - http:
           path: /api/user_login_emailorphone
+=======
+  wishlist_insert_product:
+    handler: src/lambda/wishlist/wishlist_insert_product.handler
+    events:
+      - http:
+          path: /api/wishlist_insert_product
+>>>>>>> origin/madhu-wishlist-insert-product
           method: post
     cors: true
     origin: "*"
   #-------------------------------------------------------------------------
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/madhu-wishlist-insert-product
 
   user_email_verify:
     handler: src/lambda/user/user_email_verify.handler
@@ -55,6 +82,8 @@ functions:
     cors: true
     origin: "*"
   #-------------------------------------------------------------------------
+<<<<<<< HEAD
+
 
   product_details_get:
     handler: src/lambda/product/product_details_get.handler
@@ -66,6 +95,9 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
+=======
+>>>>>>> origin/madhu-wishlist-insert-product
+
   user_login:
     handler: src/lambda/user/user_login.handler
     events:
@@ -76,6 +108,8 @@ functions:
     origin: "*"
 
   #-------------------------------------------------------------------------
+<<<<<<< HEAD
+
 
   order_update:
     handler: src/lambda/order/order_update.handler
@@ -87,6 +121,9 @@ functions:
     origin: "*"
 
   #-------------------------------------------------------------------------
+
+=======
+>>>>>>> origin/madhu-wishlist-insert-product
 
   user_name_get:
     handler: src/lambda/user/user_name_get.handler

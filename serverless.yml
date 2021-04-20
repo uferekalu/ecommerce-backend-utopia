@@ -26,15 +26,6 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
-  categories-get:
-    handler: src/lambda/product/categories_get.handler
-    events:
-      - http:
-          path: /api/categories_get
-          method: get
-    cors: true
-    origin: "*"
-  #-------------------------------------------------------------------------
   user_create:
     handler: src/lambda/user/user_create.handler
     events:
@@ -44,7 +35,6 @@ functions:
     cors: true
     origin: "*"
   #-------------------------------------------------------------------------
-<<<<<<< HEAD
 
   user_login_emailorphone:
     handler: src/lambda/user/user_login_emailorphone.handler
@@ -56,12 +46,21 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
-
   user_email_verify:
     handler: src/lambda/user/user_email_verify.handler
     events:
       - http:
           path: /api/user_email_verify/{id_user}
+          method: get
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+
+  product_details_get:
+    handler: src/lambda/product/product_details_get.handler
+    events:
+      - http:
+          path: /api/product_details_get/{id_product}
           method: get
     cors: true
     origin: "*"
@@ -78,7 +77,6 @@ functions:
 
   #-------------------------------------------------------------------------
 
-
   order_update:
     handler: src/lambda/order/order_update.handler
     events:
@@ -89,7 +87,6 @@ functions:
     origin: "*"
 
   #-------------------------------------------------------------------------
-
 
   user_name_get:
     handler: src/lambda/user/user_name_get.handler

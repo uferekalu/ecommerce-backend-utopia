@@ -26,7 +26,6 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
-
   product_details_get:
     handler: src/lambda/product/products_get.handler
     events:
@@ -65,10 +64,11 @@ functions:
           method: post
     cors: true
     origin: "*"
+
   #-------------------------------------------------------------------------
 
   user_email_verify:
-    handler: src/lambda/user/user_email_verify.handler
+    handler: src/lambda/user/user_email_verify_id_user.handler
     events:
       - http:
           path: /api/user_email_verify/{id_user}
@@ -76,6 +76,7 @@ functions:
     cors: true
     origin: "*"
   #-------------------------------------------------------------------------
+
 
 
   product_details_get:

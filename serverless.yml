@@ -26,6 +26,7 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
+
   categories-get:
     handler: src/lambda/product/categories_get.handler
     events:
@@ -36,6 +37,8 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
+
+>>>>>>> origin/madhu-login-EmailOrPhoneAndPassword
   user_create:
     handler: src/lambda/user/user_create.handler
     events:
@@ -45,6 +48,19 @@ functions:
     cors: true
     origin: "*"
   #-------------------------------------------------------------------------
+<<<<<<< HEAD
+=======
+
+  user_login_emailorphone:
+    handler: src/lambda/user/user_login_emailorphone.handler
+    events:
+      - http:
+          path: /api/user_login_emailorphone
+          method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+
 
   user_email_verify:
     handler: src/lambda/user/user_email_verify.handler

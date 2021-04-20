@@ -67,6 +67,7 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
+<<<<<<< HEAD
   product_create:
     handler: src/lambda/product/product_create.handler
     events:
@@ -78,6 +79,28 @@ functions:
 
   #-------------------------------------------------------------------------
 
+=======
+  shipping_create:
+    handler: src/lambda/shipping/shipping_create.handler
+    events:
+      - http:
+          path: /api/shipping_create
+          method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+
+  shipping_update:
+    handler: src/lambda/shipping/shipping_update.handler
+    events:
+      - http:
+          path: /api/shipping-update
+          method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+
+>>>>>>> Gbenga_shipping_update_endpoint
   ######################################################### below are examples
 
   bye: #This Is an example

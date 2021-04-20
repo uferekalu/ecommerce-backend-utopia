@@ -43,6 +43,14 @@ module.exports = {
     return result;
   },
 
+  search_get_one_column_oncondition: async (table, column1, column2, data) => {
+    let result = await connection.query(
+      `SELECT ${column1} FROM ${table} WHERE ${column2} = ?`,
+      [data]
+    );
+    return result;
+  },
+
   update_one: async (table, updated_data, column, condition) => {
     const result = await connection.query(
       `UPDATE ${table} SET ? WHERE ${column} = ?`,

@@ -22,6 +22,15 @@ module.exports = {
     return result;
   },
 
+  search_two_Or: async (table, column_one, column_two, data1, data2) => {
+    let result = await connection.query(
+      `SELECT * FROM ${table} WHERE ${column_one} = ? OR ${column_two} = ?`,
+
+      [data1, data2]
+    );
+    return result;
+  },
+
   select_oneColumn: async (table, column1, column2, data) => {
     let result = await connection.query(
       `SELECT ${column1} FROM ${table} WHERE ${column2} = ?`,
@@ -38,6 +47,7 @@ module.exports = {
     );
     return result;
   },
+
   insert_new: async (data, table) => {
     const result = await connection.query(`INSERT INTO ${table} SET ?`, data);
     return result;
@@ -47,6 +57,18 @@ module.exports = {
     let result = await connection.query(
       `SELECT ${column1} FROM ${table} WHERE ${column2} = ?`,
       [data]
+    );
+    return result;
+  },
+
+  delete_all: async (table) => {
+    const result = await connection.query(`DELETE FROM ${table}`);
+    return result;
+  },
+  delete_one: async (table, column, data) => {
+    const result = await connection.query(
+      `DELETE FROM ${table} WHERE ${column} = ?`,
+      data
     );
     return result;
   },

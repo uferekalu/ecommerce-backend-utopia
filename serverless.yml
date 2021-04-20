@@ -26,6 +26,7 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
+
   product_details_get:
     handler: src/lambda/product/products_get.handler
     events:
@@ -45,6 +46,7 @@ functions:
           method: post
     cors: true
     origin: "*"
+
 
   #--------------------------------------------------------------------------
 
@@ -79,6 +81,7 @@ functions:
     cors: true
     origin: "*"
 
+
   #-------------------------------------------------------------------------
 
   user_email_verify:
@@ -93,6 +96,7 @@ functions:
 
 
 
+
   product_details_get:
     handler: src/lambda/product/product_details_get.handler
     events:
@@ -103,6 +107,7 @@ functions:
     origin: "*"
   #------------------------------------------------------------------------
 
+
   user_login:
     handler: src/lambda/user/user_login.handler
     events:
@@ -112,7 +117,6 @@ functions:
     cors: true
     origin: "*"
 
-<<<<<<< HEAD
   #------------------------------------------------------------------------
 
 
@@ -135,6 +139,18 @@ functions:
           method: post
     cors: true
     origin: "*"
+  #-------------------------------------------------------------------------
+
+  user_logout:
+    handler: src/lambda/user/user_logout.handler
+    events:
+      - http:
+          path: /api/user_logout
+          method: post
+    cors: true
+    origin: "*"
+
+
   #-------------------------------------------------------------------------
 
   user_name_get:

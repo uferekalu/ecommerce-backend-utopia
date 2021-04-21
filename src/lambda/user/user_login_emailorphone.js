@@ -3,7 +3,7 @@ const db = require("../../lib/database/query");
 const token = require("../../middleware/verify_token");
 const bcrypt = require("bcryptjs");
 const qs = require("querystring");
-// will get post req with user_email and user_password  encrypted
+// will get post req with user_email or phone number  as user_id, type(email or phone number) and user_password
 //------TODO
 //-----currently sending plain text user_password it shouls be encrypted and export
 const api_name = "User login";
@@ -20,53 +20,45 @@ exports.handler = async (event, context) => {
         "user_password":"raj"
 
 *********************************************************************************************/
+    const type = body.type;
+    console.log("type:", type);
+    console.log("user_id:", body.user_id);
+    console.log("user_password:", body.user_password);
+    let user_id_exist = [];
+    if (type === "email") {
+      user_exist = await db.search_two(
+        "users",
+        "user_email",
+        "user_password",
+        body.user_id,
+        body.user_password
+      );
+    } else if (type === "phone") {
+      user_exist = await db.search_two(
+        "users",
+        "user_phone_number",
+        "user_password",
+        body.user_id,
+        body.user_password
+      );
+    }
+    // const user_exist = await db.search_one(
+    //   "users",
+    //   "user_email",
+    //   //"user_password",
+    //   body.user_email
+    //   //body.user_password
+    // );
 
-    const user_exist = await db.search_one(
-      "users",
-      "user_email",
-      //"user_password",
-      body.user_email
-      //body.user_password
-    );
-
-    if (user_exist.length != 0) {
-      //if (user_exist[0].email_verified != 1) {
-      // const pass_valid = await bcrypt.compare(
-      //   body.user_password,
-      //   user_exist[0].user_password
-      // );
-
-      console.log("user_exist[0].user_password", user_exist[0].user_password);
-      // console.log("pass_valid:", pass_valid);
-      if (user_exist[0].user_password != body.user_password)
-        return handler.returner(
-          [false, { message: "Password is invalid" }],
-          api_name,
-          400
-        );
-    } else {
+    if (user_exist.length == 0) {
       return handler.returner(
-        [false, { message: "Email is invalid" }],
+        [false, { message: "Password is invalid" }],
         api_name,
         400
       );
     }
 
     console.log("user_exist.length ", user_exist);
-    /*
-    if (!pass_valid)
-      return handler.returner(
-        [false, { message: "Password is invalid" }],
-        api_name,
-        400
-      );
-
-    if (user_exist[0].email_verified != 1)
-      return handler.returner(
-        [false, { message: "Account is not verified" }],
-        api_name,
-        400
-      );*/
 
     const created_token = await token.create_token(user_exist[0].id_user);
     console.log("created_token:", created_token);
@@ -84,17 +76,17 @@ exports.handler = async (event, context) => {
     // where id_id_user =(select id_user from users where user_email="anna@gmail.com");
     const id = await db.select_oneColumn(
       "users",
-      id_user,
-      user_email,
+      "id_user",
+      "user_email",
       user_exist[0].user_email
     );
     const currentuser_access_level = await db.select_oneColumn(
       "user_access_level_m2m_users",
-      id_user_access_level,
-      id_id_user,
+      "id_user_access_level",
+      "id_id_user",
       id
     );
-    const access_level = null;
+    let access_level = null;
     if (currentuser_access_level == 0) {
       access_level = [0, 1, 2, 3, 4, 5];
     } else if (currentuser_access_level == 1) {
@@ -124,3 +116,15 @@ exports.handler = async (event, context) => {
     return handler.returner([false, e], api_name);
   }
 };
+//tests
+// {
+//     "user_id":"22222",
+//     "type":"phone",
+//     "user_password":"anna"
+// }
+//test
+// {
+//     "user_id":"anna@gmail.com",
+//     "type":"email",
+//     "user_password":"anna"
+// }

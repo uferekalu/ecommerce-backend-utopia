@@ -26,6 +26,16 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
+  product_details_get:
+    handler: src/lambda/product/products_get.handler
+    events:
+      - http:
+          path: /api/products_get/{keyword}
+          method: get
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+
   user_create:
     handler: src/lambda/user/user_create.handler
     events:
@@ -34,10 +44,40 @@ functions:
           method: post
     cors: true
     origin: "*"
+  #--------------------------------------------------------------------------
+
+  user_login_emailorphone:
+    handler: src/lambda/user/user_login_emailorphone.handler
+    events:
+      - http:
+          path: /api/user_login_emailorphone
+            method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+
+  wishlist_insert_product:
+    handler: src/lambda/wishlist/wishlist_insert_product.handler
+    events:
+      - http:
+          path: /api/wishlist_insert_product
+          method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+
+  user_email_or_phone_verify:
+    handler: src/lambda/user/user_email_or_phone_verify.handler
+    events:
+      - http:
+          path: /api/user_email_or_phone_verify
+          method: post
+    cors: true
+    origin: "*"
   #-------------------------------------------------------------------------
 
   user_email_verify:
-    handler: src/lambda/user/user_email_verify.handler
+    handler: src/lambda/user/user_email_verify_id_user.handler
     events:
       - http:
           path: /api/user_email_verify/{id_user}
@@ -45,6 +85,16 @@ functions:
     cors: true
     origin: "*"
   #-------------------------------------------------------------------------
+
+  product_details_get:
+    handler: src/lambda/product/product_details_get.handler
+    events:
+      - http:
+          path: /api/product_details_get/{id_product}
+          method: get
+    cors: true
+    origin: "*"
+  #------------------------------------------------------------------------
 
   user_login:
     handler: src/lambda/user/user_login.handler
@@ -54,7 +104,36 @@ functions:
           method: post
     cors: true
     origin: "*"
+  #------------------------------------------------------------------------
 
+  order_update:
+    handler: src/lambda/order/order_update.handler
+    events:
+      - http:
+          path: /api/order_update
+          method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+
+  wishlist_get_all:
+    handler: src/lambda/product/wishlist_get_all.handler
+    events:
+      - http:
+          path: /api/wishlist_get_all
+          method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+
+  user_logout:
+    handler: src/lambda/user/user_logout.handler
+    events:
+      - http:
+          path: /api/user_logout
+          method: post
+    cors: true
+    origin: "*"
   #-------------------------------------------------------------------------
 
   user_name_get:
@@ -75,7 +154,6 @@ functions:
           method: post
     cors: true
     origin: "*"
-
   #-------------------------------------------------------------------------
 
   shipping_create:

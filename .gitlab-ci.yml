@@ -26,7 +26,7 @@ production:
     - test -z "$AWS_ACCESS_KEY_ID" && echo $FAILURE_MESSAGE && exit 1
   script:
     - npm install
-    - npm run deploy -- --stage production --verbose
+    - npm run deploy -- --stage staging --verbose
   environment: production
   only: 
     - master

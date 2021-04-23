@@ -158,10 +158,92 @@ functions:
 
   shipping_update:
     handler: src/lambda/shipping/shipping_update.handler
-    events:
+    events: 
       - http:
           path: /api/shipping-update
           method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+  order_create:
+    handler: src/lambda/order/order_create.handler
+    events: 
+      - http:
+          path: /api/order_create
+          method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+  categories_get:
+    handler: src/lambda/product/categories_get.handler
+    events: 
+      - http:
+          path: /api/categories_get
+          method: get
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+  #-------------------------------------------------------------------------
+  product_review_create:
+    handler: src/lambda/product/product_review_create.handler
+    events: 
+      - http:
+          path: /api/product_review_create
+          method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+  products_get:
+    handler: src/lambda/product/products_get.handler
+    events: 
+      - http:
+          path: /api/products_get
+          method: get
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+  user_details:
+    handler: src/lambda/user/user_details.handler
+    events: 
+      - http:
+          path: /api/user_details
+          method: get
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+  user_update:
+    handler: src/lambda/user/user_update.handler
+    events: 
+      - http:
+          path: /api/user_update
+          method: put
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+  vendor_create:
+    handler: src/lambda/vendor/vendor_create.handler
+    events: 
+      - http:
+          path: /api/vendor_create
+          method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+  vendor_review_create:
+    handler: src/lambda/vendor/vendor_review_create.handler
+    events: 
+      - http:
+          path: /api/vendor_review_create
+          method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+  vendor_update:
+    handler: src/lambda/vendor/vendor_update.handler
+    events: 
+      - http:
+          path: /api/vendor_update
+          method: put
     cors: true
     origin: "*"
   #-------------------------------------------------------------------------

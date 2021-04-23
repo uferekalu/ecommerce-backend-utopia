@@ -15,14 +15,24 @@ exports.handler = async (event, context) => {
     const all_fields = Object.keys(body)
 
     //more error handling
-    const required_fields = ["p2v_price", "category", "thumbnail"]
+    const required_fields = ["p2v_price", "id_category", "product_title", "product_desc"]
     const missing_fields = required_fields.filter(field => !all_fields.includes(field))
 
     if (missing_fields.length > 0) {
       throw Error(missing_fields)
     }
 
-    const { p2v_price, category, thumbnail, ...others } = body
+    const { p2v_price, id_category, product_title, product_desc, ...others } = body
+
+    const category_id = await db.search_one(
+      "product_categories",
+      "id_product_category",
+      id_category
+    )
+
+    if (category_id.length < 1) {
+      throw "Category is invalid"
+    }
 
     const optional_fields = Object.keys(others)
 
@@ -38,8 +48,18 @@ exports.handler = async (event, context) => {
       }
     }
 
+    async function getNewThumbnailId() {
+      if (others && optional_fields.includes("thumbnail")) {
+        const { thumbnail } = others
+        const new_thumbnail = await db.insert_new(thumbnail, "product_thumbnails")
+        return new_thumbnail.insertId
+      }
+    }
+
     //retrieves tags_id from product_tags table
     const new_tags_id = await getNewTagsId()
+    //retrieves thumbnail_id from product_thumbnails table
+    const new_thumbnail_id = await getNewThumbnailId()
 
     //recieves tags_id (if truthy) as FK ref product_tags
     //inserts new record into the products table
@@ -48,12 +68,23 @@ exports.handler = async (event, context) => {
       let new_product_record
       if (new_tags_id) {
         new_product_record = await db.insert_new(
-          { id_category: category, id_product_thumbnail: thumbnail, id_tags: new_tags_id },
+          {
+            id_category: category,
+            id_product_thumbnail: new_thumbnail_id,
+            product_title,
+            product_desc,
+            id_tags: new_tags_id,
+          },
           "products"
         )
       } else {
         new_product_record = await db.insert_new(
-          { id_category: category, id_product_thumbnail: thumbnail },
+          {
+            id_category: category,
+            product_title,
+            product_desc,
+            id_product_thumbnail: new_thumbnail_id,
+          },
           "products"
         )
       }
@@ -70,7 +101,7 @@ exports.handler = async (event, context) => {
     //collates p2v_promo_price and/or id_vendor optional fields if provided
     const new_p2v_data = {}
     for (let prop in others) {
-      if (prop === "p2v_promo_price" || prop === "id_vendor") {
+      if (prop === "p2v_promo_price" || prop === "id_vendor" || prop === "id_brand") {
         new_p2v_data[prop] = others[prop]
       }
     }
@@ -86,22 +117,33 @@ exports.handler = async (event, context) => {
     //inserts new record(s) into product_images
     //recieves new_product_id and new_product_m2m_vendor.insertId as FKs
     //ref products and products_m2m_vendors tables resp
-    //P.S images is a multidimensional array nesting each image object
-    if (others && optional_fields.includes("images")) {
-      const { images } = optional_fields
-      images.map(async image => {
-        await db.insert_new(
-          {
-            ...image,
-            product_id: new_product_id,
-            id_product_m2m_vendor: new_product_m2m_vendor.insertId,
-          },
-          "product_images"
-        )
-      })
+    //P.S product_images is a multidimensional array nesting each image object
+    if (others && optional_fields.includes("product_images")) {
+      const { product_images } = optional_fields
+
+      await db.insert_many(
+        {
+          ...product_images,
+          product_id: new_product_id,
+          id_product_m2m_vendor: new_product_m2m_vendor,
+        },
+        "product_thumbnails"
+      )
     }
 
-    return handler.returner([true, {}], api_name, 200)
+    return handler.returner(
+      [
+        true,
+        {
+          product_id: new_product_id,
+          id_product_m2m_vendor: new_product_m2m_vendor,
+          product_title,
+          product_desc,
+        },
+      ],
+      api_name,
+      201
+    )
   } catch (e) {
     if (e.name === "Error") {
       const errors = e.message

@@ -75,7 +75,7 @@ exports.handler = async (event, context) => {
 
     //The process is only successful if both tables have been successfully manipulated
     if (insert_order_shipping_status && insert_order_shipping) {
-      return handler.returner([true, {}], api_name, 201)
+      return handler.returner([true, { ...shipping_data, ...shipping_status_data }], api_name, 201)
     }
   } catch (e) {
     if (e.name === "Error") {

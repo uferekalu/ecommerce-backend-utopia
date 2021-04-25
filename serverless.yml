@@ -101,13 +101,13 @@ functions:
     events:
       - http:
           path: /api/order_update
-          method: post
+          method: put
     cors: true
     origin: "*"
   #-------------------------------------------------------------------------
 
   wishlist_get_all:
-    handler: src/lambda/product/wishlist_get_all.handler
+    handler: src/lambda/wishlist/wishlist_get_all.handler
     events:
       - http:
           path: /api/wishlist_get_all
@@ -158,7 +158,7 @@ functions:
 
   shipping_update:
     handler: src/lambda/shipping/shipping_update.handler
-    events: 
+    events:
       - http:
           path: /api/shipping-update
           method: post
@@ -167,7 +167,7 @@ functions:
   #-------------------------------------------------------------------------
   order_create:
     handler: src/lambda/order/order_create.handler
-    events: 
+    events:
       - http:
           path: /api/order_create
           method: post
@@ -176,7 +176,7 @@ functions:
   #-------------------------------------------------------------------------
   categories_get:
     handler: src/lambda/product/categories_get.handler
-    events: 
+    events:
       - http:
           path: /api/categories_get
           method: get
@@ -186,7 +186,7 @@ functions:
   #-------------------------------------------------------------------------
   product_review_create:
     handler: src/lambda/product/product_review_create.handler
-    events: 
+    events:
       - http:
           path: /api/product_review_create
           method: post
@@ -195,7 +195,7 @@ functions:
   #-------------------------------------------------------------------------
   products_get:
     handler: src/lambda/product/products_get.handler
-    events: 
+    events:
       - http:
           path: /api/products_get
           method: get
@@ -204,7 +204,7 @@ functions:
   #-------------------------------------------------------------------------
   user_details:
     handler: src/lambda/user/user_details.handler
-    events: 
+    events:
       - http:
           path: /api/user_details
           method: get
@@ -213,7 +213,7 @@ functions:
   #-------------------------------------------------------------------------
   user_update:
     handler: src/lambda/user/user_update.handler
-    events: 
+    events:
       - http:
           path: /api/user_update/{id_user}
           method: put
@@ -222,7 +222,7 @@ functions:
   #-------------------------------------------------------------------------
   vendor_create:
     handler: src/lambda/vendor/vendor_create.handler
-    events: 
+    events:
       - http:
           path: /api/vendor_create
           method: post
@@ -231,7 +231,7 @@ functions:
   #-------------------------------------------------------------------------
   vendor_review_create:
     handler: src/lambda/vendor/vendor_review_create.handler
-    events: 
+    events:
       - http:
           path: /api/vendor_review_create
           method: post
@@ -240,7 +240,7 @@ functions:
   #-------------------------------------------------------------------------
   vendor_update:
     handler: src/lambda/vendor/vendor_update.handler
-    events: 
+    events:
       - http:
           path: /api/vendor_update
           method: put

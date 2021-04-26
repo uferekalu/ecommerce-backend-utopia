@@ -206,7 +206,7 @@ functions:
     handler: src/lambda/user/user_details.handler
     events:
       - http:
-          path: /api/user_details
+          path: /api/user_details/{id_user}
           method: get
     cors: true
     origin: "*"

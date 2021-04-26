@@ -16,6 +16,7 @@ const userOne = {
 }
 
 const orderOne = {
+  id_order: 8,
   id_order_status: 1,
 }
 
@@ -36,6 +37,8 @@ const userTwo = {
   email_verified: 0,
 }
 
+const product = {}
+
 async function createUser() {
   await db.insert_new(userTwo, "users")
 }
@@ -50,7 +53,7 @@ async function getUserId() {
 }
 
 async function resetOrderStatus() {
-  await db.update_one("orders", orderOne.id_order_status, "id_order", userOne.id_user)
+  await db.update_one("orders", orderOne.id_order_status, "id_order", orderOne.id_order)
 }
 
 module.exports = {

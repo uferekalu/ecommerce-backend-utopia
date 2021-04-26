@@ -12,6 +12,12 @@ describe("testing product endpoints", async () => {
 
   // 2
   test("should get product details", async () => {
+    const res = await axios.post(`${uri}/product_create`, {})
+    expect(res.status).toEqual(200)
+  })
+
+  // 3
+  test("should get product details", async () => {
     const res = await axios.get(`${uri}/products_get/HP`)
     expect(res.status).toEqual(200)
   })

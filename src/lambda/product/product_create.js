@@ -15,14 +15,21 @@ exports.handler = async (event, context) => {
     const all_fields = Object.keys(body)
 
     //more error handling
-    const required_fields = ["p2v_price", "id_category", "product_title", "product_desc"]
-    const missing_fields = required_fields.filter(field => !all_fields.includes(field))
+    const required_fields = [
+      "p2v_price",
+      "id_category",
+      "id_vendor",
+      "product_title",
+      "product_desc",
+      "thumbnail",
+    ]
+    const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
     if (missing_fields.length > 0) {
       throw Error(missing_fields)
     }
 
-    const { p2v_price, id_category, product_title, product_desc, ...others } = body
+    const { p2v_price, id_category, id_vendor, product_title, product_desc, ...others } = body
 
     const category_id = await db.search_one(
       "product_categories",
@@ -49,11 +56,9 @@ exports.handler = async (event, context) => {
     }
 
     async function getNewThumbnailId() {
-      if (others && optional_fields.includes("thumbnail")) {
-        const { thumbnail } = others
-        const new_thumbnail = await db.insert_new(thumbnail, "product_thumbnails")
-        return new_thumbnail.insertId
-      }
+      const { thumbnail } = others
+      const new_thumbnail = await db.insert_new(thumbnail, "product_thumbnails")
+      return new_thumbnail.insertId
     }
 
     //retrieves tags_id from product_tags table
@@ -80,7 +85,7 @@ exports.handler = async (event, context) => {
       } else {
         new_product_record = await db.insert_new(
           {
-            id_category: category,
+            id_category,
             product_title,
             product_desc,
             id_product_thumbnail: new_thumbnail_id,
@@ -98,21 +103,30 @@ exports.handler = async (event, context) => {
       throw "product create unsuccessful"
     }
 
-    //collates p2v_promo_price and/or id_vendor optional fields if provided
+    //collates p2v_promo_price and/or id_brand optional fields if provided
     const new_p2v_data = {}
     for (let prop in others) {
-      if (prop === "p2v_promo_price" || prop === "id_vendor" || prop === "id_brand") {
+      if (prop === "p2v_promo_price" || prop === "id_brand") {
         new_p2v_data[prop] = others[prop]
       }
     }
 
     //inserts new record into products_m2m_vendors table
-    //recieves new_product_id and 1 as FKs ref products and vendors table resp
-    //hard coding id_vendor= 1
-    const new_product_m2m_vendor = await db.insert_new(
-      { ...new_p2v_data, id_product: new_product_id, id_vendor: 1 },
-      "products_m2m_vendors"
-    )
+    //recieves new_product_id as FKs ref products table
+    async function getNewProductVendorId() {
+      const new_product_m2m_vendor = await db.insert_new(
+        { ...new_p2v_data, id_vendor, id_product: new_product_id },
+        "products_m2m_vendors"
+      )
+      return new_product_m2m_vendor.insertId
+    }
+
+    //retrieves id_product_m2m_vendor from products_m2m_vendors table
+    const new_product_m2m_vendor_id = await getNewProductVendorId()
+
+    if (!new_product_m2m_vendor_id) {
+      throw "id_vendor is invalid"
+    }
 
     //inserts new record(s) into product_images
     //recieves new_product_id and new_product_m2m_vendor.insertId as FKs
@@ -121,14 +135,16 @@ exports.handler = async (event, context) => {
     if (others && optional_fields.includes("product_images")) {
       const { product_images } = optional_fields
 
-      await db.insert_many(
-        {
-          ...product_images,
-          product_id: new_product_id,
-          id_product_m2m_vendor: new_product_m2m_vendor,
-        },
-        "product_thumbnails"
-      )
+      product_images.map(async (image) => {
+        await db.insert_new(
+          {
+            ...image,
+            product_id: new_product_id,
+            id_product_m2m_vendor: new_product_m2m_vendor_id,
+          },
+          "product_images"
+        )
+      })
     }
 
     return handler.returner(
@@ -136,7 +152,7 @@ exports.handler = async (event, context) => {
         true,
         {
           product_id: new_product_id,
-          id_product_m2m_vendor: new_product_m2m_vendor,
+          id_product_m2m_vendor: new_product_m2m_vendor_id,
           product_title,
           product_desc,
         },
@@ -148,7 +164,7 @@ exports.handler = async (event, context) => {
     if (e.name === "Error") {
       const errors = e.message
         .split(",")
-        .map(field => {
+        .map((field) => {
           return `${field} is required`
         })
         .join(", ")

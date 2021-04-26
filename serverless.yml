@@ -215,7 +215,7 @@ functions:
     handler: src/lambda/user/user_update.handler
     events:
       - http:
-          path: /api/user_update/{id_user}
+          path: /api/user_update
           method: put
     cors: true
     origin: "*"

@@ -9,7 +9,7 @@ exports.handler = async (event, context) => {
         var datetime = await handler.datetime()
         const body = JSON.parse(event.body)
 
-        const { id_product_m2m_vendor, product_review, id_product_review, id_order_m2m_product } = body
+        const { id_product_m2m_vendor, product_review, id_order_m2m_product } = body
         
         const product_m2m_vendor_exist = await db.search_one( "products_m2m_vendors","id_product_m2m_vendor", id_product_m2m_vendor)
 
@@ -17,27 +17,25 @@ exports.handler = async (event, context) => {
             console.log("Product is not found for review")
             return handler.returner([false, { message: "Product is not found for review" }], api_name, 404)
         } else {
-            const created_token = await token.create_token(id_product_review)
+            // const created_token = await token.create_token(id_product_review)
 
-            const data = {
-                id_order_m2m_product: id_order_m2m_product,
-                product_review: product_review,
-                pr_datetime_created: datetime
-            }
+            const orderM2MproductId = await db.search_one("orders_m2m_products", "id_order_m2m_product", id_product_m2m_vendor)
 
-            const result = await db.insert_new(data, "product_reviews");
-            if (result) {
-                return handler.returner(
-                    [true, 
-                        { 
-                            message: "Product review created successfully", 
-                            data: data,
-                            token: created_token  
-                        }
-                    ], 
-                    api_name, 
-                    201
-                )
+            if (orderM2MproductId) {
+                const result = await db.insert_new(product_review, "product_reviews")
+                if (result) {
+                    return handler.returner(
+                        [true, 
+                            { 
+                                message: "Product review created successfully", 
+                                data: product_review,
+                                token: created_token  
+                            }
+                        ], 
+                        api_name, 
+                        201
+                    )
+                }
             }
         }   
 

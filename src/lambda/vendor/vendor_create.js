@@ -10,7 +10,6 @@ exports.handler = async (event, context) => {
         const body = JSON.parse(event.body)
 
         const { 
-            id_vendor,
             business_name, 
             business_abn, 
             vendor_phone_number,
@@ -24,13 +23,13 @@ exports.handler = async (event, context) => {
 
         // const id_vendor = event.queryStringParameters.id_vendor;
         
-        const vendor_exist = await db.search_one( "vendors","id_vendor", id_vendor)
+        const vendor_exist = await db.search_one( "vendors","business_name", business_name)
 
         if (vendor_exist.length != 0) {
             console.log("Vendor already exists, you may want to update it")
             return handler.returner([false, { message: "Vendor already exists, you may want to update it" }], api_name, 404)
         } else {
-            const created_token = await token.create_token(id_vendor)
+            // const created_token = await token.create_token(id_vendor)
 
             const data = {
                 business_name: business_name,
@@ -53,7 +52,7 @@ exports.handler = async (event, context) => {
                         { 
                             message: "Vendor created successfully", 
                             data: data,
-                            token: created_token  
+                            
                         }
                     ], 
                     api_name, 

@@ -27,10 +27,10 @@ functions:
   #-------------------------------------------------------------------------
 
   product_details_get:
-    handler: src/lambda/product/products_get.handler
+    handler: src/lambda/product/product_details_get.handler
     events:
       - http:
-          path: /api/products_get/{keyword}
+          path: /api/product_details_get/{id_product}
           method: get
     cors: true
     origin: "*"

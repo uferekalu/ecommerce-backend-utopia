@@ -84,17 +84,17 @@ exports.handler = async (event, context) => {
     // where id_id_user =(select id_user from users where user_email="anna@gmail.com");
     const id = await db.select_oneColumn(
       "users",
-      id_user,
-      user_email,
+      "id_user",
+      "user_email",
       user_exist[0].user_email
     );
     const currentuser_access_level = await db.select_oneColumn(
       "user_access_level_m2m_users",
-      id_user_access_level,
-      id_id_user,
+      "id_user_access_level",
+      "id_id_user",
       id
     );
-    const access_level = null;
+    let access_level = null;
     if (currentuser_access_level == 0) {
       access_level = [0, 1, 2, 3, 4, 5];
     } else if (currentuser_access_level == 1) {

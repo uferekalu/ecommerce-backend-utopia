@@ -10,6 +10,7 @@ module.exports = {
 
   search_get_one_column: async (table, column) => {
     let result = await connection.query(`SELECT ${column} FROM ${table}`)
+    return result
   },
   search_two: async (table, column_one, column_two, data1, data2) => {
     let result = await connection.query(

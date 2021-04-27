@@ -242,7 +242,7 @@ functions:
     handler: src/lambda/vendor/vendor_update.handler
     events:
       - http:
-          path: /api/vendor_update
+          path: /api/vendor_update/{id_vendor}
           method: put
     cors: true
     origin: "*"

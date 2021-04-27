@@ -56,11 +56,24 @@ exports.handler = async (event, context) => {
             throw "Vendor create not successful"
         }
 
+        const created_token = await token.create_token(newVendorRecord.inserId);
+
+        let vendorTokenData = {
+            id_vendor: newVendorRecord.insertId,
+            token: created_token,
+            vt_datetime_created: await handler.datetime(),
+        }
+          
+        const tokenId = await db.insert_new(
+            vendorTokenData, "vendor_tokens"
+        )
+
         return handler.returner(
             [
               true,
               {
-                data
+                data,
+                tokenId
               },
             ],
             api_name,

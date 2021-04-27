@@ -46,7 +46,6 @@ module.exports = {
     const result = await connection.query(`INSERT INTO ${table} SET ?`, data)
     return result
   },
-
   search_get_one_column_oncondition: async (table, column1, column2, data) => {
     let result = await connection.query(`SELECT ${column1} FROM ${table} WHERE ${column2} = ?`, [
       data,
@@ -84,6 +83,11 @@ module.exports = {
         ", "
       )} FROM ${tableOne} JOIN ${tableTwo} ON ${tableOne}.${condition}=${tableTwo}.${condition}`
     )
+    return result
+  },
+
+  insert_new_on_condition: async (data, table, column) => {
+    const result = await connection.query(`INSERT INTO ${table} SET ? WHERE ${column} =?` , data)
     return result
   },
 }

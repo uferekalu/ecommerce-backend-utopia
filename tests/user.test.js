@@ -2,7 +2,7 @@
 const axios = require("axios").default
 
 const { userOne, userTwo, deleteUser, getUserId } = require("./fixtures/db")
-const uri = process.env.API_URI
+const uri = process.env.API_URI_LOCAL
 
 describe("tests user endpoints", async () => {
   afterAll(() => deleteUser())

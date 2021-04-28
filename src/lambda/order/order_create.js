@@ -49,7 +49,7 @@ exports.handler = async (event, context) => {
     //copying body object then delete the id_product_m2m_vendor prop
     const data = body
     delete data.id_product_m2m_vendor
-    
+
     //destructing the props from mysql insert
     //affectedRows > 1 means multiple rows records inserted
     //insertedId is the id of the first row inserted
@@ -66,9 +66,20 @@ exports.handler = async (event, context) => {
 
     const orders = await db.insert_many(values, columns, "orders")
 
-    if (orders.length === 0) {
-      throw "orders not successfully created"
+    if (orders.length === affectedRows) {
+        throw "orders not successfully created"
     }
+    
+    let order_list = []
+    let order_m2m_product_list = []
+
+    for (let i = 0; i < affectedRows; i++) {
+        order_list.push(i + orders.insertId)
+        order_m2m_product_list.push(i + new_order_m2m_product.insertId)
+    }
+    
+    data.id_order_m2m_product = order_m2m_product_list.join(", ")
+    data.id_order = order_list.join(", ")
 
     return handler.returner([true, data], api_name, 201)
   } catch (e) {

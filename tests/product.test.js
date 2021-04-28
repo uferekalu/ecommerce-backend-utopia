@@ -53,7 +53,6 @@ describe("testing product endpoints", async () => {
   test("should create product review", async () => {
     const target_id = await getProductId()
     const id_product_m2m_vendor = await getProductVendorId(target_id)
-    console.log(id_product_m2m_vendor)
     const res = await axios.get(`${uri}/product_review_create`, {
       id_product_m2m_vendor,
       product_review: utils.review,

@@ -1,16 +1,17 @@
 const handler = require("../../src/middleware/handler")
 const db = require("../../src/lib/database/query")
+/*
+key: 
+  -One: seeding and setup
+  -Two: Operational
+*/
 
-//UserOne already in the database
 const userOne = {
-  id_user: 15,
-  user_first_name: "john",
-  user_middle_name: "middleOne",
-  user_last_name: "smith",
-  user_email: "john@gmail.com",
-  user_address_shipping: "addressOne",
-  user_address_billing: "billingAddressOne",
-  user_password: "john",
+  id_user: 146,
+  user_first_name: "gbenga",
+  user_last_name: "omowole",
+  user_email: "omo@mail.com",
+  user_password: "pass123",
   id_user_access_level: 0,
   id_user_title: 1,
 }
@@ -58,7 +59,19 @@ const vendorTwo = {
   vendor_address: "australia",
   vendor_short_desc: "leaders of online services",
 }
-//functions
+
+// ********
+async function setupDB() {
+  //user
+  //user token
+  //vendor
+  //product_categories
+  //product
+  //order
+  //order_shipping_status
+  //order_shipping
+}
+
 // users------------------------------------------------
 async function createUser() {
   await db.insert_new(userTwo, "users")

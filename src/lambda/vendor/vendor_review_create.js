@@ -17,7 +17,7 @@ exports.handler = async (event, context) => {
         const all_fields = Object.keys(body)
 
         //more error handling
-        const required_fields = [ "id_vendor", "id_product_m2m_vendor", "vendor_review", "token"]
+        const required_fields = [ "id_user", "id_product_m2m_vendor", "vendor_review", "token"]
 
         const missing_fields = required_fields.filter(field => !all_fields.includes(field))
 
@@ -25,15 +25,15 @@ exports.handler = async (event, context) => {
             throw Error(missing_fields)
         }
 
-        const { id_vendor, id_product_m2m_vendor, vendor_review, token } = body
+        const { id_user, id_product_m2m_vendor, vendor_review, token } = body
 
-        const validate_vendor_token = await db.search_one("vendor_tokens", "id_vendor", id_vendor)
+        const validate_user_token = await db.search_one("user_tokens", "id_user", id_user)
 
-        if (validate_vendor_token.length === 0) {
-            return handler.returner([false, { message: "Vendor is not found" }], api_name, 404)
+        if (validate_user_token.length === 0) {
+            return handler.returner([false, { message: "User is not found" }], api_name, 404)
         }
 
-        const valid_reviewer = validate_vendor_token.filter(vendor => vendor.token === token)
+        const valid_reviewer = validate_user_token.filter(user => user.token === token)
 
         if (valid_reviewer.length === 0) {
             return handler.returner(
@@ -53,9 +53,9 @@ exports.handler = async (event, context) => {
         //if product does not exist return error
         if (product_m2m_vendor_exist.length === 0) {
             return handler.returner(
-            [false, { message: "Product is not found for review" }],
-            api_name,
-            404
+                [false, { message: "Product is not found for review" }],
+                api_name,
+                404
             )
         }
 
@@ -74,6 +74,7 @@ exports.handler = async (event, context) => {
         const { id_order_m2m_product } = order_m2m_product[0]
 
         const data = { vendor_review, id_order_m2m_product, vr_datetime_created: datetime }
+        
         const result = await db.insert_new(data, "vendor_reviews")
         
         if (result) {

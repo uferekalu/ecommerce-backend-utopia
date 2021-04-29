@@ -70,10 +70,15 @@ module.exports = {
     return result
   },
 
-  insert_many: async (rows, table) => {
-    const result = rows.map(async data => {
-      return await connection.query(`INSERT INTO ${table} SET ?`, data)
-    })
+  insert_many: async (values, columns, table) => {
+    let attr
+    if (columns.length === 1) {
+      attr = columns.join()
+    }
+    if (columns.length > 1) {
+      attr = columns.join(", ")
+    }
+    const result = await connection.query(`INSERT INTO ${table} (${attr}) VALUES ?`, [values])
     return result
   },
 

@@ -35,20 +35,25 @@ describe("tests user endpoints", async () => {
   })
 
   // 5
-  // test("should get username", async () => {
-  //   const res = await axios.post(`${uri}/user-first-last-get-all`)
-  //   expect(res.status).toEqual(200)
-  // })
+  test("should get user access level", async () => {
+    const res = await axios.get(`${uri}/user_access_level_get`)
+    expect(res.status).toEqual(200)
+  })
 
   // 6
-  // test("should get user access level", async () => {
-  //   const res = await axios.post(`${uri}/user_access_level_get`)
-  //   expect(res.status).toEqual(200)
-  // })
+  test("should get user details", async () => {
+    const res = await axios.get(`${uri}/user_details`)
+    expect(res.status).toEqual(200)
+  })
 
   // 7
-  test("should get user details", async () => {
-    const res = await axios.post(`${uri}/user_details`)
+  test("should get user full name", async () => {
+    const res = await axios.get(`${uri}/user-first-last-get-all`)
+    expect(res.status).toEqual(200)
+  })
+  // 8
+  test("should update user", async () => {
+    const res = await axios.post(`${uri}/user_update`)
     expect(res.status).toEqual(200)
   })
 })

@@ -1,7 +1,7 @@
 //Total endpoints = 2
 const axios = require("axios").default
 
-const { userOne, orderOne } = require("./fixtures/db")
+const { userOne, orderOne } = require("./fixtures/data")
 
 const uri = process.env.API_URI_LOCAL
 

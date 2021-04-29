@@ -1,8 +1,9 @@
 //Total tests = 3
 const axios = require("axios").default
 
-const { getVendorId, deleteVendorRecord, vendorTwo, userOne } = require("./fixtures/db")
-const { utils } = require("./fixtures/utils")
+const { getVendorId, deleteVendorRecord } = require("./fixtures/actions")
+
+const { vendorTwo, userOne, utils } = require("./fixtures/data")
 
 const uri = process.env.API_URI_LOCAL
 

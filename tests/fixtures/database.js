@@ -25,12 +25,6 @@ const user_one = {
   // id_user_access_level: 0,
 }
 
-// const get_user_one_token = async () => {
-//   const id_user = await get_user_one_id()
-//   const result = db.search_one("user_tokens", "id_user", id_user)
-//   return result[0].token
-// }
-
 //start-------------------------------------------------------------------------------------------
 const get_user_one_id = async () => {
   const result = await db.search_one("users", "user_email", user_one.user_email)
@@ -71,8 +65,6 @@ const get_product_one_id = async () => {
 
 // SEED 4
 const productOne_m2m_vendorOne = {
-  // id_vendor,
-  // id_product,
   p2v_price: 1500,
   inventory: "XP5 Limited edition",
 }
@@ -99,19 +91,22 @@ const get_orderOne_m2m_productOne_id = async () => {
   )
   return result[0].id_order_m2m_product
 }
-
-// const id_productOne_m2m_vendorOne = get_productOne_m2m_vendorOne_id()
 //end-------------------------------------------------------------------------------------------
 
 // SEED 5
 const order_one = {
   id_order_status: 1, //hard coded
-  // id_order_m2m_product: id_productOne_m2m_vendorOne,
-  // id_user: id_user_one,
   total: 1500,
   paymentMethod: "spendrPay",
   isPaid: 1,
 }
+
+//start-------------------------------------------------------------------------------------------
+const get_order_one_id = async () => {
+  const result = await db.search_one("orders", "paymentMethod", order_one.paymentMethod)
+  return result[0].id_order
+}
+//end-------------------------------------------------------------------------------------------
 
 // SEED 6
 const order_shipping_one = {
@@ -128,12 +123,16 @@ const get_order_shipping_one_id = async () => {
 
 const id_order_shipping_one = get_order_shipping_one_id()
 //end-------------------------------------------------------------------------------------------
-
+let id_user
 let id_vendor
 let id_product
+let id_product_m2m_vendor
+let id_order
+let id_order_m2m_product
 
 async function setupDatabase() {
   await db.insert_new(user_one, "users")
+  id_user = await get_user_one_id()
   await db.insert_new(vendor_one, "vendors")
   id_vendor = await get_vendor_one_id()
   await db.insert_new(product_one, "products")
@@ -146,20 +145,27 @@ async function setupDatabase() {
     },
     "products_m2m_vendors"
   )
-  await db.insert_new(order_one, "orders")
+  id_product_m2m_vendor = await get_productOne_m2m_vendorOne_id()
+  await db.insert_new({ id_product_m2m_vendor }, "orders_m2m_products")
+  id_order_m2m_product = await get_orderOne_m2m_productOne_id()
+  await db.insert_new({ ...order_one, id_user, id_order_m2m_product }, "orders")
+  id_order = await get_order_one_id()
+  await db.update_one(
+    "orders_m2m_products",
+    { id_order },
+    "id_order_m2m_product",
+    id_order_m2m_product
+  )
   //   await db.insert_new(order_shipping_one, "order_shippings")
 }
 
 async function teardownDatabase() {
-  const id_user = await get_user_one_id()
-  const id_product_m2m_vendor = await get_productOne_m2m_vendorOne_id()
-  const id_order_m2m_product = await get_orderOne_m2m_productOne_id()
+  await db.delete_one("orders", "id_order_m2m_product", id_order_m2m_product)
   await db.delete_one("orders_m2m_products", "id_order_m2m_product", id_order_m2m_product)
-  await db.delete_one("orders", "id_product_m2m_vendor", id_product_m2m_vendor)
-  await db.delete_one("users", "id_user", id_user)
   await db.delete_one("products_m2m_vendors", "id_product_m2m_vendor", id_product_m2m_vendor)
   await db.delete_one("vendors", "id_vendor", id_vendor)
   await db.delete_one("products", "id_product", id_product)
+  await db.delete_one("users", "id_user", id_user)
   // await db.delete_one("order_shippings", "id_order_shipping_one", id_order_shipping_one)
 }
 

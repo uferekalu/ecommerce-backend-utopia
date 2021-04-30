@@ -1,7 +1,8 @@
 //Total endpoints = 12
 const axios = require("axios").default
 
-const { userOne, userTwo, deleteUser, getUserId } = require("./fixtures/db")
+const { deleteUser, getUserId } = require("./fixtures/database")
+const { userOne, userTwo } = require("./fixtures/data")
 const uri = process.env.API_URI_LOCAL
 
 describe("tests user endpoints", async () => {

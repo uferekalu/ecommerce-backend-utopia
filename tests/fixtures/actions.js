@@ -13,8 +13,13 @@ async function getUserId(data) {
   return result.insertId
 }
 
-async function resetOrderStatus(data) {
-  await db.update_one("orders", data.id_order_status, "id_order", data.id_order)
+async function resetOrderStatus(id_order_status, id_order) {
+  await db.update_one("orders", id_order_status, "id_order", id_order)
+}
+
+async function deleteOrderRecord(id_order) {
+  await db.delete_one("orders", "id_order", id_order)
+  await db.delete_one("orders_m2m_products", "id_order", id_order)
 }
 
 async function getProductId(data) {
@@ -59,4 +64,5 @@ module.exports = {
   deleteProductRecord,
   getVendorId,
   deleteVendorRecord,
+  deleteOrderRecord,
 }

@@ -150,12 +150,6 @@ async function setupDatabase() {
   id_order_m2m_product = await get_orderOne_m2m_productOne_id()
   await db.insert_new({ ...order_one, id_user, id_order_m2m_product }, "orders")
   id_order = await get_order_one_id()
-  await db.update_one(
-    "orders_m2m_products",
-    { id_order },
-    "id_order_m2m_product",
-    id_order_m2m_product
-  )
   //   await db.insert_new(order_shipping_one, "order_shippings")
 }
 
@@ -170,10 +164,11 @@ async function teardownDatabase() {
 }
 
 //For test
-setupDatabase()
-  .then(() => console.log("setup completed"))
-  .then(() => teardownDatabase())
-  .then(() => console.log("teardown completed"))
+// setupDatabase()
+//   .then(() => console.log("setup completed"))
+//   .then(() => teardownDatabase())
+//   .then(() => console.log("teardown completed"))
+//   .then(() => process.exit())
 
 module.exports = {
   setupDatabase,

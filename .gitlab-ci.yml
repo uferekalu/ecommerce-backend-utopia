@@ -8,7 +8,7 @@
 #   environment: production
 
 
-image: node:node:15.5.1
+image: node:15.5.1
 
 variables:
   AWS_REGION: us-east-2

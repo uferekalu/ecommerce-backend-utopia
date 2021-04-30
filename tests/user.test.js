@@ -37,7 +37,9 @@ describe("tests user endpoints", async () => {
 
   // 5
   test("should get user access level", async () => {
-    const res = await axios.get(`${uri}/user_access_level_get`)
+    const res = await axios.post(`${uri}/user_access_level_get`, {
+      user_email: "mejabidurotimi@gmail.com",
+    })
     expect(res.status).toEqual(200)
   })
 

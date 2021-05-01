@@ -5,6 +5,7 @@ const qs = require("querystring");
 //-----if the id_product exists send response will all te product details
 //-----if the id_product doesn't exist send response as product doesn't exist
 const api_name = "Products get";
+
 exports.handler = async (event, context) => {
   try {
     let product_search_keyword = event.pathParameters.keyword;

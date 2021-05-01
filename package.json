@@ -12,11 +12,11 @@
     "serverless-pseudo-parameters": "^2.5.0"
   },
   "devDependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "env-cmd": "^10.1.0",
-    "http-server": "^0.11.1",
+    "http-server": "^0.12.3",
     "serverless": "^1.83.2",
-    "serverless-jest-plugin": "^0.2.1",
+    "serverless-jest-plugin": "^0.3.0",
     "serverless-offline": "^5.12.1",
     "serverless-stack-output": "^0.2.3",
     "wait-on": "^3.3.0"

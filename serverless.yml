@@ -256,6 +256,15 @@ functions:
     cors: true
     origin: "*"
   #-------------------------------------------------------------------------
+  user_addresses_update:
+    handler: src/lambda/user/user_addresses_update.handler
+    events:
+      - http:
+          path: /api/user_addresses_update
+          method: put
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
 
   ######################################################### below are examples
 

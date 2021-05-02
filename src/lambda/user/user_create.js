@@ -82,12 +82,21 @@ exports.handler = async (event, context) => {
 
     await send.send_email(user_email, email_info);
 
-    // console.log(auth_token.create_token(id_user));
+    // Auth Token
+    const token = auth_token.create_token(result.insertId);
+
+    const auth_token_data = {
+      token: token,
+      id_user: result.insertId,
+      ut_datetime_created: datetime,
+    };
+
+    await db.insert_new(auth_token_data, "user_tokens");
 
     let response = {
       message: "Created account successful",
       id_user: result.insertId,
-      token: auth_token.create_token(result.insertId),
+      token: token,
     };
 
     return handler.returner([true, response], api_name, 201);

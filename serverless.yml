@@ -257,6 +257,16 @@ functions:
     origin: "*"
   #-------------------------------------------------------------------------
 
+  order_tracking:
+    handler: src/lambda/order/order_tracking.handler
+    events:
+      - http:
+          path: /api/order_tracking
+          method: post
+    cors: true
+    origin: "*"
+  #-------------------------------------------------------------------------
+
   ######################################################### below are examples
 
   bye: #This Is an example

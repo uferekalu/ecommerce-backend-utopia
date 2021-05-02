@@ -23,7 +23,8 @@ exports.handler = async (event, context) => {
       "product_desc",
       "thumbnail",
     ]
-    const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
+
+    const missing_fields = required_fields.filter(field => !all_fields.includes(field))
 
     if (missing_fields.length > 0) {
       throw Error(missing_fields)
@@ -56,7 +57,7 @@ exports.handler = async (event, context) => {
     }
 
     async function getNewThumbnailId() {
-      const { thumbnail } = others
+      const { thumbnail } = body
       const new_thumbnail = await db.insert_new(thumbnail, "product_thumbnails")
       return new_thumbnail.insertId
     }
@@ -135,7 +136,7 @@ exports.handler = async (event, context) => {
     if (others && optional_fields.includes("product_images")) {
       const { product_images } = optional_fields
 
-      product_images.map(async (image) => {
+      product_images.map(async image => {
         await db.insert_new(
           {
             ...image,
@@ -164,7 +165,7 @@ exports.handler = async (event, context) => {
     if (e.name === "Error") {
       const errors = e.message
         .split(",")
-        .map((field) => {
+        .map(field => {
           return `${field} is required`
         })
         .join(", ")

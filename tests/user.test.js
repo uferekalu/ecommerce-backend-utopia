@@ -67,6 +67,7 @@ describe("tests user endpoints", async () => {
       id_user,
       token,
     })
+    const res = await axios.get(`${uri}/user_details`)
     expect(res.status).toEqual(200)
   })
 })

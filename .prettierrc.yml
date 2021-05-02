@@ -1,0 +1,8 @@
+enable: true
+printWidth: 100
+singleQuote:
+htmlWhitespaceSensitivity: 'ignore'
+semi: false
+tabWidth: 2
+trailingComma: es5
+bracketSpacing: true

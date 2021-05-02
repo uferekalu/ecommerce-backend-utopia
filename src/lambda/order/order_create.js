@@ -30,7 +30,7 @@ exports.handler = async (event, context) => {
 
     //if user does not exist return error
     if (user_exist.length === 0) {
-      return handler.returner([false, { message: "User is not found" }], api_name, 404)
+      throw "user not found"
     }
 
     //converts id_product_m2m_vendor to multidimensional array
@@ -67,17 +67,17 @@ exports.handler = async (event, context) => {
     const orders = await db.insert_many(values, columns, "orders")
 
     if (orders.length === affectedRows) {
-        throw "orders not successfully created"
+      throw "orders not successfully created"
     }
-    
+
     let order_list = []
     let order_m2m_product_list = []
 
     for (let i = 0; i < affectedRows; i++) {
-        order_list.push(i + orders.insertId)
-        order_m2m_product_list.push(i + new_order_m2m_product.insertId)
+      order_list.push(i + orders.insertId)
+      order_m2m_product_list.push(i + new_order_m2m_product.insertId)
     }
-    
+
     data.id_order_m2m_product = order_m2m_product_list.join(", ")
     data.id_order = order_list.join(", ")
 

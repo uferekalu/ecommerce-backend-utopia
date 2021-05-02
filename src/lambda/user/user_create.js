@@ -17,11 +17,6 @@ const email_info = {
   message: "Please click here to verify your email\n\n\n\n",
 }; // we can send  HTML template insted of messgae
 
-
-// DEV-DURO added the (id_user_access_level) column to the (users) table
-
-// ALTER TABLE users ADD id_user_access_level INT NOT NULL DEFAULT 0;
-
 exports.handler = async (event, context) => {
   try {
     var datetime = await handler.datetime();

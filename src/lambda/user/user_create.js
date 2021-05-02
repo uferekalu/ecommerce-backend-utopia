@@ -80,7 +80,7 @@ exports.handler = async (event, context) => {
     const id_hashed = cryptr.encrypt(result.insertId);
     email_info.message += `https://4l0nq44u0k.execute-api.us-east-2.amazonaws.com/staging/api/user_email_verify/${id_hashed}`;
 
-    await send.send_email(body.user_email, email_info);
+    await send.send_email(user_email, email_info);
 
     // console.log(auth_token.create_token(id_user));
 

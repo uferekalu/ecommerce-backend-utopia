@@ -1,6 +1,7 @@
 const handler = require("../../middleware/handler");
 const db = require("../../lib/database/query");
 
+
 const api_name = "User details";
 
 exports.handler = async (event, context) => {
@@ -14,6 +15,12 @@ exports.handler = async (event, context) => {
       "id_user",
       id_user
     );
+
+    const user_token = await db.search_one(
+      "user_tokens",
+      "id_user",
+      id_user
+    )
     
     if (user_exist.length == 0){
         return handler.returner(
@@ -34,7 +41,7 @@ exports.handler = async (event, context) => {
             user_email: user_exist[0].user_email,
             user_phone_number: user_exist[0].user_phone_number
         }
-        return handler.returner([true, { message: "User fetched successfully", data: user_data  }], api_name, 200)
+        return handler.returner([true, { message: "User fetched successfully", data: user_data, token: user_token  }], api_name, 200)
     }
     } catch(error) {
         console.log("Error: ", error);

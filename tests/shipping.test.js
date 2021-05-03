@@ -8,13 +8,14 @@ describe("testing shipping endpoints", async () => {
   test("should create shipping", async () => {
     const res = await axios.post(`${uri}/shipping-create`, {
       id_order_shipping: 1,
-      id_vendor_tm: 2,
+      id_order: 2,
+      os_company: "my company",
     })
     expect(res.status).toEqual(201)
   })
 
   // 2
-  test("should get shipping update", async () => {
+  test("should update shipping", async () => {
     const res = await axios.post(`${uri}/shipping-update`)
     expect(res.status).toEqual(200)
   })

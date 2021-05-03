@@ -23,7 +23,7 @@
     "wait-on": "^3.3.0"
   },
   "scripts": {
-    "test": "env-cmd -f ./test.env jest --watchAll --runInBand --detectOpenHandles",
+    "test": "env-cmd -f ./test.env jest --watchAll --runInBand --detectOpenHandles --verbose",
     "deploy": "serverless deploy",
     "start": "serverless offline"
   },

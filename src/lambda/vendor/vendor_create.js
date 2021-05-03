@@ -54,7 +54,7 @@ exports.handler = async (event, context) => {
             [
                 true,
                 {
-                    data,
+                    ...data,
                 },
             ],
             api_name,

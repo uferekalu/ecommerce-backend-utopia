@@ -39,6 +39,23 @@ exports.handler = async (event, context) => {
             return handler.returner([false, { message: "Password is invalid" }], api_name, 400)
         }
 
+        const user_id = user_exist[0].id_user
+
+        const check_token = await db.search_one("user_tokens", "id_user", user_id)
+
+        const created_token = await token.create_token(user_exist[0].id_user)
+
+        let data = {
+            id_user: user_exist[0].id_user,
+            token: created_token,
+            ut_datetime_created: await handler.datetime(),
+        }
+        if (check_token.length > 0) {
+            await db.update_one("user_tokens", data, "id_user", user_id)
+        } else {
+            await db.insert_new(data, "user_tokens")
+        }
+
         /*
     if (!pass_valid)
       return handler.returner(
@@ -54,15 +71,6 @@ exports.handler = async (event, context) => {
         400
       );*/
 
-        const created_token = await token.create_token(user_exist[0].id_user)
-
-        let data = {
-            id_user: user_exist[0].id_user,
-            token: created_token,
-            ut_datetime_created: await handler.datetime(),
-        }
-
-        const result = await db.insert_new(data, "user_tokens")
         //console.log("user_access_level ", user_exist[0].id_user_access_level);
         console.log("user_dob ", user_exist[0].user_dob)
         //-------- get users access levels from tables with sub queries

@@ -30,6 +30,12 @@ exports.handler = async (event, context) => {
             id_vendor_status,
             ...others
         } = body
+
+        const vendor_exist = await db.search_one("vendors", "business_name", business_name)
+
+        if (vendor_exist.length > 0) {
+            throw "Business name is taken"
+        }
         const vendorStatusId = await db.search_one(
             "vendor_statuses",
             "id_vendor_status",

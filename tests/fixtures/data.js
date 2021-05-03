@@ -1,10 +1,10 @@
 const userOne = {
-  id_user: 146,
-  user_first_name: "gbenga",
-  user_last_name: "omowole",
-  user_email: "omo@mail.com",
-  user_password: "pass123",
-  id_user_access_level: 0,
+  id_user: 239,
+  user_first_name: "KyleXY",
+  user_middle_name: "clone",
+  user_last_name: "Science",
+  user_email: "kyle@mail.com",
+  user_password: "clone",
   id_user_title: 1,
 }
 
@@ -17,7 +17,6 @@ const userTwo = {
   user_first_name: "jakata",
   user_last_name: "paul",
   user_password: "pass123456789",
-  user_dob: "2000",
   user_gender: "male",
   id_user_status: 1,
   user_email: "jakata@mail.com",

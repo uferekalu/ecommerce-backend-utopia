@@ -1,16 +1,26 @@
 const db = require("../../src/lib/database/query")
+const { userTwo } = require("./data")
 
 async function createUser(data) {
   await db.insert_new(data, "users")
 }
 
-async function deleteUser(data) {
-  await db.delete_one("users", "user_first_name", data.user_first_name)
+async function deleteUser() {
+  const data = await db.search_one("users", "user_first_name", userTwo.user_first_name)
+  const user_id = data[0].id_user
+  await db.delete_one("user_tokens", "id_user", user_id)
+  await db.delete_one("users", "id_user", user_id)
 }
 
 async function getUserId(data) {
-  const result = await db.search_one("users", "user_first_name", data.user_first_name)
-  return result.insertId
+  const result = await db.search_one("users", "user_first_name", data)
+  return result[0].id_user
+}
+
+async function getUserToken(data) {
+  const res = await db.search_one("users", "user_first_name", data)
+  const result = await db.search_one("user_tokens", "id_user", res[0].id_user)
+  return result[0].token
 }
 
 async function resetOrderStatus(id_order_status, id_order) {
@@ -58,6 +68,7 @@ module.exports = {
   createUser,
   deleteUser,
   getUserId,
+  getUserToken,
   resetOrderStatus,
   getProductId,
   getProductVendorId,

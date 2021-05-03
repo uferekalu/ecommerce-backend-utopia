@@ -6,6 +6,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser-for-serverless": "^1.0.1",
     "cryptr": "^6.0.2",
+    "jest": "^23.6.0",
     "mysql": "^2.18.1",
     "nodemailer": "^6.5.0",
     "serverless-mysql": "^1.5.4",
@@ -22,7 +23,7 @@
     "wait-on": "^3.3.0"
   },
   "scripts": {
-    "test": "env-cmd -f ./test.env jest --watchAll --runInBand --detectOpenHandles",
+    "test": "env-cmd -f ./test.env jest --watchAll --runInBand --detectOpenHandles --verbose",
     "deploy": "serverless deploy",
     "start": "serverless offline"
   },

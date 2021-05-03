@@ -70,7 +70,7 @@ describe("tests user endpoints", () => {
             user_password: userTwo.user_password,
             user_first_name: "Gbenga",
         })
-        expect(res.status).toEqual(200)
+        expect(res.status).toEqual(201)
     }, 10000)
 
     // 9
@@ -78,5 +78,18 @@ describe("tests user endpoints", () => {
         const id_user = await getUserId(userTwo.user_first_name)
         const res = await axios.get(`${uri}/user_addresses_get/${id_user}`)
         expect(res.status).toEqual(200)
-    })
-}, 10000)
+    }, 10000)
+
+    // 10
+    test("should update user addresses", async () => {
+        const id_user = await getUserId(userTwo.user_first_name)
+        const token = await getUserToken(userTwo.user_first_name)
+        const res = await axios.put(`${uri}/user_addresses_update`, {
+            id_user,
+            token,
+            user_address_billing: "first street",
+            user_address_shipping: "second street",
+        })
+        expect(res.status).toEqual(201)
+    }, 10000)
+})

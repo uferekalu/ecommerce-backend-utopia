@@ -29,6 +29,12 @@ exports.handler = async (event, context) => {
             throw "user does not exist"
         }
 
+        const isAuth = await db.search_one("user_tokens", "id_user", id_user)
+
+        if (isAuth.length < 1) {
+            throw "authentication required"
+        }
+
         const pass_valid = await bcrypt.compare(user_password, user_exist[0].user_password)
 
         if (!pass_valid) {
@@ -43,7 +49,7 @@ exports.handler = async (event, context) => {
 
         const updated_data = { ...others }
 
-        return handler.returner([true, updated_data], api_name, 200)
+        return handler.returner([true, updated_data], api_name, 201)
     } catch (e) {
         if (e.name === "Error") {
             const errors = e.message

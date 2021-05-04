@@ -10,7 +10,7 @@ functions:
         handler: src/lambda/product/product_search.handler
         events:
             - http:
-                  path: /api/product_search
+                  path: /api/product_search/{index}
                   method: post
         cors: true
         origin: "*"

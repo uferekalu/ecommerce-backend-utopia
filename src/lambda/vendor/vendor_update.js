@@ -24,11 +24,15 @@ exports.handler = async (event, context) => {
         } = body
         
         const vendor_exist = await db.search_one( "vendors","id_vendor", id_vendor)
+        const vendor_business_exist = await db.search_one( "vendors","business_name", business_name)
 
         if (vendor_exist.length == 0) {
             console.log("Vendor is not found")
             return handler.returner([false, { message: "Vendor is not found" }], api_name, 404)
-        } else {
+        } else if (vendor_business_exist.length != 0) {
+            console.log("Vendor already exists")
+            return handler.returner([false, { message: "Vendor already exists" }], api_name, 404)
+        } else  {
             const created_token = await token.create_token(id_vendor)
 
             const updated_data = {

@@ -1,69 +1,81 @@
-const handler = require('../../middleware/handler')
-const db = require('../../lib/database/query')
-const token = require('../../middleware/verify_token')
-
-const api_name = 'Vendor create'
-
+const handler = require("../../middleware/handler")
+const db = require("../../lib/database/query")
+const token = require("../../middleware/verify_token")
+const api_name = "Vendor create"
 exports.handler = async (event, context) => {
     try {
-        var datetime = await handler.datetime()
         const body = JSON.parse(event.body)
-
-        const { 
-            id_vendor,
-            business_name, 
-            business_abn, 
+        //error handling
+        if (!body || JSON.stringify(body) === "{}") {
+            throw "body is empty"
+        }
+        const all_fields = Object.keys(body)
+        //more error handling
+        const required_fields = [
+            "business_name",
+            "vendor_phone_number",
+            "vendor_address",
+            "vendor_short_desc",
+            "id_vendor_status",
+        ]
+        const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
+        if (missing_fields.length > 0) {
+            throw Error(missing_fields)
+        }
+        const {
+            business_name,
             vendor_phone_number,
             vendor_address,
-            vendor_long_desc,
             vendor_short_desc,
-            vendor_coverphoto,
-            vendor_photo,
-            id_vendor_status
+            id_vendor_status,
+            ...others
         } = body
 
-        // const id_vendor = event.queryStringParameters.id_vendor;
-        
-        const vendor_exist = await db.search_one( "vendors","id_vendor", id_vendor)
+        const vendor_exist = await db.search_one("vendors", "business_name", business_name)
 
-        if (vendor_exist.length != 0) {
-            console.log("Vendor already exists, you may want to update it")
-            return handler.returner([false, { message: "Vendor already exists, you may want to update it" }], api_name, 404)
-        } else {
-            const created_token = await token.create_token(id_vendor)
-
-            const data = {
-                business_name: business_name,
-                business_abn: business_abn,
-                vendor_phone_number: vendor_phone_number,
-                vendor_address: vendor_address,
-                vendor_long_desc: vendor_long_desc,
-                vendor_short_desc: vendor_short_desc,
-                vendor_coverphoto: vendor_coverphoto,
-                vendor_photo: vendor_photo,
-                id_vendor_status: id_vendor_status,
-                created_at: datetime,
-                updated_at: datetime
-            }
-
-            const result = await db.insert_new(data, "vendors");
-            if (result) {
-                return handler.returner(
-                    [true, 
-                        { 
-                            message: "Vendor created successfully", 
-                            data: data,
-                            token: created_token  
-                        }
-                    ], 
-                    api_name, 
-                    201
-                )
-            }
-        }   
-
+        if (vendor_exist.length > 0) {
+            throw "Business name is taken"
+        }
+        const vendorStatusId = await db.search_one(
+            "vendor_statuses",
+            "id_vendor_status",
+            id_vendor_status
+        )
+        if (vendorStatusId.length < 1) {
+            throw "Vendor status is invalid"
+        }
+        const data = {
+            ...others,
+            business_name,
+            vendor_phone_number,
+            vendor_address,
+            vendor_short_desc,
+            id_vendor_status,
+        }
+        const newVendorRecord = await db.insert_new(data, "vendors")
+        if (!newVendorRecord) {
+            throw "Vendor create not successful"
+        }
+        return handler.returner(
+            [
+                true,
+                {
+                    ...data,
+                },
+            ],
+            api_name,
+            201
+        )
     } catch (e) {
-        console.log("Error: ", e);
-        return handler.returner([false, e.toString()], api_name, 500);
+        if (e.name === "Error") {
+            const errors = e.message
+                .split(",")
+                .map((field) => {
+                    return `${field} is required`
+                })
+                .join(", ")
+            return handler.returner([false, errors], api_name, 400)
+        }
+        return handler.returner([false, e], api_name, 400)
     }
 }

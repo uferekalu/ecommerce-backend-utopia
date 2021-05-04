@@ -35,6 +35,19 @@ exports.handler = async (event, context) => {
     //     UPDATE Customers
     // SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
     // WHERE CustomerID = 1;
+    //-----to update a order status it has to be existed in the parent table i.e, order_statuses
+    const order_status_exist = await db.search_one(
+      "order_statuses",
+      "id_order_status",
+      body.id_order_status
+    );
+    //if (order_status_exist !== 0)
+    if (order_status_exist == 0)
+      return handler.returner(
+        [false, { message: "Order status is not found" }],
+        api_name,
+        404
+      );
     const updated_data = {
       // id_user: body.id_user,
       id_order_status: body.id_order_status,

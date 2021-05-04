@@ -1,88 +1,90 @@
-const handler = require("../../middleware/handler");
-const db = require("../../lib/database/query");
-
-const api_name = "Order create";
+const handler = require("../../middleware/handler")
+const db = require("../../lib/database/query")
+const api_name = "Order create"
 
 exports.handler = async (event, context) => {
-  try {
-    var datetime = await handler.datetime();
-    const body = JSON.parse(event.body);
+    try {
+        const body = JSON.parse(event.body)
 
-    const {
-      id_user,
-      id_product_m2m_vendor,
-      id_order_status,
-      total,
-      paymentMethod,
-    } = body;
+        //error handling
+        if (!body || JSON.stringify(body) === "{}") {
+            throw "body is empty"
+        }
 
-    // const id_user = event.queryStringParameters.id_user;
-    // const id_product_m2m_vendor = event.queryStringParameters.id_product_m2m_vendor;
-    // const id_order_status = event.queryStringParameters.id_order_status;
+        const all_fields = Object.keys(body)
 
-    let user_result = await db.search_one("users", "id_user", id_user);
-    let product_m2m_vendor_result = await db.search_one(
-      "products_m2m_vendors",
-      "id_product_m2m_vendor",
-      id_product_m2m_vendor
-    );
-    let order_status_result = await db.search_one(
-      "order_statuses",
-      "id_order_status",
-      id_order_status
-    );
+        //more error handling
+        const required_fields = ["id_user", "id_product_m2m_vendor", "paymentMethod"]
 
-    if (user_result.length == 0) {
-      console.log("User is not found!");
-      return handler.returner(
-        [false, { message: "User is not found" }],
-        api_name,
-        400
-      );
+        const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
+
+        if (missing_fields.length > 0) {
+            throw Error(missing_fields)
+        }
+
+        const { id_user, id_product_m2m_vendor, paymentMethod } = body
+
+        // ensure user exists
+        const user_exist = await db.search_one("users", "id_user", id_user)
+
+        //if user does not exist return error
+        if (user_exist.length === 0) {
+            throw "user not found"
+        }
+
+        const mapped_prices = id_product_m2m_vendor.map(async (_id) => {
+            const res = await db.search_one("products_m2m_vendors", "id_product_m2m_vendor", _id)
+            return res[0].p2v_price
+        })
+        const prices = await Promise.all(mapped_prices)
+
+        const total = prices.reduce((sum, price) => sum + price)
+
+        const new_order = await db.insert_new(
+            { total, id_user, paymentMethod, isPaid: 1 },
+            "orders"
+        )
+
+        if (!new_order) {
+            throw " order not created successfully"
+        }
+
+        const id_order = new_order.insertId
+
+        const values = id_product_m2m_vendor.map((_id) => [_id, id_order])
+
+        const new_order_m2m_product = await db.insert_many(
+            values,
+            ["id_product_m2m_vendor", "id_order"],
+            "orders_m2m_products"
+        )
+
+        if (!new_order_m2m_product) {
+            throw "orders_m2m_products not created successfully"
+        }
+
+        const { affectedRows, insertId } = new_order_m2m_product
+        let id_order_m2m_product = []
+        for (let i = 0; i < affectedRows; i++) {
+            id_order_m2m_product.push(i + insertId)
+        }
+
+        const data = {
+            message: "order created successfully",
+            id_order_m2m_product,
+        }
+
+        return handler.returner([true, data], api_name, 201)
+    } catch (e) {
+        if (e.name === "Error") {
+            const errors = e.message
+                .split(",")
+                .map((field) => {
+                    return `${field} is required`
+                })
+                .join(", ")
+            return handler.returner([false, errors], api_name, 400)
+        }
+        return handler.returner([false, e], api_name, 400)
     }
-
-    if (product_m2m_vendor_result.length == 0) {
-      console.log("You must have a product or products to create an order!");
-      return handler.returner(
-        [
-          false,
-          {
-            message: "You must have a product or products to create an order!",
-          },
-        ],
-        api_name,
-        400
-      );
-    }
-    if (order_status_result.length == 0) {
-      console.log("Please provide order status");
-      return handler.returner(
-        [false, { message: "Please provide order status" }],
-        api_name,
-        400
-      );
-    }
-
-    const data = {
-      id_order_status,
-      id_orders_m2m_products: id_product_m2m_vendor,
-      id_user: id_user,
-      total: total,
-      created_at: datetime,
-      paymentMethod: paymentMethod,
-      isPaid: 0,
-    };
-
-    const result = await db.insert_new(data, "orders");
-    if (result) {
-      return handler.returner(
-        [true, { message: "Order created successfully", data: data }],
-        api_name,
-        201
-      );
-    }
-  } catch (error) {
-    console.log("Error: ", error);
-    return handler.returner([false, error.toString()], api_name, 500);
-  }
-};
+}

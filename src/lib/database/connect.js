@@ -34,6 +34,4 @@ if (Object.keys(process.env).includes("AWS_LAMBDA_FUNCTION_VERSION 111111111")) 
   });
 }
 
-
-
 module.exports = connection;

@@ -20,7 +20,7 @@ const userTwo = {
     user_password: "pass123456789",
     user_gender: "male",
     id_user_status: 1,
-    user_email: "jakata@mail.com",
+    user_email: "jakatapaul@mail.com",
     id_user_title: 1,
 }
 

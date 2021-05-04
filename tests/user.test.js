@@ -68,7 +68,7 @@ describe("tests user endpoints", () => {
             id_user,
             token,
             user_password: userTwo.user_password,
-            user_first_name: "Gbenga",
+            user_last_name: "Peter",
         })
         expect(res.status).toEqual(201)
     }, 10000)

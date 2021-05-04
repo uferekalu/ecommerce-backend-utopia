@@ -22,7 +22,7 @@ exports.handler = async (event, context) => {
             throw Error(missing_fields)
         }
 
-        const { id_user, id_product_m2m_vendor } = body
+        const { id_user, id_product_m2m_vendor, paymentMethod } = body
 
         // ensure user exists
         const user_exist = await db.search_one("users", "id_user", id_user)
@@ -41,7 +41,7 @@ exports.handler = async (event, context) => {
         const total = prices.reduce((sum, price) => sum + price)
 
         const new_order = await db.insert_new(
-            { total, id_user, paymentMethod: "paybridge", isPaid: 1 },
+            { total, id_user, paymentMethod, isPaid: 1 },
             "orders"
         )
 

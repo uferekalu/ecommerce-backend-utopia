@@ -38,10 +38,7 @@ const productTwo = {
     id_vendor: 3,
     product_title: "test product xyz",
     product_desc: "the best product in the world",
-    thumbnail: {
-        name: "image",
-        title: "product image",
-    },
+    id_product_thumbnail: 2,
 }
 
 const vendorOne = {

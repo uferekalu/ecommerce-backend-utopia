@@ -8,13 +8,6 @@ module.exports = {
         return result
     },
 
-    select_all_and_limit: async (table, column, index, lim) => {
-        let result = await connection.query(
-            `SELECT * FROM ${table} WHERE ${column} > ${index} ORDER BY ${column} LIMIT ${lim}`
-        )
-        return result
-    },
-
     search_get_one_column: async (table, column) => {
         let result = await connection.query(`SELECT ${column} FROM ${table}`)
         return result
@@ -49,21 +42,6 @@ module.exports = {
         let result = await connection.query(`SELECT * FROM ${table} WHERE ${column} REGEXP ?`, [
             data,
         ])
-        return result
-    },
-
-    search_with_regexp_compound: async (table, column, data) => {
-        let result = await connection.query(`SELECT * FROM ${table} WHERE ${column} REGEXP ?`, [
-            data,
-        ])
-        return result
-    },
-
-    search_with_regexp_compound_and: async (table, column1, data1, condition) => {
-        let result = await connection.query(
-            `SELECT * FROM ${table} WHERE ${column1} REGEXP ? AND ?`,
-            [data1, condition]
-        )
         return result
     },
 

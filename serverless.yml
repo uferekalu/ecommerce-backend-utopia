@@ -10,7 +10,7 @@ functions:
         handler: src/lambda/product/product_search.handler
         events:
             - http:
-                  path: /api/product_search
+                  path: /api/product_search/{index}
                   method: post
         cors: true
         origin: "*"
@@ -183,6 +183,7 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     product_review_create:
         handler: src/lambda/product/product_review_create.handler
         events:
@@ -274,61 +275,6 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-
-    return_create:
-        handler: src/lambda/return/return_create.handler
-        events:
-            - http:
-                  path: /api/order/{id_order_m2m_product}/return_create
-                  method: post
-        cors: true
-        origin: "*"
-    #--------------------------------------------------------------------------
-    return_get:
-        handler: src/lambda/return/return_get.handler
-        events:
-            - http:
-                  path: /api/returns/{id_return}
-                  method: get
-        cors: true
-        origin: "*"
-    #--------------------------------------------------------------------------
-    returns_get_all:
-        handler: src/lambda/return/returns_get_all.handler
-        events:
-            - http:
-                  path: /api/returns
-                  method: get
-        cors: true
-        origin: "*"
-    #---------------------------------------------------------------------------
-    refund_create:
-        handler: src/lambda/refund/refund_create.handler
-        events:
-            - http:
-                  path: /api/refunds/refund_create/{id_order}/{id_return}
-                  method: post
-        cors: true
-        origin: "*"
-    #-----------------------------------------------------------------------------
-    refund_get:
-        handler: src/lambda/refund/refund_get.handler
-        events:
-            - http:
-                  path: /api/refunds/{id_refund}
-                  method: get
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------------
-    refunds_get_all:
-        handler: src/lambda/refund/refunds_get_all.handler
-        events:
-            - http:
-                  path: /api/refunds
-                  method: get
-        cors: true
-        origin: "*"
-    #--------------------------------------------------------------------------------
 
     ######################################################### below are examples
 

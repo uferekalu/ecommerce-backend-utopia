@@ -6,6 +6,7 @@ const { userOne, productOne, productTwo, utils, vendorTwo } = require("./fixture
 const {
     getProductId,
     getProductVendorId,
+    grabProductVendorId,
     deleteProductRecord,
     getOrderProductId,
     getUserToken,
@@ -16,7 +17,8 @@ const uri = process.env.API_URI_LOCAL
 describe("tests product endpoints", () => {
     afterAll(async () => {
         const id_product = await getProductId(productTwo.product_title)
-        const id_product_m2m_vendor = await getProductVendorId(id_product)
+        // const id_product_m2m_vendor = await getProductVendorId(id_product)
+        const id_product_m2m_vendor = await grabProductVendorId()
         await deleteProductRecord(id_product, id_product_m2m_vendor)
     })
 
@@ -28,7 +30,7 @@ describe("tests product endpoints", () => {
 
     //2
     test("should search product", async () => {
-        const res = await axios.post(`${uri}/product_search`, {
+        const res = await axios.post(`${uri}/product_search/0`, {
             keyword: productOne.product_title,
         })
         expect(res.status).toEqual(200)
@@ -54,19 +56,19 @@ describe("tests product endpoints", () => {
         expect(res.status).toEqual(200)
     }, 10000)
 
-    //6
-    // test("should create product review", async () => {
-    //     const id_product = await getProductId(productTwo.product_title)
-    //     const id_product_m2m_vendor = await getProductVendorId(id_product)
-    //     await getOrderProductId(id_product_m2m_vendor)
-    //     const token = await getUserToken(userOne.user_first_name)
-    //     const data = {
-    //         id_user: userOne.id_user,
-    //         id_product_m2m_vendor,
-    //         product_review: userOne.review,
-    //         token,
-    //     }
-    //     const res = await axios.get(`${uri}/product_review_create`, data)
-    //     expect(res.status).toEqual(201)
-    // }, 10000)
+    // 6
+    test("should create product review", async () => {
+        const token = await getUserToken(userOne.user_first_name)
+        const id_product_m2m_vendor = await grabProductVendorId()
+        const data = {
+            // id_product_m2m_vendor,
+            id_product_m2m_vendor: 5,
+            product_review: userOne.review,
+            id_user: userOne.id_user,
+            token,
+        }
+
+        const res = await axios.post(`${uri}/product_review_create`, data)
+        expect(res.status).toEqual(201)
+    }, 20000)
 })

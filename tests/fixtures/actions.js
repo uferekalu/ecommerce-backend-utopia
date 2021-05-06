@@ -49,12 +49,22 @@ async function getProductVendorId(data) {
     )
     return result.insertId
 }
+async function grabProductVendorId() {
+    const result = await db.search_one("products_m2m_vendors", "id_vendor", vendorOne.id_vendor)
+    return result[0].id_product_m2m_vendor
+}
+
 async function getOrderProductId(data) {
     const result = await db.insert_new(
         { id_product_m2m_vendor: data, id_order: orderOne.id_order },
         "orders_m2m_products"
     )
     return result.insertId
+}
+
+async function grabOrderProductId(data) {
+    const result = await db.search_one("orders_m2m_products", "id_product_m2m_vendor", data)
+    return result
 }
 
 async function createVendor(data) {
@@ -66,9 +76,9 @@ async function getVendorId(data) {
     return result.insertId
 }
 
-async function deleteProductRecord(data, target) {
+async function deleteProductRecord(data) {
     try {
-        await db.delete_one("orders_m2m_products", "id_product_m2m_vendor", target)
+        await db.delete_one("product_reviews", "product_review", "oshi")
         await db.delete_one("products_m2m_vendors", "id_product", data)
         await db.delete_one("products", "id_product", data)
     } catch (err) {
@@ -92,10 +102,12 @@ module.exports = {
     resetOrderStatus,
     getProductId,
     getProductVendorId,
+    grabProductVendorId,
     deleteProductRecord,
     createVendor,
     getVendorId,
     deleteVendorRecord,
     deleteOrderRecord,
     getOrderProductId,
+    grabOrderProductId,
 }

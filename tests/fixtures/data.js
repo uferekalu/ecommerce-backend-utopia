@@ -6,7 +6,7 @@ const userOne = {
     user_email: "kyle@mail.com",
     user_password: "clone",
     id_user_title: 1,
-    review: "worst product in the world",
+    review: "oshi",
 }
 
 const orderOne = {
@@ -35,7 +35,7 @@ const productOne = {
 const productTwo = {
     p2v_price: 105,
     id_category: 1,
-    id_vendor: 3,
+    id_vendor: 4,
     product_title: "test product xyz",
     product_desc: "the best product in the world",
     id_product_thumbnail: 2,

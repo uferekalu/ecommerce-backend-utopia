@@ -5,38 +5,45 @@ const api_name = "Product search"
 
 exports.handler = async (event, context) => {
     try {
+        //query carries index for pagination optimization
+        const query = event.pathParameters
+
         const body = JSON.parse(event.body)
 
+        //if no category is selected from the dropdown and no keyword is inputed, return all product
         if (!body || JSON.stringify(body) === "{}") {
-            throw "body is empty"
+            //set limit of data return to the client
+            const limit = 10
+            const search_result = await db.select_and_limit(
+                "products",
+                "id_product",
+                query.index,
+                limit
+            )
+            return handler.returner([true, search_result], api_name)
         }
+
         const all_fields = Object.keys(body)
 
-        const required_fields = ["keyword"]
+        let search_result, regex
 
-        const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
-
-        if (missing_fields.length > 0) {
-            throw Error(missing_fields)
+        if (all_fields.includes("keyword")) {
+            const { keyword } = body
+            const keyword_split = keyword.split(/,\s|\s+/)
+            regex = keyword_split.join("|")
         }
-        const { keyword } = body
-        //if keyword is a long string
-        //let keyword_array = product_search_keyword.split(" ");
-        //console.log("array ", keyword_array);
-        // uniqueArray = a.filter(function (item, pos, self) {
-        //   return self.indexOf(item) == pos;
-        // });
-        // let products_array = []; //new Array();
-        //---Creating and adding data
-        // let result = new Set();
-        // ["ABC", "ABC"];
-        // result.add();
-        //---Converting set into array
-        // let products_array = result.forEach((element) => {
-        //   return element;
-        // });
 
-        const search_result = await db.search_with_regexp("products", "product_title", keyword)
+        if (all_fields.includes("id_category")) {
+            const { id_category } = body
+            search_result = await db.search_with_regexp_compound_and(
+                "products",
+                "product_title",
+                regex,
+                id_category
+            )
+        } else {
+            search_result = await db.search_with_regexp_compound("products", "product_title", regex)
+        }
 
         if (search_result.length < 1) {
             throw "product not found, try another keyword"
@@ -57,75 +64,3 @@ exports.handler = async (event, context) => {
         return handler.returner([false, e], api_name, 400)
     }
 }
-
-// const handler = require("../../middleware/handler")
-// const db = require("../../lib/database/query")
-// const qs = require("querystring")
-// //required data id_product
-// //-----if the id_product exists send response will all te product details
-// //-----if the id_product doesn't exist send response as product doesn't exist
-// const api_name = "Products get"
-
-// exports.handler = async (event, context) => {
-//     try {
-//         let product_search_keyword = event.pathParameters.keyword
-//         //if keyword is a long string
-//         //let keyword_array = product_search_keyword.split(" ");
-//         //console.log("array ", keyword_array);
-//         // uniqueArray = a.filter(function (item, pos, self) {
-//         //   return self.indexOf(item) == pos;
-//         // });
-//         // let products_array = []; //new Array();
-//         //---Creating and adding data
-//         // let result = new Set();
-//         // ["ABC", "ABC"];
-//         // result.add();
-//         //---Converting set into array
-//         // let products_array = result.forEach((element) => {
-//         //   return element;
-//         // });
-
-//         console.log("product_search_keyword:", product_search_keyword)
-
-//         //for (keyword in keyword_array) {
-//         const keyword_product_result = await db.search_with_regexp(
-//             "products",
-//             "product_title",
-//             product_search_keyword
-//         )
-//         //.then((response) => {
-//         //console.log("response ", response[0].product_title);
-//         // products_array.push(response[0].product_title);
-//         //});
-//         // }
-
-//         console.log("keyword_product_result", keyword_product_result)
-//         // const product_exist = await db.search_with_regexp(
-//         //   "products",
-//         //   "product_title",
-//         //   product_search_keyword
-//         // );
-//         // let uniq_product_array = products_array.filter(function (item, pos, self) {
-//         //   return self.indexOf(item) == pos;
-//         // });
-//         if (keyword_product_result.length == 0)
-//             return handler.returner([false, { message: "Product not found" }], api_name, 404)
-
-//         // console.log("uniq_product_array:", uniq_product_array);
-//         let product_name = keyword_product_result.map((product) => product.product_title)
-//         return handler.returner(
-//             [
-//                 true,
-//                 {
-//                     products_list: product_name,
-//                     // id_product: product_exist[0].id_product,
-//                 },
-//             ],
-//             api_name,
-//             201
-//         )
-//     } catch (e) {
-//         console.log("Error: ", e)
-//         return handler.returner([false, e], api_name)
-//     }
-// }

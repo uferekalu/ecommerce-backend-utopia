@@ -8,6 +8,13 @@ module.exports = {
         return result
     },
 
+    select_and_limit: async (table, column, index, lim) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table} WHERE ${column} > ${index} ORDER BY ${column} LIMIT ${lim}`
+        )
+        return result
+    },
+
     search_get_one_column: async (table, column) => {
         let result = await connection.query(`SELECT ${column} FROM ${table}`)
         return result

@@ -51,7 +51,7 @@ exports.handler = async (event, context) => {
         //you dont want to hint a potential hacker what they are getting wrong or right.
 
         const id_user = user_exist[0].id_user
-
+        //console.log("id_user:", id_user)
         //newly created token
         const created_token = await token.create_token(user_exist[0].id_user)
 
@@ -111,6 +111,7 @@ exports.handler = async (event, context) => {
                     token: created_token,
                     //hard coded access_levels
                     user_access_level: access_level,
+                    id_user,
                     // user_exist[0].id_user % 3 == 0
                     //   ? [2, 3, 4, 5]
                     //   : user_exist[0].id_user % 2 == 0

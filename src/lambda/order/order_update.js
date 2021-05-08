@@ -56,7 +56,7 @@ exports.handler = async (event, context) => {
 
             body.id_order
         )
-        return handler.returner([true, { message: "Order is updated" }], api_name, 200)
+        return handler.returner([true, { message: "Order is updated" }], api_name, 201)
     } catch (e) {
         console.log("Error: ", e)
         return handler.returner([false, e], api_name)

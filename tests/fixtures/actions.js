@@ -28,13 +28,18 @@ async function resetOrderStatus(id_order_status, id_order) {
 }
 
 async function deleteOrderRecord(id_order) {
-    await db.delete_one("orders", "id_order", id_order)
     await db.delete_one("orders_m2m_products", "id_order", id_order)
+    await db.delete_one("orders", "id_order", id_order)
 }
 
 async function getProductId(data) {
     const result = await db.search_one("products", "product_title", data)
     return result[0].id_product
+}
+
+async function getOrderId(data) {
+    const result = await db.search_one("orders", "paymentMethod", data)
+    return result[0].id_order
 }
 
 async function getProductVendorId(data) {
@@ -95,19 +100,25 @@ async function deleteVendorRecord(data) {
 }
 
 module.exports = {
+    //creaters
     createUser,
-    deleteUser,
-    getUserId,
-    getUserToken,
-    resetOrderStatus,
-    getProductId,
-    getProductVendorId,
-    grabProductVendorId,
-    deleteProductRecord,
     createVendor,
-    getVendorId,
+    //deleters
+    deleteUser,
     deleteVendorRecord,
     deleteOrderRecord,
+    deleteProductRecord,
+    //getters
+    getUserId,
+    getProductId,
+    getUserToken,
+    getProductVendorId,
+    getVendorId,
     getOrderProductId,
+    getOrderId,
+    //grabbers
     grabOrderProductId,
+    grabProductVendorId,
+    //resetters
+    resetOrderStatus,
 }

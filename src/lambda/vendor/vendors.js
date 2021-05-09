@@ -9,15 +9,14 @@ exports.handler = async (event, context) => {
 
         const limit = 20
 
-        const vendors = await db.select_and_limit("vendors", "id_vendor", query.index, limit)
+        const search_vendors = await db.select_and_limit("vendors", "id_vendor", query.index, limit)
 
-        if (vendors.length < 1) {
+        if (search_vendors.length < 1) {
             throw "No vendor found"
         }
 
-        const data = vendors.map((vendor) => vendor.business_name)
-
-        return handler.returner([true, data], api_name, 200)
+        const vendors = search_vendors.map((vendor) => vendor.business_name)
+        return handler.returner([true, { vendors }], api_name, 200)
     } catch (e) {
         return handler.returner([false, e], api_name, 400)
     }

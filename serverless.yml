@@ -284,11 +284,11 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-    vendor:
-        handler: src/lambda/vendor/vendor.handler
+    vendors:
+        handler: src/lambda/vendor/vendors.handler
         events:
             - http:
-                  path: /api/vendor/{index}
+                  path: /api/vendors/{index}
                   method: get
         cors: true
         origin: "*"

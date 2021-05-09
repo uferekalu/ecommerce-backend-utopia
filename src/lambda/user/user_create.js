@@ -99,7 +99,7 @@ exports.handler = async (event, context) => {
         let response = {
             message: "Created account successful",
             id_user: result.insertId,
-            data,
+            ...data,
             token,
         }
 

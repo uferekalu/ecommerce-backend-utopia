@@ -2,6 +2,7 @@ const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 
 const api_name = "Product search"
+const error_one = "product not found, please try another search"
 
 exports.handler = async (event, context) => {
     try {
@@ -10,7 +11,7 @@ exports.handler = async (event, context) => {
 
         const body = JSON.parse(event.body)
 
-        //condition 1: if no category is selected from the dropdown and no search is inputed, return all product
+        //condition 1: if no category is selected from the dropdown and no search is inputted, return all product
         if (!body || JSON.stringify(body) === "{}" || (!body.search && !body.id_category)) {
             //set limit of data return to the client
             const limit = 20
@@ -60,21 +61,14 @@ exports.handler = async (event, context) => {
         }
 
         if (search_result.length < 1) {
-            throw "product not found, please try another search"
+            throw `${error_one}`
         }
 
         return handler.returner([true, search_result], api_name)
     } catch (e) {
-        if (e.name === "Error") {
-            const errors = e.message
-                .split(",")
-                .map((field) => {
-                    return `${field} is required`
-                })
-                .join(", ")
-
-            return handler.returner([false, errors], api_name, 400)
+        if (e === error_one) {
+            return handler.returner([false, e], api_name, 400)
         }
-        return handler.returner([false, e], api_name, 400)
+        return handler.returner([false, e], api_name, 500)
     }
 }

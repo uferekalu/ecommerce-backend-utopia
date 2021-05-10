@@ -6,11 +6,11 @@ provider:
     stage: staging
 
 functions:
-    product_search_fake: #//fake endpoint
+    product_search:
         handler: src/lambda/product/product_search.handler
         events:
             - http:
-                  path: /api/product_search/{index}
+                  path: /api/products/{index}
                   method: post
         cors: true
         origin: "*"
@@ -183,7 +183,6 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-    #-------------------------------------------------------------------------
     product_review_create:
         handler: src/lambda/product/product_review_create.handler
         events:
@@ -284,11 +283,20 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-    vendors:
-        handler: src/lambda/vendor/vendors.handler
+    vendors_get:
+        handler: src/lambda/vendor/vendors_get.handler
         events:
             - http:
                   path: /api/vendors/{index}
+                  method: get
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    vendor_details_get:
+        handler: src/lambda/vendor/vendor_details_get.handler
+        events:
+            - http:
+                  path: /api/vendor/{id_vendor}
                   method: get
         cors: true
         origin: "*"

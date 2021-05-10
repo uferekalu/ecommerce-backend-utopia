@@ -15,6 +15,14 @@ module.exports = {
         return result
     },
 
+    select_one_with_condition_and_limit: async (table, column, condition, index, lim) => {
+        let result = await connection.query(
+            `SELECT ${column} FROM ${table} WHERE ? AND ${column} > ? ORDER BY ${column} LIMIT ?`,
+            [condition, index, lim]
+        )
+        return result
+    },
+
     search_get_one_column: async (table, column) => {
         let result = await connection.query(`SELECT ${column} FROM ${table}`)
         return result

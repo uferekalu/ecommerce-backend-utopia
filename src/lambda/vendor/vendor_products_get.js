@@ -1,58 +1,59 @@
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 
-const api_name = "Vendor product get"
+const api_name = "Vendor products get"
+const error_one = "vendor not found"
+const error_two = "no products found"
 
 exports.handler = async (event, context) => {
     try {
-        const query = event.pathParameters
+        const param = event.pathParameters
 
-        const vendor = await db.search_one("vendors", "id_vendor", query.id_vendor)
+        const { id_vendor, index } = param
+
+        const vendor = await db.search_one("vendors", "id_vendor", id_vendor)
 
         if (vendor.length < 1) {
-            throw "invalid vendor id"
+            throw `${error_one}`
         }
 
-        const { id_vendor } = vendor[0]
+        const { business_name } = vendor[0]
 
-        const productsM2MVendor = await db.search_one(
+        const limit = 20
+
+        const id_product_array = await db.select_one_with_condition_and_limit(
             "products_m2m_vendors",
-            "id_vendor",
-            id_vendor
-        )
-
-        if (productsM2MVendor.length < 1) {
-            throw "No product for this vendor"
-        }
-
-        const { id_product } = productsM2MVendor[0]
-
-        const product_search = await db.search_one(
-            "products",
             "id_product",
-            id_product
+            { id_vendor },
+            index,
+            limit
         )
 
-        if (product_search.length < 1) {
-            throw "Sorry, there are no products!"
+        if (id_product_array.length < 1) {
+            throw `${error_two}`
         }
 
-        let product_lists = product_search.map((product) => {
-            return product.product_title;
-        });
+        const products_search = id_product_array.map(async (obj) => {
+            const res = await db.search_one("products", "id_product", obj.id_product)
+            return res[0]
+        })
 
-        return handler.returner([true, product_lists], api_name, 200)
+        const products = await Promise.all(products_search)
 
+        if (products.length < 1) {
+            throw `${error_two}`
+        }
+
+        const data = {
+            business_name,
+            products,
+        }
+
+        return handler.returner([true, data], api_name, 200)
     } catch (e) {
-        if (e.name === "Error") {
-            const errors = e.message
-                .split(",")
-                .map((field) => {
-                    return `${field} is required`
-                })
-                .join(", ")
-            return handler.returner([false, errors], api_name, 400)
+        if (e === error_one || e === error_two) {
+            return handler.returner([false, e], api_name, 400)
         }
-        return handler.returner([false, e], api_name, 400)
+        return handler.returner([false, e], api_name, 500)
     }
 }

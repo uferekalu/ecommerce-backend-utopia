@@ -15,7 +15,10 @@ exports.handler = async (event, context) => {
             throw "No vendor found"
         }
 
-        const vendors = search_vendors.map((vendor) => vendor.business_name)
+        const vendors = search_vendors.map((vendor) => {
+            const { id_vendor, business_name } = vendor
+            return { id_vendor, business_name }
+        })
         return handler.returner([true, { vendors }], api_name, 200)
     } catch (e) {
         return handler.returner([false, e], api_name, 400)

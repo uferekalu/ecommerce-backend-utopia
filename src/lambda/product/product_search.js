@@ -17,6 +17,18 @@ exports.handler = async (event, context) => {
 
         let data, regex, category
 
+        const addVNamePTitleToProduct = async (p2v_search) => {
+            const mapped = p2v_search.map(async (item) => {
+                const vendor = await db.search_one("vendors", "id_vendor", item.id_vendor)
+                const product = await db.search_one("products", "id_product", item.id_product)
+                const { business_name } = vendor[0]
+                const { product_title } = product[0]
+                return { business_name, product_title, ...item }
+            })
+
+            return await Promise.all(mapped)
+        }
+
         //condition 1: if no category is selected from the dropdown and no search is inputted, return all product
         if (!body || JSON.stringify(body) === "{}" || (!body.search && !body.id_category)) {
             //set limit of data return to the client
@@ -27,15 +39,8 @@ exports.handler = async (event, context) => {
                 limit
             )
 
-            const mapped = p2v_search.map(async (item) => {
-                const vendor = await db.search_one("vendors", "id_vendor", item.id_vendor)
-                const product = await db.search_one("products", "id_product", item.id_product)
-                const { business_name } = vendor[0]
-                const { product_title } = product[0]
-                return { business_name, product_title, ...item }
-            })
+            const products = await addVNamePTitleToProduct(p2v_search)
 
-            const products = await Promise.all(mapped)
             data = {
                 category: "all",
                 products,
@@ -90,8 +95,6 @@ exports.handler = async (event, context) => {
 
             const flattened = resolved.flat()
 
-            console.log(flattened.length)
-
             if (flattened.length < 1) {
                 return
             }
@@ -110,15 +113,7 @@ exports.handler = async (event, context) => {
 
             const map_result = mapper()
 
-            const final = map_result.map(async (item) => {
-                const vendor = await db.search_one("vendors", "id_vendor", item.id_vendor)
-                const product = await db.search_one("products", "id_product", item.id_product)
-                const { business_name } = vendor[0]
-                const { product_title } = product[0]
-                return { business_name, product_title, ...item }
-            })
-
-            const products = await Promise.all(final)
+            const products = await addVNamePTitleToProduct(map_result)
 
             return {
                 category,

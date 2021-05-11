@@ -1,7 +1,7 @@
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 
-const api_name = "Vendors"
+const api_name = "Vendors get"
 
 exports.handler = async (event, context) => {
     try {

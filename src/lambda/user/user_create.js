@@ -31,6 +31,7 @@ exports.handler = async (event, context) => {
 
         const required_fields = [
             "user_email",
+            "user_phone_number",
             "user_first_name",
             "user_last_name",
             "user_password",
@@ -45,6 +46,7 @@ exports.handler = async (event, context) => {
 
         const {
             user_email,
+            user_phone_number,
             user_first_name,
             user_last_name,
             user_password,
@@ -53,9 +55,13 @@ exports.handler = async (event, context) => {
         } = body
 
         const email_exist = await db.search_one("users", "user_email", user_email)
-
         if (email_exist.length != 0) {
             throw "Email already exist"
+        }
+
+        const phone_exist = await db.search_one("users", "user_phone_number", user_phone_number)
+        if (phone_exist.length != 0) {
+            throw "Phone number is taken"
         }
 
         const password_hashed = await passwordHash(user_password)
@@ -64,6 +70,7 @@ exports.handler = async (event, context) => {
             user_first_name,
             user_last_name,
             user_email,
+            user_phone_number,
             user_password: password_hashed,
             user_datetime_created: datetime,
             id_user_status: 1,

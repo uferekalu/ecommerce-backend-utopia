@@ -10,15 +10,13 @@ exports.handler = async (event, context) => {
 
         const body = JSON.parse(event.body)
 
+        let keyword = body.search
+
         let search_vendors
 
         const limit = 20
 
-        if (!body || JSON.stringify(body) === "{}" || !body.search) {
-            search_vendors = await db.select_and_limit("vendors", "id_vendor", query.index, limit)
-        }
-
-        if (body.search) {
+        if (keyword) {
             const { search } = body
             const cap_search = search.toUpperCase()
             const search_split = cap_search.split(/,\s|\s+/)
@@ -32,7 +30,13 @@ exports.handler = async (event, context) => {
                     regex,
                     limit
                 )
+            } else {
+                keyword = undefined
             }
+        }
+
+        if (!body || !keyword) {
+            search_vendors = await db.select_and_limit("vendors", "id_vendor", query.index, limit)
         }
 
         if (search_vendors.length < 1) {

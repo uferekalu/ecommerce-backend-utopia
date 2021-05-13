@@ -86,11 +86,18 @@ module.exports = {
         return result
     },
 
-    select_one_with_condition_regex: async (table, target, condition, column, regex) => {
-        const result = await connection.query(
-            `SELECT ${target} FROM ${table} WHERE ? AND ${column} REGEXP ? ORDER BY ${target}`,
-            [condition, regex]
+    select_many_with_regex_and_limit: async (table, columns, target, regex, limit) => {
+        let result = await connection.query(
+            `SELECT ${columns.join(", ")} FROM ${table} WHERE ${target} REGEXP ? LIMIT ?`,
+            [regex, limit]
         )
+        return result
+    },
+
+    search_with_regexp_compound: async (table, column, data) => {
+        let result = await connection.query(`SELECT * FROM ${table} WHERE ${column} REGEXP ?`, [
+            data,
+        ])
         return result
     },
 

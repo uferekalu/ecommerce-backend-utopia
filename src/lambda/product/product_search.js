@@ -6,27 +6,48 @@ const error_one = "product not found, please try another search"
 
 exports.handler = async (event, context) => {
     try {
-        //query carries index for pagination optimization
-        const query = event.pathParameters
+        //param carries index for pagination optimization
+        const param = event.pathParameters
+
+        const { index } = param
 
         const body = JSON.parse(event.body)
+
+        const limit = 20
+
+        let data, regex, category
+
+        const addVNamePTitleToProduct = async (p2v_search) => {
+            const mapped = p2v_search.map(async (item) => {
+                const vendor = await db.search_one("vendors", "id_vendor", item.id_vendor)
+                const product = await db.search_one("products", "id_product", item.id_product)
+                const { business_name } = vendor[0]
+                const { product_title } = product[0]
+                return { business_name, product_title, ...item }
+            })
+
+            return await Promise.all(mapped)
+        }
 
         //condition 1: if no category is selected from the dropdown and no search is inputted, return all product
         if (!body || JSON.stringify(body) === "{}" || (!body.search && !body.id_category)) {
             //set limit of data return to the client
-            const limit = 20
-            const search_result = await db.select_and_limit(
-                "products",
-                "id_product",
-                query.index,
+            const p2v_search = await db.select_and_limit(
+                "products_m2m_vendors",
+                "id_product_m2m_vendor",
+                index,
                 limit
             )
-            return handler.returner([true, search_result], api_name)
+
+            const products = await addVNamePTitleToProduct(p2v_search)
+
+            data = {
+                category: "all",
+                products,
+            }
         }
 
         const all_fields = Object.keys(body)
-
-        let search_result, regex
 
         //splits long string from search field and adds | consumable by mysql
         if (all_fields.includes("search")) {
@@ -41,30 +62,116 @@ exports.handler = async (event, context) => {
             }
         }
 
-        if (all_fields.includes("id_category") && regex) {
-            //condition 2: id_category is defined and search is defined
+        //extracts category name
+        if (all_fields.includes("id_category")) {
             const { id_category } = body
 
-            search_result = await db.search_with_regexp_compound_and(
-                "products",
-                "product_title",
-                regex,
-                { id_category }
+            const category_search = await db.search_one(
+                "product_categories",
+                "id_product_category",
+                id_category
             )
-        } else if (all_fields.includes("id_category") && !regex) {
-            //condition 3: id_category is defined and search is undefined
-            const { id_category } = body
-            search_result = await db.search_one("products", "id_category", id_category)
-        } else {
-            //condition 4: id_category is undefined and search is defined
-            search_result = await db.search_with_regexp_compound("products", "product_title", regex)
+
+            category = category_search[0].category_name
         }
 
-        if (search_result.length < 1) {
+        //reusable function to get the data object
+        const getData = async (product_search) => {
+            if (product_search.length < 1) {
+                return
+            }
+
+            const mapped = product_search.map(async (item) => {
+                const p2v_search = await db.search_one(
+                    "products_m2m_vendors",
+                    "id_product",
+                    item.id_product
+                )
+
+                return p2v_search
+            })
+
+            const resolved = await Promise.all(mapped)
+
+            const flattened = resolved.flat()
+
+            if (flattened.length < 1) {
+                return
+            }
+
+            const mapper = () => {
+                let arr = []
+                const cap = flattened.length
+                const range = +index + limit
+
+                const end = cap > range ? range : cap
+                for (let i = +index; i < end; i++) {
+                    arr.push(flattened[i])
+                }
+                return arr
+            }
+
+            const map_result = mapper()
+
+            const products = await addVNamePTitleToProduct(map_result)
+
+            return {
+                category,
+                products,
+            }
+        }
+
+        //condition 2: id_category is defined and search is defined
+        if (category && regex) {
+            const { id_category } = body
+            const product_search = await db.select_one_with_condition_regex(
+                "products",
+                "id_product",
+                { id_category },
+                "product_title",
+                regex
+            )
+
+            data = await getData(product_search)
+        }
+
+        // condition 3: id_category is defined and search is undefined
+        if (category && !regex) {
+            const { id_category } = body
+            const product_search = await db.select_one_with_condition_and_limit(
+                "products",
+                "id_product",
+                { id_category },
+                index,
+                limit
+            )
+
+            data = await getData(product_search)
+        }
+
+        //condition 4: id_category is undefined and search is defined
+        if (!category && regex) {
+            const product_search = await db.select_one_with_regex_and_limit(
+                "products",
+                "id_product",
+                "product_title",
+                regex,
+                index,
+                limit
+            )
+
+            data = await getData(product_search)
+            if (data) {
+                data.category = "all"
+            }
+        }
+
+        if (!data || JSON.stringify(data) === "{}") {
             throw `${error_one}`
         }
 
-        return handler.returner([true, search_result], api_name)
+        return handler.returner([true, data], api_name)
+        //
     } catch (e) {
         if (e === error_one) {
             return handler.returner([false, e], api_name, 400)

@@ -15,10 +15,36 @@ module.exports = {
         return result
     },
 
+    select_with_condition_and_limit: async (table, column, condition, index, lim) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table} WHERE ? AND ${column} > ? ORDER BY ${column} LIMIT ?`,
+            [condition, index, lim]
+        )
+        return result
+    },
+
     select_one_with_condition_and_limit: async (table, column, condition, index, lim) => {
         let result = await connection.query(
             `SELECT ${column} FROM ${table} WHERE ? AND ${column} > ? ORDER BY ${column} LIMIT ?`,
             [condition, index, lim]
+        )
+        return result
+    },
+
+    select_many_with_condition_and_limit: async (table, columns, condition, index, lim) => {
+        let result = await connection.query(
+            `SELECT ${columns.join(", ")} FROM ${table} WHERE ? AND ${columns[0]} > ? ORDER BY ${
+                columns[1]
+            } LIMIT ?`,
+            [condition, index, lim]
+        )
+        return result
+    },
+
+    select_one_with_condition: async (table, column, condition) => {
+        let result = await connection.query(
+            `SELECT ${column} FROM ${table} WHERE ? ORDER BY ${column}`,
+            [condition]
         )
         return result
     },
@@ -75,11 +101,29 @@ module.exports = {
         return result
     },
 
-    search_with_regexp_compound_and: async (table, column1, data1, condition) => {
-        let result = await connection.query(
-            `SELECT * FROM ${table} WHERE ${column1} REGEXP ? AND ?`,
-            [data1, condition]
+    select_one_with_condition_regex_and_limit: async (
+        table,
+        target,
+        condition,
+        column,
+        regex,
+        index,
+        lim
+    ) => {
+        const result = await connection.query(
+            `SELECT ${target} FROM ${table} WHERE ? AND ${column} REGEXP ? AND ${target} > ? ORDER BY ${target} LIMIT ?`,
+            [condition, regex, index, lim]
         )
+
+        return result
+    },
+
+    select_one_with_regex_and_limit: async (table, target, column, regex, rand) => {
+        const result = await connection.query(
+            `SELECT ${target} FROM ${table} WHERE ${column} REGEXP ?`,
+            [regex]
+        )
+
         return result
     },
 
@@ -138,4 +182,9 @@ module.exports = {
         const result = await connection.query(`INSERT INTO ${table} SET ? WHERE ${column} =?`, data)
         return result
     },
+
+    // join_and_select_columns_with_condition: async (table1, table2, joiner, columns,) => {
+    //     const result = await connection.query(`SELECT ${table} SET ? WHERE ${column} =?`, data)
+    //     return result
+    // },
 }

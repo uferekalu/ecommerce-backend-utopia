@@ -31,6 +31,24 @@ module.exports = {
         return result
     },
 
+    select_many_with_condition_and_limit: async (table, columns, condition, index, lim) => {
+        let result = await connection.query(
+            `SELECT ${columns.join(", ")} FROM ${table} WHERE ? AND ${columns[0]} > ? ORDER BY ${
+                columns[1]
+            } LIMIT ?`,
+            [condition, index, lim]
+        )
+        return result
+    },
+
+    select_one_with_condition: async (table, column, condition) => {
+        let result = await connection.query(
+            `SELECT ${column} FROM ${table} WHERE ? ORDER BY ${column}`,
+            [condition]
+        )
+        return result
+    },
+
     search_get_one_column: async (table, column) => {
         let result = await connection.query(`SELECT ${column} FROM ${table}`)
         return result

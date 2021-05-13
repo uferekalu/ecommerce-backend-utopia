@@ -124,6 +124,8 @@ exports.handler = async (event, context) => {
         //condition 2: id_category is defined and search is defined
         if (category && regex) {
             const { id_category } = body
+            console.log(regex)
+            console.log(id_category)
             const product_search = await db.select_one_with_condition_regex(
                 "products",
                 "id_product",
@@ -131,6 +133,7 @@ exports.handler = async (event, context) => {
                 "product_title",
                 regex
             )
+            console.log(product_search)
 
             data = await getData(product_search)
         }

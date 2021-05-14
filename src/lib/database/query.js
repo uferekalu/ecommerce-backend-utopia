@@ -183,8 +183,11 @@ module.exports = {
         return result
     },
 
-    // join_and_select_columns_with_condition: async (table1, table2, joiner, columns,) => {
-    //     const result = await connection.query(`SELECT ${table} SET ? WHERE ${column} =?`, data)
-    //     return result
-    // },
+    select_one_with_condition_regex: async (table, target, condition, column, regex) => {
+        const result = await connection.query(
+            `SELECT ${target} FROM ${table} WHERE ? AND ${column} REGEXP ? ORDER BY ${target}`,
+            [condition, regex]
+        )
+        return result
+    },
 }

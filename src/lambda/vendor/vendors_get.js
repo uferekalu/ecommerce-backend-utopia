@@ -6,37 +6,30 @@ const error_one = "vendors not found, please try another search"
 
 exports.handler = async (event, context) => {
     try {
-        const query = event.pathParameters
+        const param = event.pathParameters
 
-        const body = JSON.parse(event.body)
-
-        let keyword = body.search
+        const keyword = param?.keyword
 
         let search_vendors
 
         const limit = 20
 
         if (keyword) {
-            const { search } = body
-            const cap_search = search.toUpperCase()
-            const search_split = cap_search.split(/,\s|\s+/)
-            const keywords = search_split.filter((word) => word.length > 1)
+            const cap_keyword = keyword.toUpperCase()
+            const keyword_split = cap_keyword.split(/,\s|\s+/)
+            const keywords = keyword_split.filter((word) => word.length > 1)
             if (keywords.length > 0) {
                 const regex = keywords.join("|")
-                search_vendors = await db.select_many_with_regex_and_limit(
+                search_vendors = await db.select_with_regex_and_limit(
                     "vendors",
-                    ["*"],
+                    "id_vendor",
                     "business_name",
                     regex,
                     limit
                 )
-            } else {
-                keyword = undefined
             }
-        }
-
-        if (!body || !keyword) {
-            search_vendors = await db.select_and_limit("vendors", "id_vendor", query.index, limit)
+        } else {
+            search_vendors = await db.select_and_limit("vendors", "id_vendor", param.index, limit)
         }
 
         if (search_vendors.length < 1) {

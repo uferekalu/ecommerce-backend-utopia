@@ -24,14 +24,20 @@ exports.handler = async (event, context) => {
 
         const mapped_products = all_orders.map(async (item) => {
             const { id_order, created_at } = item
-            const result = await db.select_one_with_condition(
+            const result = await db.select_many_with_condition(
                 "orders_m2m_products",
-                "id_product_m2m_vendor",
+                ["id_order_m2m_product", "id_product_m2m_vendor"],
                 {
                     id_order,
                 }
             )
-            result[0].created_at = created_at
+
+            const index = result.length
+
+            for (let i = 0; i < index; i++) {
+                result[i].created_at = created_at
+            }
+
             return result
         })
 
@@ -40,19 +46,21 @@ exports.handler = async (event, context) => {
         const flattened_products = resolved_products.flat()
 
         let items = []
-        let quantity = []
+        let count = []
         let onset = []
+        let ordered = []
 
         flattened_products.map((order) => {
-            const { id_product_m2m_vendor, created_at } = order
+            const { id_product_m2m_vendor, id_order_m2m_product, created_at } = order
 
             if (!items.includes(id_product_m2m_vendor)) {
                 items.push(id_product_m2m_vendor)
-                quantity.push(1)
+                ordered.push(id_order_m2m_product)
+                count.push(1)
                 onset.push(created_at)
             } else {
                 const index = items.indexOf(id_product_m2m_vendor)
-                quantity[index]++
+                count[index]++
             }
         })
 
@@ -69,11 +77,12 @@ exports.handler = async (event, context) => {
             })
 
             const { product_title } = name[0]
-
-            details[0].quantity = quantity[pos]
+            const quantity = count[pos]
+            const id_order_m2m_product = ordered[pos]
             details[0].created_at = onset[pos]
-            details[0].product_title = product_title
-            return details
+            delete details[0].updated_at
+
+            return [{ product_title, id_order_m2m_product, quantity, ...details[0] }]
         })
 
         const product_details = await Promise.all(products)

@@ -16,6 +16,14 @@ module.exports = {
         return result
     },
 
+    select_many_with_condition: async (table, columns, condition) => {
+        let result = await connection.query(
+            `SELECT ${columns.join(", ")} FROM ${table} WHERE ? ORDER BY ${columns[0]}`,
+            [condition]
+        )
+        return result
+    },
+
     select_and_limit: async (table, column, index, lim) => {
         let result = await connection.query(
             `SELECT * FROM ${table} WHERE ${column} > ${index} ORDER BY ${column} LIMIT ${lim}`

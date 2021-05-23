@@ -66,7 +66,7 @@ exports.handler = async (event, context) => {
 
         const password_hashed = await passwordHash(user_password)
 
-        const data = {
+        const record = {
             user_first_name,
             user_last_name,
             user_email,
@@ -80,9 +80,9 @@ exports.handler = async (event, context) => {
             ...others,
         }
 
-        const result = await db.insert_new(data, "users")
+        const result = await db.insert_new(record, "users")
 
-        delete data.user_password
+        delete record.user_password
 
         if (!result) {
             throw "user create unsuccessful"
@@ -103,14 +103,14 @@ exports.handler = async (event, context) => {
 
         await db.insert_new(auth_token_data, "user_tokens")
 
-        let response = {
+        const data = {
             message: "Created account successful",
             id_user: result.insertId,
-            ...data,
+            ...record,
             token,
         }
 
-        return handler.returner([true, response], api_name, 201)
+        return handler.returner([true, data], api_name, 201)
     } catch (e) {
         if (e.name === "Error") {
             const errors = e.message

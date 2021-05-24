@@ -116,7 +116,7 @@ exports.handler = async (event, context) => {
         //recieves new_product_id as FKs ref products table
         async function getNewProductVendorId() {
             const new_product_m2m_vendor = await db.insert_new(
-                { ...new_p2v_data, id_vendor, id_product: new_product_id },
+                { ...new_p2v_data, id_vendor, p2v_price, id_product: new_product_id },
                 "products_m2m_vendors"
             )
             return new_product_m2m_vendor.insertId

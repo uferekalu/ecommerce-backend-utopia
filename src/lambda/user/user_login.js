@@ -51,7 +51,7 @@ exports.handler = async (event, context) => {
         //you dont want to hint a potential hacker what they are getting wrong or right.
 
         const id_user = user_exist[0].id_user
-        const id_user = user_exist[0].user_first_name
+        const user_first_name = user_exist[0].user_first_name
         //console.log("id_user:", id_user)
         //newly created token
         const created_token = await token.create_token(user_exist[0].id_user)

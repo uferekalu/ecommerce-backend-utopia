@@ -8,7 +8,8 @@ async function createUser(data) {
 async function deleteUser() {
     const data = await db.search_one("users", "user_first_name", userTwo.user_first_name)
     const user_id = data[0].id_user
-    await db.delete_one("user_tokens", "id_user", user_id)
+    // await db.delete_one("user_tokens", "id_user", user_id)
+    await db.delete_one("user_access_level_m2m_users", "id_id_user", user_id)
     await db.delete_one("users", "id_user", user_id)
 }
 

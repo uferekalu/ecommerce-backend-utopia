@@ -74,7 +74,6 @@ exports.handler = async (event, context) => {
             user_password: password_hashed,
             user_datetime_created: datetime,
             id_user_status: 1,
-            // id_user_access_level: 0,
             id_user_title,
             email_verified: 0,
             ...others,
@@ -92,42 +91,23 @@ exports.handler = async (event, context) => {
             "users",
             "id_user",
             "user_email",
-
             record.user_email
         )
-        console.log("user_id", user_id[0].id_user)
-        //When a user is registered he is a buyer, so we nned add the 0 as the accesslevel by deafult
+        //When a user is registered he is a buyer, so we need add the 0 as the accesslevel by deafult
         const userAccessRecord = {
             id_id_user: user_id[0].id_user,
             id_user_access_level: 0,
         }
-        const result2 = await db.insert_new(userAccessRecord, "user_access_level_m2m_users")
+
+        await db.insert_new(userAccessRecord, "user_access_level_m2m_users")
 
         const id_hashed = cryptr.encrypt(result.insertId)
         email_info.message += `https://4l0nq44u0k.execute-api.us-east-2.amazonaws.com/staging/api/user_email_verify/${id_hashed}`
 
         await send.send_email(user_email, email_info)
 
-        // const token = auth_token.create_token(result.insertId)
-
-        // const auth_token_data = {
-        //     token: token,
-        //     id_user: result.insertId,
-        //     ut_datetime_created: datetime,
-        // }
-
-        // await db.insert_new(auth_token_data, "user_tokens")
-
-        // const data = {
-        //     message: "Created account successful",
-        //     id_user: result.insertId,
-        //     ...record,
-        //     token,
-        // }
-
         // return handler.returner([true, data], api_name, 201)
         return handler.returner([true, { message: "Created account successful" }], api_name, 201)
-        // [false, { message: "Order status is not found" }],
     } catch (e) {
         if (e.name === "Error") {
             const errors = e.message

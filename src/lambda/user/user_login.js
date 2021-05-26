@@ -76,14 +76,6 @@ exports.handler = async (event, context) => {
             await db.insert_new(data, "user_tokens")
         }
 
-        /*
-    if (user_exist[0].email_verified != 1)
-      return handler.returner(
-        [false, { message: "Account is not verified" }],
-        api_name,
-        400
-      );*/
-
         const id = await db.select_oneColumn(
             "users",
             "id_user",
@@ -96,14 +88,7 @@ exports.handler = async (event, context) => {
             "id_id_user",
             id[0].id_user
         )
-        // console.log("id:", id[0].id_user)
-        // const currentuser_access_level = await db.search_one(
-        //     "user_access_level_m2m_users",
-        //     "id_id_user",
-        //     id[0].id_user
-        // )
-        console.log("currentuser_access_level[0]:", user_access_level[0].id_user_access_level)
-        //console.log("currentuser_access_level:", currentuser_access_level)
+
         const currentuser_access_level = user_access_level[0].id_user_access_level
         let access_level = [4, 5]
         if (currentuser_access_level == 0) {
@@ -118,15 +103,9 @@ exports.handler = async (event, context) => {
                 true,
                 {
                     token: created_token,
-                    //hard coded access_levels
                     user_access_level: access_level,
                     id_user,
                     user_first_name,
-                    // user_exist[0].id_user % 3 == 0
-                    //   ? [2, 3, 4, 5]
-                    //   : user_exist[0].id_user % 2 == 0
-                    //   ? [1, 3, 4, 5]
-                    //   : [0, 1, 2, 3, 4, 5], //[2, 3, 4, 5], //user_exist[0].id_user_access_level,
                 },
             ],
             api_name,

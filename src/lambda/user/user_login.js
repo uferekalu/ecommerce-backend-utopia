@@ -76,49 +76,36 @@ exports.handler = async (event, context) => {
             await db.insert_new(data, "user_tokens")
         }
 
-        /*
-    if (user_exist[0].email_verified != 1)
-      return handler.returner(
-        [false, { message: "Account is not verified" }],
-        api_name,
-        400
-      );*/
-
         const id = await db.select_oneColumn(
             "users",
             "id_user",
             "user_email",
             user_exist[0].user_email
         )
-        const currentuser_access_level = await db.select_oneColumn(
+        const user_access_level = await db.select_oneColumn(
             "user_access_level_m2m_users",
             "id_user_access_level",
             "id_id_user",
-            id
+            id[0].id_user
         )
 
-        let access_level = null
+        const currentuser_access_level = user_access_level[0].id_user_access_level
+        let access_level = [4, 5]
         if (currentuser_access_level == 0) {
-            access_level = [0, 1, 2, 3, 4, 5]
+            access_level.push(2, 3) // [0, 1, 2, 3, 4, 5]
         } else if (currentuser_access_level == 1) {
-            access_level = [1, 3, 4, 5]
+            access_level.push(1, 2, 3) //[1, 3, 4, 5]
         } else if (currentuser_access_level == 2) {
-            access_level = [2, 3, 4, 5]
+            access_level.push(0, 1, 2, 3)
         }
         return handler.returner(
             [
                 true,
                 {
                     token: created_token,
-                    //hard coded access_levels
                     user_access_level: access_level,
                     id_user,
-                    user_first_name
-                    // user_exist[0].id_user % 3 == 0
-                    //   ? [2, 3, 4, 5]
-                    //   : user_exist[0].id_user % 2 == 0
-                    //   ? [1, 3, 4, 5]
-                    //   : [0, 1, 2, 3, 4, 5], //[2, 3, 4, 5], //user_exist[0].id_user_access_level,
+                    user_first_name,
                 },
             ],
             api_name,

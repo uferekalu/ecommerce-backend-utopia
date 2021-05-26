@@ -14,15 +14,6 @@ describe("tests user endpoints", () => {
         expect(res.status).toEqual(201)
     })
 
-    // 3
-    test("should logout user", async () => {
-        const token = await getUserToken(userTwo.user_first_name)
-        const res = await axios.post(`${uri}/user_logout/`, {
-            token,
-        })
-        expect(res.status).toEqual(201)
-    }, 10000)
-
     // 2
     test("should login user", async () => {
         const res = await axios.post(`${uri}/user_login`, {
@@ -32,7 +23,7 @@ describe("tests user endpoints", () => {
         expect(res.status).toEqual(201)
     }, 10000)
 
-    4
+    // 4
     // test("should verify user email", async () => {
     //   const id_user = await getUserId(userTwo.user_first_name)
     //   const res = await axios.post(`${uri}/user_email_verify/${id_user}`)
@@ -89,6 +80,15 @@ describe("tests user endpoints", () => {
             token,
             user_address_billing: "first street",
             user_address_shipping: "second street",
+        })
+        expect(res.status).toEqual(201)
+    }, 10000)
+
+    // 3
+    test("should logout user", async () => {
+        const token = await getUserToken(userTwo.user_first_name)
+        const res = await axios.post(`${uri}/user_logout/`, {
+            token,
         })
         expect(res.status).toEqual(201)
     }, 10000)

@@ -13,6 +13,13 @@ module.exports = {
         return result
     },
 
+    select_all_from_join: async (table1, table2, joint) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint} = ${table2}.${joint}`
+        )
+        return result
+    },
+
     select_one_with_condition: async (table, column, condition) => {
         let result = await connection.query(
             `SELECT ${column} FROM ${table} WHERE ? ORDER BY ${column}`,

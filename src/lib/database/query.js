@@ -13,9 +13,73 @@ module.exports = {
         return result
     },
 
+    select_many: async (table, columns) => {
+        let result = await connection.query(`SELECT ${columns.join(", ")} FROM ${table}`)
+        return result
+    },
+
+    select_many_from_join_with_condition: async (table1, table2, joint, columns, condition) => {
+        let result = await connection.query(
+            `SELECT ${columns.join(
+                ", "
+            )} FROM ${table1} JOIN ${table2} ON ${table1}.${joint} = ${table2}.${joint} WHERE ?`,
+            [condition]
+        )
+        return result
+    },
+
     select_all_from_join: async (table1, table2, joint) => {
         let result = await connection.query(
             `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint} = ${table2}.${joint}`
+        )
+        return result
+    },
+
+    select_all_from_join_with_condition: async (table1, table2, joint, condition) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint} = ${table2}.${joint} WHERE ?`,
+            [condition]
+        )
+        return result
+    },
+
+    select_all_from_join_with_regex: async (table1, table2, joint, target, regex) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint} = ${table2}.${joint} WHERE ${target} REGEXP ?`,
+            [regex]
+        )
+        return result
+    },
+
+    select_all_from_join_with_condition_and_regex: async (
+        table1,
+        table2,
+        joint,
+        condition,
+        target,
+        regex
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint} = ${table2}.${joint} WHERE ? AND ${target} REGEXP ?`,
+            [condition, regex]
+        )
+        return result
+    },
+
+    select_many_from_join_with_condition_and_regex: async (
+        table1,
+        table2,
+        joint,
+        columns,
+        condition,
+        target,
+        regex
+    ) => {
+        let result = await connection.query(
+            `SELECT ${columns.join(
+                ", "
+            )} FROM ${table1} JOIN ${table2} ON ${table1}.${joint} = ${table2}.${joint} WHERE ? AND ${target} REGEXP ?`,
+            [condition, regex]
         )
         return result
     },

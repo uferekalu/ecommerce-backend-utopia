@@ -8,6 +8,11 @@ module.exports = {
         return result
     },
 
+    select_all: async (table) => {
+        let result = await connection.query(`SELECT * FROM ${table}`)
+        return result
+    },
+
     select_one_with_condition: async (table, column, condition) => {
         let result = await connection.query(
             `SELECT ${column} FROM ${table} WHERE ? ORDER BY ${column}`,

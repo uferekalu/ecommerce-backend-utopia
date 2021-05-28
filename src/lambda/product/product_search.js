@@ -25,7 +25,7 @@ exports.handler = async (event, context) => {
                 "products_m2m_vendors",
                 "products",
                 "id_product",
-                ["product_title", "p2v_promo_price"],
+                ["product_title", "p2v_promo_price", "p2v_price", "p2v_promo_price"],
                 { id_category }
             )
         }
@@ -36,7 +36,13 @@ exports.handler = async (event, context) => {
                 "products_m2m_vendors",
                 "products",
                 "id_product",
-                ["product_title", "p2v_promo_price"],
+                [
+                    "id_product_m2m_vendor",
+                    "product_title",
+                    "p2v_price",
+                    "p2v_promo_price",
+                    "is_sale",
+                ],
                 { id_category },
                 "product_title",
                 regex

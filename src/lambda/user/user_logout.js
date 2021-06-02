@@ -10,12 +10,13 @@ exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
 
-        const token_exist = await db.search_one("user_tokens", "token", body.token)
-        //*******if the token doesn't exist sendback false, { message: "User is not found" }
-        //*******if exists delete it from the user_tokens table send a success bool back
+        if (body?.token) {
+            console.log(body)
+            const token_exist = await db.search_one("user_tokens", "token", body.token)
 
-        if (token_exist.length > 0) {
-            await delete_one("user_tokens", "token", body.token)
+            if (token_exist.length > 0) {
+                await delete_one("user_tokens", "token", body.token)
+            }
         }
 
         return handler.returner([true], api_name, 201)

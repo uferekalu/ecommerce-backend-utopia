@@ -21,44 +21,25 @@ exports.handler = async (event, context) => {
 
         //condition 1
         if (id_category && !keyword) {
-            data = await db.select_many_from_join_with_condition(
+            data = await db.select_all_from_join_with_condition(
                 "products_m2m_vendors",
                 "products",
                 "id_product",
-                ["product_title", "p2v_promo_price", "p2v_price", "p2v_promo_price"],
                 { id_category }
             )
         }
 
         //condition 2
         if (id_category && keyword) {
-            data = await db.select_many_from_join_with_condition_and_regex(
+            data = await db.select_all_from_join_with_condition_and_regex(
                 "products_m2m_vendors",
                 "products",
                 "id_product",
-                [
-                    "id_product_m2m_vendor",
-                    "product_title",
-                    "p2v_price",
-                    "p2v_promo_price",
-                    "is_sale",
-                ],
                 { id_category },
                 "product_title",
                 regex
             )
         }
-
-        // //condition 3
-        // if (!id_category && keyword) {
-        //     data = await db.select_all_from_join_with_regex(
-        //         "products_m2m_vendors",
-        //         "products",
-        //         "id_product",
-        //         "product_title",
-        //         regex
-        //     )
-        // }
 
         if (data.length === 0) {
             throw `${error_one}`

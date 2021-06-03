@@ -36,7 +36,7 @@ functions:
         handler: src/lambda/product/product_details_get.handler
         events:
             - http:
-                  path: /api/product_details_get/{id_product}
+                  path: /api/product/{id_product_m2m_vendor}
                   method: get
         cors: true
         origin: "*"
@@ -319,15 +319,7 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-    products_get:
-        handler: src/lambda/product/products_get.handler
-        events:
-            - http:
-                  path: /api/products_get
-                  method: get
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
+
     product_categories_get:
         handler: src/lambda/product/product_categories_get.handler
         events:

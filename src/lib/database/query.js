@@ -43,6 +43,21 @@ module.exports = {
         return result
     },
 
+    select_all_from_join3_with_condition: async (
+        table1,
+        table2,
+        table3,
+        joint1,
+        joint2,
+        condition
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} WHERE ?`,
+            [condition]
+        )
+        return result
+    },
+
     select_all_from_join_with_regex: async (table1, table2, joint, target, regex) => {
         let result = await connection.query(
             `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint} = ${table2}.${joint} WHERE ${target} REGEXP ?`,

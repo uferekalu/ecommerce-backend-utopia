@@ -36,6 +36,7 @@ exports.handler = async (event, context) => {
             "user_last_name",
             "user_password",
             "id_user_title",
+            "id_user_access_level",
         ]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
@@ -51,6 +52,7 @@ exports.handler = async (event, context) => {
             user_last_name,
             user_password,
             id_user_title,
+            id_user_access_level,
             ...others
         } = body
 
@@ -96,7 +98,7 @@ exports.handler = async (event, context) => {
         //When a user is registered he is a buyer, so we need add the 0 as the accesslevel by deafult
         const userAccessRecord = {
             id_id_user: user_id[0].id_user,
-            id_user_access_level: 0,
+            id_user_access_level,
         }
 
         await db.insert_new(userAccessRecord, "user_access_level_m2m_users")

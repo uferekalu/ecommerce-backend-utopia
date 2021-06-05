@@ -330,6 +330,16 @@ functions:
         origin: "*"
     #-------------------------------------------------------------------------
 
+    user_password_reset:
+        handler: src/lambda/user/user_password_reset.handler
+        events:
+            - http:
+                  path: /api/reset_password/{id_user}
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+
     ######################################################### below are examples
 
     bye: #This Is an example

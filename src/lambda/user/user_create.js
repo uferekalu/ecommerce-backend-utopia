@@ -1,5 +1,5 @@
 const handler = require("../../middleware/handler")
-const auth_token = require("../../middleware/verify_token")
+const auth_token = require("../../middleware/token_handler")
 const db = require("../../lib/database/query")
 const send = require("../../lib/services/email/send_email")
 const bcrypt = require("bcryptjs")

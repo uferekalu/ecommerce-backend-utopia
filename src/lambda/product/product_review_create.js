@@ -1,6 +1,6 @@
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
-const token = require("../../middleware/verify_token")
+const auth_token = require("../../middleware/token_handler")
 const api_name = "Product review create"
 
 exports.handler = async (event, context) => {

@@ -1,6 +1,5 @@
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
-const token = require("../../middleware/verify_token")
 const api_name = "Vendor create"
 exports.handler = async (event, context) => {
     try {

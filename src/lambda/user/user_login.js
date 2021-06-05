@@ -1,6 +1,6 @@
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
-const token = require("../../middleware/verify_token")
+const auth_token = require("../../middleware/token_handler")
 const bcrypt = require("bcryptjs")
 const qs = require("querystring")
 
@@ -54,7 +54,7 @@ exports.handler = async (event, context) => {
         const user_first_name = user_exist[0].user_first_name
         //console.log("id_user:", id_user)
         //newly created token
-        const created_token = await token.create_token(user_exist[0].id_user)
+        const created_token = await auth_token.create(user_exist[0].id_user)
 
         let data = {
             id_user,

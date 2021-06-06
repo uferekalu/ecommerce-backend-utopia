@@ -339,6 +339,15 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+    products_get_all:
+        handler: src/lambda/product/products_get_all.handler
+        events:
+            - http:
+                  path: /api/products
+                  method: get
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
 
     ######################################################### below are examples
 

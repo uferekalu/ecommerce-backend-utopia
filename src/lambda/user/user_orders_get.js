@@ -8,14 +8,12 @@ exports.handler = async (event, context) => {
         const limit = 20
         const param = event.pathParameters
 
-        const { id_user, index } = param
+        const { id_user } = param
 
-        const all_orders = await db.select_many_with_condition_and_limit(
+        const all_orders = await db.select_many_with_condition(
             "orders",
             ["id_order", "created_at"],
-            { id_user },
-            index,
-            limit
+            { id_user }
         )
 
         if (all_orders.length < 1) {

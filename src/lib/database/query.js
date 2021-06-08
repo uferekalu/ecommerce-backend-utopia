@@ -304,4 +304,17 @@ module.exports = {
         )
         return result
     },
+
+    check_connections: async (USER, COMMAND) => {
+        const result = await connection.query(
+            `SELECT * FROM INFORMATION_SCHEMA.PROCESSLIST WHERE ? AND ?`,
+            [USER, COMMAND]
+        )
+        return result
+    },
+
+    kill_connections: async (ID) => {
+        const result = await connection.query(`KILL ${ID}`)
+        return result
+    },
 }

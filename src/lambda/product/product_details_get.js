@@ -9,12 +9,22 @@ exports.handler = async (event) => {
         const param = event.pathParameters
         const { id_product_m2m_vendor } = param
 
-        const details = await db.select_all_from_join3_with_condition(
+        // const details = await db.select_all_from_join3_with_condition(
+        //     "products_m2m_vendors",
+        //     "products",
+        //     "vendors",
+        //     "id_product", 
+        //     "id_vendor",
+        //     { id_product_m2m_vendor }
+        // )
+        const details = await db.select_all_from_join4_with_condition(
             "products_m2m_vendors",
             "products",
             "vendors",
-            "id_product",
+            "product_thumbnails",
+            "id_product", 
             "id_vendor",
+            "id_product_thumbnail",
             { id_product_m2m_vendor }
         )
 
@@ -24,7 +34,18 @@ exports.handler = async (event) => {
 
         const product = details[0]
 
-        return handler.returner([true, product], api_name)
+        const variants = product.variant
+
+        let variant_list = variants.map((variant) => {
+            return variant
+        })
+
+        const data = {
+            product,
+            variant_list
+        }
+
+        return handler.returner([true, data], api_name)
     } catch (e) {
         if (e === error_one) {
             return handler.returner([false, e], api_name, 400)

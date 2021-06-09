@@ -180,15 +180,6 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-    categories_get:
-        handler: src/lambda/product/categories_get.handler
-        events:
-            - http:
-                  path: /api/categories_get
-                  method: get
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
     product_review_create:
         handler: src/lambda/product/product_review_create.handler
         events:
@@ -284,7 +275,7 @@ functions:
         handler: src/lambda/vendor/vendor_products_get.handler
         events:
             - http:
-                  path: /api/vendor/{id_vendor}/products/{index}
+                  path: /api/vendor/{id_vendor}/products
                   method: get
         cors: true
         origin: "*"
@@ -293,10 +284,7 @@ functions:
         handler: src/lambda/vendor/vendors_get.handler
         events:
             - http:
-                  path: /api/vendors/{index}
-                  method: get
-            - http:
-                  path: /api/vendors/{index}/{keyword}
+                  path: /api/vendors/{keyword}
                   method: get
         cors: true
         origin: "*"
@@ -314,7 +302,7 @@ functions:
         handler: src/lambda/user/user_orders_get.handler
         events:
             - http:
-                  path: /api/user/{id_user}/orders/{index}
+                  path: /api/user/{id_user}/orders
                   method: get
         cors: true
         origin: "*"
@@ -344,6 +332,15 @@ functions:
         events:
             - http:
                   path: /api/products
+                  method: get
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    kill_connections:
+        handler: src/lambda/temporary/kill_connections.handler
+        events:
+            - http:
+                  path: /api/kill-cons/{id_user}/-/{pass}
                   method: get
         cors: true
         origin: "*"

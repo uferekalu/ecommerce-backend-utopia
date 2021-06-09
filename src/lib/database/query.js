@@ -40,6 +40,13 @@ module.exports = {
         return result
     },
 
+    select_all_from_join3: async (table1, table2, table3, joint1, joint2) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2}`
+        )
+        return result
+    },
+
     select_all_from_join_with_condition: async (table1, table2, joint, condition) => {
         let result = await connection.query(
             `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint} = ${table2}.${joint} WHERE ?`,
@@ -78,6 +85,22 @@ module.exports = {
         return result
     },
 
+    select_all_from_join3_with_regex: async (
+        table1,
+        table2,
+        table3,
+        joint1,
+        joint2,
+        target,
+        regex
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} WHERE ${target} REGEXP ?`,
+            [regex]
+        )
+        return result
+    },
+
     select_all_from_join_with_condition_and_regex: async (
         table1,
         table2,
@@ -88,6 +111,23 @@ module.exports = {
     ) => {
         let result = await connection.query(
             `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint} = ${table2}.${joint} WHERE ? AND ${target} REGEXP ?`,
+            [condition, regex]
+        )
+        return result
+    },
+
+    select_all_from_join3_with_condition_and_regex: async (
+        table1,
+        table2,
+        table3,
+        joint1,
+        joint2,
+        condition,
+        target,
+        regex
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} WHERE ? AND ${target} REGEXP ?`,
             [condition, regex]
         )
         return result

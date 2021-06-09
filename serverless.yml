@@ -275,7 +275,7 @@ functions:
         handler: src/lambda/vendor/vendor_products_get.handler
         events:
             - http:
-                  path: /api/vendor/{id_vendor}/products/{index}
+                  path: /api/vendor/{id_vendor}/products
                   method: get
         cors: true
         origin: "*"

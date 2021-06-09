@@ -34,18 +34,18 @@ exports.handler = async (event) => {
 
         const product = details[0]
 
-        const variants = product.variant
+        // const variants = product.variants[0]
 
-        let variant_list = variants.map((variant) => {
-            return variant
-        })
+        // let variant_list = variants.map((variant) => {
+        //     return variant
+        // })
 
-        const data = {
-            product,
-            variant_list
-        }
+        // const data = {
+        //     product,
+        //     variant_list
+        // }
 
-        return handler.returner([true, data], api_name)
+        return handler.returner([true, product], api_name)
     } catch (e) {
         if (e === error_one) {
             return handler.returner([false, e], api_name, 400)

@@ -6,20 +6,20 @@ provider:
     stage: staging
 
 functions:
-    product_search:
-        handler: src/lambda/product/product_search.handler
-        events:
-            - http:
-                  path: /api/products/{id_category}/-/{keyword}
-                  method: get
-            - http:
-                  path: /api/products/{id_category}
-                  method: get
-            - http:
-                  path: /api/products/-/{keyword}
-                  method: get
-        cors: true
-        origin: "*"
+  #  product_search:
+    #    handler: src/lambda/product/product_search.handler
+      #  events:
+       #     - http:
+         #         path: /api/products/{id_category}/-/{keyword}
+          #        method: get
+          #  - http:
+          #        path: /api/products/{id_category}
+           #       method: get
+           # - http:
+            #      path: /api/products/-/{keyword}
+            #      method: get
+      #  cors: true
+      #  origin: "*"
     #-------------------------------------------------------------------------
 
     user_access_level_get: #//fake endpoint

@@ -10,9 +10,7 @@ exports.handler = async (event, context) => {
 
         const keyword = param?.keyword
 
-        let search_vendors
-
-        const limit = 20
+        let vendors
 
         if (keyword) {
             const cap_keyword = keyword.toUpperCase()
@@ -20,27 +18,21 @@ exports.handler = async (event, context) => {
             const keywords = keyword_split.filter((word) => word.length > 1)
             if (keywords.length > 0) {
                 const regex = keywords.join("|")
-                search_vendors = await db.select_with_regex_and_limit(
-                    "vendors",
-                    "id_vendor",
-                    "business_name",
-                    regex,
-                    limit
-                )
+                vendors = await db.select_with_regex("vendors", "business_name", regex)
             }
         } else {
-            search_vendors = await db.select_and_limit("vendors", "id_vendor", param.index, limit)
+            vendors = await db.select_all("vendors")
         }
 
-        if (search_vendors.length < 1) {
+        if (vendors.length < 1) {
             throw `${error_one}`
         }
 
-        const vendors = search_vendors.map((vendor) => {
-            delete vendor.created_at
-            delete vendor.updated_at
-            return vendor
-        })
+        // const vendors = vendors.map((vendor) => {
+        //     delete vendor.created_at
+        //     delete vendor.updated_at
+        //     return vendor
+        // })
 
         return handler.returner([true, { vendors }], api_name, 200)
     } catch (e) {

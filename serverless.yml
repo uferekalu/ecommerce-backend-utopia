@@ -286,6 +286,9 @@ functions:
             - http:
                   path: /api/vendors/{keyword}
                   method: get
+            - http:
+                  path: /api/vendors
+                  method: get
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------

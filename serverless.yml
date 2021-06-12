@@ -225,6 +225,15 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+    vendor_create_now:
+        handler: src/lambda/vendor/vendor_create_now.handler
+        events:
+            - http:
+                  path: /api/vendor_create_now
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
     vendor_review_create:
         handler: src/lambda/vendor/vendor_review_create.handler
         events:

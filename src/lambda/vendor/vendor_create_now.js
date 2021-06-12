@@ -53,6 +53,8 @@ exports.handler = async (event) => {
             ...others
         } = body
 
+        console.log(others?.user_first_name)
+
         const email_exist = await db.search_one("users", "user_email", vendor_email)
         if (email_exist.length != 0) {
             throw `${errors_array[1]}`
@@ -83,9 +85,21 @@ exports.handler = async (event) => {
 
         const password_hashed = await passwordHash(vendor_password)
 
+        const nameValidator = /[\d\s$&+,:;=?@#|'<>.^*()%!-]/gm
+
+        const valid_first_name =
+            others?.user_first_name && !nameValidator.test(others.user_first_name)
+                ? others.user_first_name
+                : undefined
+
+        const valid_last_name =
+            others?.user_last_name && !nameValidator.test(others.user_last_name)
+                ? others.user_last_name
+                : undefined
+
         const userData = {
-            user_first_name: business_name,
-            user_last_name: business_name,
+            user_first_name: valid_first_name || business_name,
+            user_last_name: valid_last_name || business_name,
             user_email: vendor_email,
             user_phone_number: vendor_phone_number,
             user_password: password_hashed,
@@ -105,7 +119,6 @@ exports.handler = async (event) => {
         const id_user = new_user.insertId
 
         const vendorData = {
-            ...others,
             business_name,
             vendor_phone_number,
             vendor_address,

@@ -78,6 +78,7 @@ exports.handler = async (event, context) => {
             id_user_status: 1,
             id_user_title,
             email_verified: 0,
+            phone_verified: 0,
             ...others,
         }
 

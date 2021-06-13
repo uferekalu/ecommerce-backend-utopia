@@ -1,5 +1,6 @@
 var mysql = require("mysql")
 const connection = require("../lib/database/connect")
+const db = require("../lib/database/query")
 
 exports.returner = async (result, api_name, statusCode) => {
     if (statusCode == undefined) {
@@ -79,4 +80,23 @@ exports.query = async (full_query) => {
             }
         })
     })
+}
+
+exports.get_access_level = async (id) => {
+    let access_level = [4, 5]
+    switch (id) {
+        case 0:
+            access_level.push(2, 3)
+            break
+        case 1:
+            access_level.push(1, 2, 3)
+            break
+        case 2:
+            access_level.push(0, 1, 2, 3)
+            break
+        default:
+            null
+            break
+    }
+    return access_level
 }

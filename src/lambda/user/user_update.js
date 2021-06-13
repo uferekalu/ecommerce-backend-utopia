@@ -14,7 +14,7 @@ exports.handler = async (event, context) => {
 
         const all_fields = Object.keys(body)
 
-        const required_fields = ["id_user", "token", "user_password"]
+        const required_fields = ["id_user", "token"]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
@@ -35,8 +35,6 @@ exports.handler = async (event, context) => {
             throw "authentication required"
         }
 
-        const pass_valid = await bcrypt.compare(user_password, user_exist[0].user_password)
-
         if (!pass_valid) {
             throw "password is invalid"
         }
@@ -45,6 +43,10 @@ exports.handler = async (event, context) => {
 
         if (optional_fields.length < 1) {
             throw "nothing to update"
+        }
+
+        if (optional_fields.includes("user_password")) {
+            delete others.user_password
         }
 
         const updated_data = { ...others }

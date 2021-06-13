@@ -52,16 +52,6 @@ functions:
         origin: "*"
     #--------------------------------------------------------------------------
 
-    user_login_emailorphone:
-        handler: src/lambda/user/user_login_emailorphone.handler
-        events:
-            - http:
-                  path: /api/user_login_emailorphone
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
     wishlist_insert_product:
         handler: src/lambda/wishlist/wishlist_insert_product.handler
         events:

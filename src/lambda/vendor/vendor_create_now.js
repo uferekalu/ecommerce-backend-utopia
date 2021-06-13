@@ -96,7 +96,7 @@ exports.handler = async (event) => {
             others?.user_last_name && !nameValidator.test(others.user_last_name)
                 ? others.user_last_name
                 : undefined
-
+        ///
         const userData = {
             user_first_name: valid_first_name || business_name,
             user_last_name: valid_last_name || business_name,

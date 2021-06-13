@@ -37,6 +37,7 @@ exports.handler = async (event) => {
             "vendor_short_desc",
             "id_vendor_status",
             "vendor_password",
+            "id_user_access_level",
         ]
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
         if (missing_fields.length > 0) {
@@ -50,10 +51,9 @@ exports.handler = async (event) => {
             vendor_short_desc,
             id_vendor_status,
             vendor_password,
+            id_user_access_level,
             ...others
         } = body
-
-        console.log(others?.user_first_name)
 
         const email_exist = await db.search_one("users", "user_email", vendor_email)
         if (email_exist.length != 0) {
@@ -130,7 +130,6 @@ exports.handler = async (event) => {
         if (!new_vendor) {
             throw `${errors_array[5]}`
         }
-
         const id_vendor = new_vendor.insertId
 
         const updated = await db.update_one("users", { id_vendor }, "id_user", id_user)
@@ -139,7 +138,17 @@ exports.handler = async (event) => {
             throw `${errors_array[6]}`
         }
 
-        const data = { id_vendor, ...vendorData }
+        await db.insert_new(
+            {
+                id_id_user: id_user,
+                id_user_access_level,
+            },
+            "user_access_level_m2m_users"
+        )
+
+        const user_access_level = await handler.get_access_level(id_user_access_level)
+
+        const data = { id_vendor, id_user, user_access_level, ...vendorData }
         delete data.id_vendor_status
 
         return handler.returner([true, data], api_name, 201)

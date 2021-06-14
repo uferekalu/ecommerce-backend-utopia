@@ -183,6 +183,22 @@ module.exports = {
         return result
     },
 
+    select_all_with_condition_and_order: async (table, column, condition, dir) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table} WHERE ? ORDER BY ${column} ${dir}`,
+            [condition]
+        )
+        return result
+    },
+
+    select_all_with_condition_order_and_limit: async (table, column, condition, lim, dir) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table} WHERE ? ORDER BY ${column} ${dir} LIMIT ${lim}`,
+            [condition]
+        )
+        return result
+    },
+
     select_and_limit: async (table, column, index, lim) => {
         let result = await connection.query(
             `SELECT * FROM ${table} WHERE ${column} > ${index} ORDER BY ${column} LIMIT ${lim}`

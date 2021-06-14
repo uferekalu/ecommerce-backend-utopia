@@ -9,7 +9,7 @@ exports.handler = async (event, context) => {
     try {
         const param = event.pathParameters
 
-        const { id_vendor, index } = param
+        const { id_vendor } = param
 
         const vendor = await db.search_one("vendors", "id_vendor", id_vendor)
 
@@ -17,36 +17,19 @@ exports.handler = async (event, context) => {
             throw `${error_one}`
         }
 
-        const { business_name } = vendor[0]
-
-        const limit = 20
-
-        const id_product_array = await db.select_one_with_condition_and_limit(
+        const data = await db.select_all_from_join4_with_condition(
+            "products",
             "products_m2m_vendors",
+            "product_thumbnails",
+            "vendors",
             "id_product",
-            { id_vendor },
-            index,
-            limit
+            "id_product_thumbnail",
+            "id_vendor",
+            { "vendors.id_vendor": id_vendor }
         )
 
-        if (id_product_array.length < 1) {
+        if (data.length < 1) {
             throw `${error_two}`
-        }
-
-        const products_search = id_product_array.map(async (obj) => {
-            const res = await db.search_one("products", "id_product", obj.id_product)
-            return res[0]
-        })
-
-        const products = await Promise.all(products_search)
-
-        if (products.length < 1) {
-            throw `${error_two}`
-        }
-
-        const data = {
-            business_name,
-            products,
         }
 
         return handler.returner([true, data], api_name, 200)

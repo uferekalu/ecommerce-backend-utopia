@@ -359,6 +359,18 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+    product_newest_arrival:
+        handler: src/lambda/product/product_newest_arrival.handler
+        events:
+            - http:
+                  path: /api/product_newest
+                  method: get
+            - http:
+                  path: /api/product_newest/{limit}
+                  method: get
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
 
     ######################################################### below are examples
 

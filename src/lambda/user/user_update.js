@@ -47,7 +47,7 @@ exports.handler = async (event, context) => {
 
         const updated_data = { ...others }
 
-        const data = await db.update_one("users", updated_data, "id_user", id_user)
+        await db.update_one("users", updated_data, "id_user", id_user)
 
         return handler.returner([true, updated_data], api_name, 201)
     } catch (e) {

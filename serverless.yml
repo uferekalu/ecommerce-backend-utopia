@@ -52,16 +52,6 @@ functions:
         origin: "*"
     #--------------------------------------------------------------------------
 
-    wishlist_insert_product:
-        handler: src/lambda/wishlist/wishlist_insert_product.handler
-        events:
-            - http:
-                  path: /api/wishlist_insert_product
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
     user_email_or_phone_verify:
         handler: src/lambda/user/user_email_or_phone_verify.handler
         events:
@@ -376,6 +366,15 @@ functions:
         events:
             - http:
                   path: /api/wishlist_create
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    wishlist_get:
+        handler: src/lambda/wishlist/wishlist_get.handler
+        events:
+            - http:
+                  path: /api/wishlist_get
                   method: post
         cors: true
         origin: "*"

@@ -21,7 +21,7 @@ exports.handler = async (event, context) => {
         if (missing_fields.length > 0) {
             throw Error(missing_fields)
         }
-        const { id_user, token, user_password, ...others } = body
+        const { id_user, token, ...others } = body
 
         const user_exist = await db.search_one("users", "id_user", id_user)
 
@@ -33,10 +33,6 @@ exports.handler = async (event, context) => {
 
         if (isAuth.length < 1) {
             throw "authentication required"
-        }
-
-        if (!pass_valid) {
-            throw "password is invalid"
         }
 
         const optional_fields = Object.keys(others)
@@ -51,9 +47,9 @@ exports.handler = async (event, context) => {
 
         const updated_data = { ...others }
 
-        const data = await db.update_one("users", updated_data, "id_user", id_user)
+        await db.update_one("users", updated_data, "id_user", id_user)
 
-        return handler.returner([true, data], api_name, 201)
+        return handler.returner([true, updated_data], api_name, 201)
     } catch (e) {
         if (e.name === "Error") {
             const errors = e.message

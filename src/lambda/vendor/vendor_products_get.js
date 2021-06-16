@@ -35,15 +35,9 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, data], api_name, 200)
     } catch (e) {
-<<<<<<< HEAD
         // if (e === error_one || e === error_two) {
         //     return handler.returner([false, e], api_name, 404)
         // }
-=======
-        if (e === error_one || e === error_two) {
-            return handler.returner([false, { message: e, products: data }], api_name, 404)
-        }
->>>>>>> 981d1e52b68a9cdc16f47bb29a6fe7f38e1ab2fb
         return handler.returner([false, e], api_name, 500)
     }
 }

@@ -6,6 +6,7 @@ const error_one = "vendor not found"
 const error_two = "no products found"
 
 exports.handler = async (event, context) => {
+    let data = []
     try {
         const param = event.pathParameters
 
@@ -17,7 +18,7 @@ exports.handler = async (event, context) => {
             throw `${error_one}`
         }
 
-        const data = await db.select_all_from_join4_with_condition(
+        data = await db.select_all_from_join4_with_condition(
             "products",
             "products_m2m_vendors",
             "product_thumbnails",
@@ -34,9 +35,15 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, data], api_name, 200)
     } catch (e) {
+<<<<<<< HEAD
         // if (e === error_one || e === error_two) {
         //     return handler.returner([false, e], api_name, 404)
         // }
+=======
+        if (e === error_one || e === error_two) {
+            return handler.returner([false, { message: e, products: data }], api_name, 404)
+        }
+>>>>>>> 981d1e52b68a9cdc16f47bb29a6fe7f38e1ab2fb
         return handler.returner([false, e], api_name, 500)
     }
 }

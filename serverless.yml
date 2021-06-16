@@ -371,6 +371,15 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+    wishlist_create:
+        handler: src/lambda/wishlist/wishlist_create.handler
+        events:
+            - http:
+                  path: /api/wishlist_create
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
 
     ######################################################### below are examples
 

@@ -190,6 +190,11 @@ module.exports = {
         return result
     },
 
+    select_all_with_condition: async (table, condition) => {
+        let result = await connection.query(`SELECT * FROM ${table} WHERE ?`, [condition])
+        return result
+    },
+
     select_one_with_condition: async (table, column, condition) => {
         let result = await connection.query(
             `SELECT ${column} FROM ${table} WHERE ? ORDER BY ${column}`,
@@ -223,9 +228,7 @@ module.exports = {
     },
 
     select_all_and_order: async (table, column, dir) => {
-        let result = await connection.query(
-            `SELECT * FROM ${table} ORDER BY ${column} ${dir}`
-        )
+        let result = await connection.query(`SELECT * FROM ${table} ORDER BY ${column} ${dir}`)
         return result
     },
 
@@ -370,6 +373,11 @@ module.exports = {
             updated_data,
             condition,
         ])
+        return result
+    },
+
+    update_with_condition: async (table, update, condition) => {
+        const result = await connection.query(`UPDATE ${table} SET ? WHERE ?`, [update, condition])
         return result
     },
 

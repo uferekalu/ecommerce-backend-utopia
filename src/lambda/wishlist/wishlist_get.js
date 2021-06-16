@@ -2,13 +2,13 @@ const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const auth_token = require("../../middleware/token_handler")
 
-const api_name = "Wishlist create"
+const api_name = "Wishlist get"
 const errors_array = [
     "body is empty",
     "user does not exist",
     "authentication required",
     "you have no wishlist",
-    "wishlist create unsuccessful",
+    "wishlist get unsuccessful",
 ]
 
 exports.handler = async (event) => {
@@ -21,7 +21,7 @@ exports.handler = async (event) => {
 
         const all_fields = Object.keys(body)
 
-        const required_fields = ["token", "id_user", "wishlist"]
+        const required_fields = ["token", "id_user"]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
@@ -29,7 +29,7 @@ exports.handler = async (event) => {
             throw Error(missing_fields)
         }
 
-        const { wishlist, id_user, token } = body
+        const { id_user, token } = body
 
         const user_exist = (await db.search_one("users", "id_user", id_user))[0]
 
@@ -43,42 +43,15 @@ exports.handler = async (event) => {
             throw `${errors_array[2]}`
         }
 
-        if (wishlist.length < 1) {
+        const wishlist = (await db.select_all_with_condition("wishlists", { id_user }))[0]
+
+        if (!wishlist) {
             throw `${errors_array[3]}`
         }
 
-        const wishlist_string = JSON.stringify(wishlist)
+        const data = JSON.parse(wishlist.wishlist_items)
 
-        const wish_list_exist = await db.select_one("wishlists", {
-            wishlist_items: wishlist_string,
-        })
-
-        const wishlist_datetime = await handler.datetime()
-
-        const data = {
-            id_user,
-            wishlist_items: wishlist_string,
-        }
-
-        let new_wishlist
-
-        if (!wish_list_exist) {
-            data.wishlist_datetime_created = wishlist_datetime
-            new_wishlist = await db.insert_new(data, "wishlists")
-        }
-
-        if (wish_list_exist) {
-            data.wishlist_datetime_updated = wishlist_datetime
-            new_wishlist = await db.update_with_condition("wishlists", data, { id_user })
-        }
-
-        if (!new_wishlist) {
-            throw `${errors_array[4]}`
-        }
-
-        data.wishlist_items = wishlist
-
-        return handler.returner([true, data], api_name, 201)
+        return handler.returner([true, data], api_name, 200)
     } catch (e) {
         let errors
         if (e.name === "Error") {

@@ -13,20 +13,32 @@ exports.handler = async (event) => {
 
         if (isLimited) {
             const { limit } = param
-            data = await db.select_all_with_condition_order_and_limit(
+            data = await db.select_all_from_join4_with_condition_order_and_limit(
+                "products",
                 "products_m2m_vendors",
-                "p2v_promo_off",
+                "product_thumbnails",
+                "vendors",
+                "id_product",
+                "id_product_thumbnail",
+                "id_vendor",
                 { is_sale: "true" },
+                "p2v_promo_off",
                 limit,
                 "DESC"
             )
         }
 
         if (!isLimited) {
-            data = await db.select_all_with_condition_and_order(
+            data = await db.select_all_from_join4_with_condition_and_order(
+                "products",
                 "products_m2m_vendors",
-                "p2v_promo_off",
+                "product_thumbnails",
+                "vendors",
+                "id_product",
+                "id_product_thumbnail",
+                "id_vendor",
                 { is_sale: "true" },
+                "p2v_promo_off",
                 "DESC"
             )
         }

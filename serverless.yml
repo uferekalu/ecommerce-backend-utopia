@@ -379,6 +379,24 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+    cart_create:
+        handler: src/lambda/cart/cart_create.handler
+        events:
+            - http:
+                  path: /api/cart_create
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    cart_get:
+        handler: src/lambda/cart/cart_get.handler
+        events:
+            - http:
+                  path: /api/cart_get
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
 
     ######################################################### below are examples
 

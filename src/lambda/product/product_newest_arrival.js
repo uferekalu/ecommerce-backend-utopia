@@ -11,35 +11,36 @@ exports.handler = async (event) => {
         const isLimited = param?.limit
         let data
 
-        // if (isLimited) {
-        //     const { limit } = param
-        //     data = await db.select_all_with_condition_order_and_limit(
-        //         "products_m2m_vendors",
-        //         "p2v_promo_off",
-        //         { is_sale: "true" },
-        //         limit,
-        //         "DESC"
-        //     )
-        // }
+        if (isLimited) {
+            const { limit } = param
+            data = await db.select_all_from_join4_with_condition_and_order_and_limit(
+                "products",
+                "products_m2m_vendors",
+                "product_thumbnails",
+                "vendors",
+                "id_product",
+                "id_product_thumbnail",
+                "id_vendor",
+                { is_sale: "true" },
+                "created_at",
+                limit,
+                "DESC"
+            )
+        }
 
         if (!isLimited) {
-            // data = await db.select_all_from_join4_and_order(
-            //     "products_m2m_vendors",
-            //     "created_at",
-            //     "DESC"
-            // )
-
-        data = await db.select_all_from_join4_and_order(
-            "products",
-            "products_m2m_vendors",
-            "product_thumbnails",
-            "vendors",
-            "id_product",
-            "id_product_thumbnail",
-            "id_vendor",
-            "created_at",
-            "DESC"
-        )
+            data = await db.select_all_from_join4_with_condition_and_order(
+                "products",
+                "products_m2m_vendors",
+                "product_thumbnails",
+                "vendors",
+                "id_product",
+                "id_product_thumbnail",
+                "id_vendor",
+                { is_sale: "true" },
+                "created_at",
+                "DESC"
+            )
         }
 
         if (data.length < 1) {

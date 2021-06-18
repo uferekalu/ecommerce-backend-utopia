@@ -8,8 +8,11 @@ exports.handler = async (event) => {
     try {
         const param = event.pathParameters
 
+        console.log(param);
+
         const isLimited = param?.limit
         let data
+        console.log("IS IT:",isLimited);
 
         // if (isLimited) {
         //     const { limit } = param

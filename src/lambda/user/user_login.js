@@ -36,12 +36,16 @@ exports.handler = async (event, context) => {
             user_exist = await db.search_one("users", "user_phone_number", body.user_phone_number)
         }
 
+        console.log("USER EXISTS", user_exist.length)
+
         if (user_exist.length === 0) {
             throw "invalid login"
         }
 
         //comparing the provided password with the hashed version using the library reverse check
         const pass_valid = await bcrypt.compare(body.user_password, user_exist[0].user_password)
+
+        console.log("VALID PASS", pass_valid)
 
         if (!pass_valid) {
             throw "invalid login"

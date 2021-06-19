@@ -294,8 +294,8 @@ functions:
         handler: src/lambda/user/user_orders_get.handler
         events:
             - http:
-                  path: /api/user/{id_user}/orders
-                  method: get
+                  path: /api/user/orders
+                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------

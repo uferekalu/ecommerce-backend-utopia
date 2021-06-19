@@ -4,6 +4,8 @@ const api_name = "Order create"
 
 exports.handler = async (event, context) => {
     try {
+        const datetime = await handler.datetime()
+
         const body = JSON.parse(event.body)
 
         //error handling
@@ -41,7 +43,7 @@ exports.handler = async (event, context) => {
         const total = prices.reduce((sum, price) => sum + price)
 
         const new_order = await db.insert_new(
-            { total, id_user, paymentMethod, isPaid: 1 },
+            { total, id_user, order_created_at: datetime, paymentMethod, isPaid: 1 }, //ispaid when paypal success response
             "orders"
         )
 

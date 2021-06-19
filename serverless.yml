@@ -319,6 +319,16 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+
+    user_forgot_password:
+        handler: src/lambda/user/user_forgot_password.handler
+        events:
+            - http:
+                  path: /api/forgot_password
+                  method: put
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
     products_get_all:
         handler: src/lambda/product/products_get_all.handler
         events:

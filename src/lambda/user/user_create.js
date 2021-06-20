@@ -13,6 +13,13 @@ const passwordHash = async (password) => {
 }
 
 const api_name = "User create"
+const errors_array = [
+    "body is empty",
+    "Email already exist",
+    "Phone number is taken",
+    "Invalid referral code",
+    "User create unsuccessful",
+]
 const email_info = {
     subject: "Email Verification",
     message: "Please click here to verify your email\n\n\n\n",
@@ -21,10 +28,15 @@ const email_info = {
 exports.handler = async (event, context) => {
     try {
         var datetime = await handler.datetime()
+
+        const param = event.pathParameters
+        const referral_code = param?.code
+        let accum_converts
+
         const body = JSON.parse(event.body)
 
         if (!body || JSON.stringify(body) === "{}") {
-            throw "body is empty"
+            throw `${errors_array[0]}`
         }
 
         const all_fields = Object.keys(body)
@@ -58,12 +70,19 @@ exports.handler = async (event, context) => {
 
         const email_exist = await db.search_one("users", "user_email", user_email)
         if (email_exist.length != 0) {
-            throw "Email already exist"
+            throw `${errors_array[1]}`
         }
 
         const phone_exist = await db.search_one("users", "user_phone_number", user_phone_number)
         if (phone_exist.length != 0) {
-            throw "Phone number is taken"
+            throw `${errors_array[2]}`
+        }
+
+        if (referral_code) {
+            const referee = (await db.select_one("referral_codes", { referral_code }))[0]
+            if (!referee) throw `${errors_array[3]}`
+            const { total_conversions } = referee
+            accum_converts = total_conversions + 1
         }
 
         const password_hashed = await passwordHash(user_password)
@@ -87,8 +106,15 @@ exports.handler = async (event, context) => {
         delete record.user_password
 
         if (!result) {
-            throw "user create unsuccessful"
+            throw `${errors_array[4]}`
         }
+
+        await db.update_with_condition(
+            "referral_codes",
+            { total_conversions: accum_converts },
+            { referral_code }
+        )
+
         //get the id_user
         const user_id = await db.select_oneColumn(
             "users",
@@ -109,19 +135,25 @@ exports.handler = async (event, context) => {
 
         await send.send_email(user_email, email_info)
 
-        // return handler.returner([true, data], api_name, 201)
-        return handler.returner([true, { message: "Created account successful" }], api_name, 201)
+        return handler.returner([true, record], api_name, 201)
     } catch (e) {
+        let errors
         if (e.name === "Error") {
-            const errors = e.message
+            errors = e.message
                 .split(",")
                 .map((field) => {
                     return `${field} is required`
                 })
                 .join(", ")
+        }
 
+        if (errors_array.includes(e)) {
+            errors = e
+        }
+
+        if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
-        return handler.returner([false, e], api_name, 400)
+        return handler.returner([false, e], api_name, 500)
     }
 }

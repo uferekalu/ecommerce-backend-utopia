@@ -8,6 +8,10 @@ module.exports = {
         return result
     },
 
+    /**
+     * @desc Returns one record from a table by condition
+     * @query SELECT * FROM table WHERE condition
+     */
     select_one: async (table, condition) => {
         let result = await connection.query(`SELECT * FROM ${table} WHERE ?`, [condition])
         return result
@@ -451,6 +455,10 @@ module.exports = {
         return result
     },
 
+    /**
+     * @desc Updates one record in a table by condition
+     * @query UPDATE table SET update WHERE condition
+     */
     update_with_condition: async (table, update, condition) => {
         const result = await connection.query(`UPDATE ${table} SET ? WHERE ?`, [update, condition])
         return result

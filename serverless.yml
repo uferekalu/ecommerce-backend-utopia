@@ -46,6 +46,9 @@ functions:
         handler: src/lambda/user/user_create.handler
         events:
             - http:
+                  path: /api/user_create/{code}
+                  method: post
+            - http:
                   path: /api/user_create
                   method: post
         cors: true

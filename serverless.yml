@@ -341,15 +341,6 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-    kill_connections:
-        handler: src/lambda/temporary/kill_connections.handler
-        events:
-            - http:
-                  path: /api/kill-cons/{id_user}/-/{pass}
-                  method: get
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
     products_on_promo:
         handler: src/lambda/product/products_on_promo.handler
         events:
@@ -406,6 +397,24 @@ functions:
         events:
             - http:
                   path: /api/cart_get
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    referral_code_create:
+        handler: src/lambda/referral/referral_code_create.handler
+        events:
+            - http:
+                  path: /api/referral_code_create
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    referral_code_get:
+        handler: src/lambda/referral/referral_code_get.handler
+        events:
+            - http:
+                  path: /api/referral_code_get
                   method: post
         cors: true
         origin: "*"

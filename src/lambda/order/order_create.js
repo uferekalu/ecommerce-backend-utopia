@@ -24,6 +24,8 @@ exports.handler = async (event, context) => {
 
         const { id_user, id_product_m2m_vendor, paymentMethod } = body
 
+        console.log(body)
+
         // ensure user exists
         const user_exist = await db.search_one("users", "id_user", id_user)
 

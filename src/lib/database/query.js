@@ -8,6 +8,10 @@ module.exports = {
         return result
     },
 
+    /**
+     * @desc Returns one record from a table by condition
+     * @query SELECT * FROM table WHERE condition
+     */
     select_one: async (table, condition) => {
         let result = await connection.query(`SELECT * FROM ${table} WHERE ?`, [condition])
         return result
@@ -87,6 +91,22 @@ module.exports = {
     ) => {
         let result = await connection.query(
             `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table2}.${joint3} = ${table4}.${joint3} WHERE ?`,
+            [condition]
+        )
+        return result
+    },
+    select_all_from_join4_with_conditionB: async (
+        table1,
+        table2,
+        table3,
+        table4,
+        joint1,
+        joint2,
+        joint3,
+        condition
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table3}.${joint3} = ${table4}.${joint3} WHERE ?`,
             [condition]
         )
         return result
@@ -435,6 +455,10 @@ module.exports = {
         return result
     },
 
+    /**
+     * @desc Updates one record in a table by condition
+     * @query UPDATE table SET update WHERE condition
+     */
     update_with_condition: async (table, update, condition) => {
         const result = await connection.query(`UPDATE ${table} SET ? WHERE ?`, [update, condition])
         return result

@@ -1,98 +1,70 @@
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
+const auth_token = require("../../middleware/token_handler")
 
 const api_name = "User orders"
-const error_one = "no orders found"
+const errors_array = ["body is empty", "authentication required", "no orders found"]
 exports.handler = async (event, context) => {
     try {
-        const limit = 20
-        const param = event.pathParameters
+        const body = JSON.parse(event.body)
 
-        const { id_user } = param
+        if (!body || JSON.stringify(body) === "{}") {
+            throw `${errors_array[0]}`
+        }
 
-        const all_orders = await db.select_many_with_condition(
+        const all_fields = Object.keys(body)
+
+        //more error handling
+        const required_fields = ["token"]
+
+        const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
+
+        if (missing_fields.length > 0) {
+            throw Error(missing_fields)
+        }
+
+        const { token } = body
+
+        const id_user = await auth_token.verify(token)
+
+        if (!id_user) {
+            throw `${errors_array[1]}`
+        }
+
+        const response = await db.select_all_from_join4_with_conditionB(
+            "orders_m2m_products",
             "orders",
-            ["id_order", "created_at"],
+            "products_m2m_vendors",
+            "products",
+            "id_order",
+            "id_product_m2m_vendor",
+            "id_product",
             { id_user }
         )
 
-        if (all_orders.length < 1) {
-            throw `${error_one}`
-        }
+        const orders = []
+        const code = []
+        const products = []
 
-        const mapped_products = all_orders.map(async (item) => {
-            const { id_order, created_at } = item
-            const result = await db.select_many_with_condition(
-                "orders_m2m_products",
-                ["id_order_m2m_product", "id_product_m2m_vendor"],
-                {
-                    id_order,
-                }
-            )
-
-            const index = result.length
-
-            for (let i = 0; i < index; i++) {
-                result[i].created_at = created_at
-            }
-
-            return result
-        })
-
-        const resolved_products = await Promise.all(mapped_products)
-
-        const flattened_products = resolved_products.flat()
-
-        let items = []
-        let count = []
-        let onset = []
-        let ordered = []
-
-        flattened_products.map((order) => {
-            const { id_product_m2m_vendor, id_order_m2m_product, created_at } = order
-
-            if (!items.includes(id_product_m2m_vendor)) {
-                items.push(id_product_m2m_vendor)
-                ordered.push(id_order_m2m_product)
-                count.push(1)
-                onset.push(created_at)
+        response.map((item) => {
+            if (!orders.includes(item.id_order)) {
+                orders.push(item.id_order)
+                item.quantity = 1
+                code.push(item.id_product_m2m_vendor)
+                products.push(item)
             } else {
-                const index = items.indexOf(id_product_m2m_vendor)
-                count[index]++
+                const index = code.indexOf(item.id_product_m2m_vendor)
+                products[index].quantity++
             }
         })
 
-        const products = items.map(async (_id, pos) => {
-            const details = await db.search_one(
-                "products_m2m_vendors",
-                "id_product_m2m_vendor",
-                _id
-            )
-
-            const { id_product } = details[0]
-            const name = await db.select_one_with_condition("products", "product_title", {
-                id_product,
-            })
-
-            const { product_title } = name[0]
-            const quantity = count[pos]
-            const id_order_m2m_product = ordered[pos]
-            details[0].created_at = onset[pos]
-            delete details[0].updated_at
-
-            return [{ product_title, id_order_m2m_product, quantity, ...details[0] }]
-        })
-
-        const product_details = await Promise.all(products)
-        const orders = product_details.flat()
-        const data = {
-            id_user,
-            orders,
+        if (!products) {
+            throw `${errors_array[2]}`
         }
 
-        return handler.returner([true, data], api_name)
+        return handler.returner([true, products], api_name)
     } catch (e) {
-        if (e === error_one) {
+        if (errors_array.includes(e)) {
             return handler.returner([false, e], api_name, 400)
         }
         return handler.returner([false, e], api_name, 500)

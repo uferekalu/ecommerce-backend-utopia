@@ -419,6 +419,15 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+    vendor_orders_get:
+        handler: src/lambda/vendor/vendor_orders_get.handler
+        events:
+            - http:
+                  path: /api/vendor_orders_get
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
 
     ######################################################### below are examples
 

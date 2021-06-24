@@ -76,17 +76,19 @@ exports.handler = async (event, context) => {
             await db.insert_new(data, "user_tokens")
         }
 
-        const id = await db.select_oneColumn(
-            "users",
-            "id_user",
-            "user_email",
-            user_exist[0].user_email
-        )
+        const user_details = (
+            await db.select_all_from_join_with_condition("users", "vendors", "id_vendor", {
+                user_email: user_exist[0].user_email,
+            })
+        )[0]
+
+        const { business_name } = user_details
+
         const user_access_level = await db.select_oneColumn(
             "user_access_level_m2m_users",
             "id_user_access_level",
             "id_id_user",
-            id[0].id_user
+            id_user
         )
 
         const current_user_access_level = user_access_level[0].id_user_access_level
@@ -98,6 +100,7 @@ exports.handler = async (event, context) => {
         } else if (current_user_access_level == 2) {
             access_level.push(0, 1, 2, 3)
         }
+
         return handler.returner(
             [
                 true,
@@ -106,6 +109,7 @@ exports.handler = async (event, context) => {
                     user_access_level: access_level,
                     id_user,
                     user_first_name,
+                    business_name,
                 },
             ],
             api_name,

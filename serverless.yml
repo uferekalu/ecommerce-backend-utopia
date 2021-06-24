@@ -293,6 +293,15 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+    vendor_full_details:
+        handler: src/lambda/vendor/vendor_full_details.handler
+        events:
+            - http:
+                  path: /api/vendor/full/{id_vendor}
+                  method: get
+        cors: true
+        origin: "*"       
+    #-------------------------------------------------------------------------
     user_orders_get:
         handler: src/lambda/user/user_orders_get.handler
         events:

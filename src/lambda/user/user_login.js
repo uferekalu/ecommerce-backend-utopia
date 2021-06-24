@@ -82,7 +82,7 @@ exports.handler = async (event, context) => {
             })
         )[0]
 
-        const { business_name } = user_details
+        const { business_name, id_vendor } = user_details
 
         const user_access_level = await db.select_oneColumn(
             "user_access_level_m2m_users",
@@ -105,11 +105,12 @@ exports.handler = async (event, context) => {
             [
                 true,
                 {
-                    token: created_token,
-                    user_access_level: access_level,
                     id_user,
+                    id_vendor,
                     user_first_name,
                     business_name,
+                    user_access_level: access_level,
+                    token: created_token,
                 },
             ],
             api_name,

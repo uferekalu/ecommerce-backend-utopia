@@ -269,6 +269,9 @@ functions:
             - http:
                   path: /api/vendor/{id_vendor}/products
                   method: get
+            - http:
+                  path: /api/vendor/{id_vendor}/products/{inactive}
+                  method: get
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------

@@ -269,6 +269,9 @@ functions:
             - http:
                   path: /api/vendor/{id_vendor}/products
                   method: get
+            - http:
+                  path: /api/vendor/{id_vendor}/products/{inactive}
+                  method: get
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
@@ -415,6 +418,15 @@ functions:
         events:
             - http:
                   path: /api/referral_code_get
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    vendor_orders_get:
+        handler: src/lambda/vendor/vendor_orders_get.handler
+        events:
+            - http:
+                  path: /api/vendor_orders_get
                   method: post
         cors: true
         origin: "*"

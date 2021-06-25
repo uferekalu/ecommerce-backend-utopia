@@ -1,6 +1,12 @@
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const api_name = "Order create"
+const errors_array = [
+    "body is empty",
+    "user not found",
+    "order not created successfully",
+    "orders_m2m_products not created successfully",
+]
 
 exports.handler = async (event, context) => {
     try {
@@ -10,7 +16,7 @@ exports.handler = async (event, context) => {
 
         //error handling
         if (!body || JSON.stringify(body) === "{}") {
-            throw "body is empty"
+            throw `${errors_array[0]}`
         }
 
         const all_fields = Object.keys(body)
@@ -31,7 +37,7 @@ exports.handler = async (event, context) => {
 
         //if user does not exist return error
         if (user_exist.length === 0) {
-            throw "user not found"
+            throw `${errors_array[1]}`
         }
 
         const mapped_prices = id_product_m2m_vendor.map(async (_id) => {
@@ -48,7 +54,7 @@ exports.handler = async (event, context) => {
         )
 
         if (!new_order) {
-            throw " order not created successfully"
+            throw `${errors_array[2]}`
         }
 
         const id_order = new_order.insertId
@@ -62,7 +68,7 @@ exports.handler = async (event, context) => {
         )
 
         if (!new_order_m2m_product) {
-            throw "orders_m2m_products not created successfully"
+            throw `${errors_array[3]}`
         }
 
         const { affectedRows, insertId } = new_order_m2m_product
@@ -73,20 +79,29 @@ exports.handler = async (event, context) => {
 
         const data = {
             message: "order created successfully",
+            id_order,
             id_order_m2m_product,
         }
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {
+        let errors
         if (e.name === "Error") {
-            const errors = e.message
+            errors = e.message
                 .split(",")
                 .map((field) => {
                     return `${field} is required`
                 })
                 .join(", ")
+        }
+
+        if (errors_array.includes(e)) {
+            errors = e
+        }
+
+        if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
-        return handler.returner([false, e], api_name, 400)
+        return handler.returner([false, e], api_name, 500)
     }
 }

@@ -53,8 +53,22 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, data], api_name, 200)
     } catch (e) {
-        if (e === error_one || e === error_two) {
-            return handler.returner([false, e], api_name, 404)
+        let errors
+        if (e.name === "Error") {
+            errors = e.message
+                .split(",")
+                .map((field) => {
+                    return `${field} is required`
+                })
+                .join(", ")
+        }
+
+        if (errors_array.includes(e)) {
+            errors = e
+        }
+
+        if (errors) {
+            return handler.returner([false, errors], api_name, 400)
         }
         return handler.returner([false, e], api_name, 500)
     }

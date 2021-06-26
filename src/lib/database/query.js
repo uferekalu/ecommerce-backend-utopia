@@ -17,6 +17,14 @@ module.exports = {
         return result
     },
 
+    select_one_with_2conditions: async (table, condition1, condition2) => {
+        let result = await connection.query(`SELECT * FROM ${table} WHERE ? AND ?`, [
+            condition1,
+            condition2,
+        ])
+        return result
+    },
+
     select_all: async (table) => {
         let result = await connection.query(`SELECT * FROM ${table}`)
         return result

@@ -1,5 +1,7 @@
 "use strict"
+// require("dotenv").config({ path: `${__dirname}/./../../../dev.env` })
 require("dotenv").config()
+console.log(`DB NAME: ${process.env.DB_NAME}`)
 
 const connection = require("serverless-mysql")({
     config: {

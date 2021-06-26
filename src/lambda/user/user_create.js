@@ -13,13 +13,21 @@ const passwordHash = async (password) => {
 }
 
 const api_name = "User create"
-const errors_array = [
+const custom_errors = [
     "body is empty",
     "Email already exist",
     "Phone number is taken",
     "Invalid referral code",
     "User create unsuccessful",
 ]
+
+class CustomError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "customError"
+    }
+}
+
 const email_info = {
     subject: "Email Verification",
     message: "Please click here to verify your email\n\n\n\n",
@@ -47,14 +55,13 @@ exports.handler = async (event, context) => {
             "user_first_name",
             "user_last_name",
             "user_password",
-            "id_user_title",
             "id_user_access_level",
         ]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
         if (missing_fields.length > 0) {
-            throw Error(missing_fields)
+            throw new CustomError(missing_fields)
         }
 
         const {
@@ -63,7 +70,6 @@ exports.handler = async (event, context) => {
             user_first_name,
             user_last_name,
             user_password,
-            id_user_title,
             id_user_access_level,
             ...others
         } = body
@@ -94,10 +100,6 @@ exports.handler = async (event, context) => {
             user_phone_number,
             user_password: password_hashed,
             user_datetime_created: datetime,
-            id_user_status: 1,
-            id_user_title,
-            email_verified: 0,
-            phone_verified: 0,
             ...others,
         }
 
@@ -122,7 +124,7 @@ exports.handler = async (event, context) => {
             "user_email",
             record.user_email
         )
-        //When a user is registered he is a buyer, so we need add the 0 as the accesslevel by deafult
+
         const userAccessRecord = {
             id_id_user: user_id[0].id_user,
             id_user_access_level,
@@ -137,23 +139,13 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, record], api_name, 201)
     } catch (e) {
-        let errors
-        if (e.name === "Error") {
-            errors = e.message
-                .split(",")
-                .map((field) => {
-                    return `${field} is required`
-                })
-                .join(", ")
-        }
-
-        if (errors_array.includes(e)) {
+        let errors = await handler.required_field_error(e)
+        if (custom_errors.includes(e)) {
             errors = e
         }
-
         if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
-        return handler.returner([false, e], api_name, 500)
+        return handler.returner([false], api_name, 500)
     }
 }

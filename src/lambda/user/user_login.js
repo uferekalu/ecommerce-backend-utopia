@@ -82,7 +82,11 @@ exports.handler = async (event, context) => {
             })
         )[0]
 
-        const { business_name, id_vendor } = user_details
+        let vendor_details = {}
+        if (user_details?.id_vendor && user_details?.business_name) {
+            const { business_name, id_vendor } = user_details
+            vendor_details = { business_name, id_vendor }
+        }
 
         const user_access_level = await db.select_oneColumn(
             "user_access_level_m2m_users",
@@ -106,9 +110,8 @@ exports.handler = async (event, context) => {
                 true,
                 {
                     id_user,
-                    id_vendor,
                     user_first_name,
-                    business_name,
+                    ...vendor_details,
                     user_access_level: access_level,
                     token: created_token,
                 },

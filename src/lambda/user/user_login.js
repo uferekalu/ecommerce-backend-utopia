@@ -83,7 +83,7 @@ exports.handler = async (event, context) => {
         )[0]
 
         let vendor_details = {}
-        if (user_details?.id_vendor) {
+        if (user_details?.id_vendor && user_details?.business_name) {
             const { business_name, id_vendor } = user_details
             vendor_details = { business_name, id_vendor }
         }

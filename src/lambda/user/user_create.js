@@ -44,7 +44,7 @@ exports.handler = async (event, context) => {
         const body = JSON.parse(event.body)
 
         if (!body || JSON.stringify(body) === "{}") {
-            throw `${errors_array[0]}`
+            throw `${custom_errors[0]}`
         }
 
         const all_fields = Object.keys(body)
@@ -76,17 +76,17 @@ exports.handler = async (event, context) => {
 
         const email_exist = await db.search_one("users", "user_email", user_email)
         if (email_exist.length != 0) {
-            throw `${errors_array[1]}`
+            throw `${custom_errors[1]}`
         }
 
         const phone_exist = await db.search_one("users", "user_phone_number", user_phone_number)
         if (phone_exist.length != 0) {
-            throw `${errors_array[2]}`
+            throw `${custom_errors[2]}`
         }
 
         if (referral_code) {
             const referee = (await db.select_one("referral_codes", { referral_code }))[0]
-            if (!referee) throw `${errors_array[3]}`
+            if (!referee) throw `${custom_errors[3]}`
             const { total_conversions } = referee
             accum_converts = total_conversions + 1
         }
@@ -108,7 +108,7 @@ exports.handler = async (event, context) => {
         delete record.user_password
 
         if (!result) {
-            throw `${errors_array[4]}`
+            throw `${custom_errors[4]}`
         }
 
         await db.update_with_condition(

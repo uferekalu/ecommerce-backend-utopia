@@ -45,7 +45,7 @@ exports.handler = async (event, context) => {
         const total = prices.reduce((sum, price) => sum + price)
 
         const new_order = await db.insert_new(
-            { total, id_user, order_created_at: datetime, paymentMethod, isPaid: 1 }, //ispaid when paypal success response
+            { total, id_user, order_created_at: datetime, paymentMethod, isPaid: 0 }, //ispaid when paypal success response
             "orders"
         )
 

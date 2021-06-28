@@ -17,7 +17,7 @@ exports.handler = async (event, context) => {
             throw `${error_one}`
         }
 
-        return handler.returner([true, employees], api_name, 200)
+        return handler.returner([true, { employees }], api_name, 200)
     } catch (e) {
         if (e === error_one) {
             return handler.returner([false, e], api_name, 400)

@@ -9,8 +9,8 @@ exports.handler = async (event, context) => {
         const employees = await db.select_all_from_join2_with_condition(
             "employees",
             "employee_positions",
-            "id_employee_position ",
-            { id_user }
+            "id_employee_position",
+            "employee_positions.id_employee_position > 2"
         )
 
         if (employees.length === 0) {

@@ -98,11 +98,11 @@ exports.handler = async (event, context) => {
         const current_user_access_level = user_access_level[0].id_user_access_level
         let access_level = [4, 5]
         if (current_user_access_level == 0) {
-            access_level.push(2, 3) // [0, 1, 2, 3, 4, 5]
+            access_level.push(2, 3) // [2, 3, 4, 5]
         } else if (current_user_access_level == 1) {
-            access_level.push(1, 2, 3) //[1, 3, 4, 5]
+            access_level.push(1, 2, 3) //[1, 2, 3, 4, 5]
         } else if (current_user_access_level == 2) {
-            access_level.push(0, 1, 2, 3)
+            access_level.push(0, 1, 2, 3) //[0, 1, 2, 3, 4, 5]
         }
 
         return handler.returner(

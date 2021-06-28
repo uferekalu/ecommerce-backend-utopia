@@ -44,9 +44,11 @@ exports.handler = async (event) => {
 
         const wishlist_string = JSON.stringify(wishlist)
 
-        const wish_list_exist = await db.select_one("wishlists", {
-            wishlist_items: wishlist_string,
-        })
+        const wish_list_exist = (
+            await db.select_one("wishlists", {
+                id_user,
+            })
+        )?.length
 
         const wishlist_datetime = await handler.datetime()
 

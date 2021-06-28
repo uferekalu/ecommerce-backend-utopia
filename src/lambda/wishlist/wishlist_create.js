@@ -7,7 +7,6 @@ const errors_array = [
     "body is empty",
     "user does not exist",
     "authentication required",
-    "you have no wishlist",
     "wishlist create unsuccessful",
 ]
 
@@ -43,10 +42,6 @@ exports.handler = async (event) => {
             throw `${errors_array[2]}`
         }
 
-        if (wishlist.length < 1) {
-            throw `${errors_array[3]}`
-        }
-
         const wishlist_string = JSON.stringify(wishlist)
 
         const wish_list_exist = await db.select_one("wishlists", {
@@ -73,7 +68,7 @@ exports.handler = async (event) => {
         }
 
         if (!new_wishlist) {
-            throw `${errors_array[4]}`
+            throw `${errors_array[3]}`
         }
 
         data.wishlist_items = wishlist

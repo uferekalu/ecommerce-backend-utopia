@@ -22,6 +22,7 @@ exports.handler = async (event, context) => {
             "id_vendor",
             "product_title",
             "product_desc",
+            "shipping_locations",
             "sku",
         ]
 
@@ -31,8 +32,16 @@ exports.handler = async (event, context) => {
             throw Error(missing_fields)
         }
 
-        const { p2v_price, id_category, id_vendor, product_title, product_desc, sku, ...others } =
-            body
+        const {
+            p2v_price,
+            id_category,
+            id_vendor,
+            product_title,
+            product_desc,
+            shipping_locations,
+            sku,
+            ...others
+        } = body
 
         const category_id = await db.search_one(
             "product_categories",
@@ -115,12 +124,21 @@ exports.handler = async (event, context) => {
             }
         }
 
+        let array_shipping_locations
+
+        if (!shipping_locations) {
+            array_shipping_locations = JSON.stringify([])
+        } else {
+            array_shipping_locations = JSON.stringify(shipping_locations)
+        }
+
         async function getNewProductVendorId() {
             const new_product_m2m_vendor = await db.insert_new(
                 {
                     ...new_p2v_data,
                     id_vendor,
                     p2v_price,
+                    shipping_locations: array_shipping_locations,
                     sku,
                     id_product: new_product_id,
                     is_active,
@@ -156,6 +174,8 @@ exports.handler = async (event, context) => {
             id_product_m2m_vendor: new_product_m2m_vendor_id,
             product_title,
             product_desc,
+            // shipping_locations
+            shipping_locations: array_shipping_locations,
         }
 
         return handler.returner([true, { ...product, is_active }], api_name, 201)

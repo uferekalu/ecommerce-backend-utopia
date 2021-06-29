@@ -25,6 +25,8 @@ exports.handler = async (event, context) => {
 
         const { token } = body
 
+        console.log("TOKEN", token)
+
         const id_user = await auth_token.verify(token)
 
         if (!id_user) {
@@ -42,6 +44,8 @@ exports.handler = async (event, context) => {
             { id_user }
         )
 
+        console.log("RESPONSE", response)
+
         const orders = []
         const code = []
         const products = []
@@ -58,11 +62,15 @@ exports.handler = async (event, context) => {
             }
         })
 
+        console.log("ORDERS", orders)
+        console.log("CODE", code)
+        console.log("PRODUCTS", products)
+
         if (!products) {
             throw `${errors_array[2]}`
         }
 
-        return handler.returner([true, products], api_name)
+        return handler.returner([true, response], api_name)
     } catch (e) {
         if (errors_array.includes(e)) {
             return handler.returner([false, e], api_name, 400)

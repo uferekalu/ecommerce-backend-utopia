@@ -23,6 +23,7 @@ exports.handler = async (event, context) => {
             "product_title",
             "product_desc",
             "shipping_locations",
+            "sku",
         ]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
@@ -38,6 +39,7 @@ exports.handler = async (event, context) => {
             product_title,
             product_desc,
             shipping_locations,
+            sku,
             ...others
         } = body
 
@@ -136,9 +138,10 @@ exports.handler = async (event, context) => {
                     ...new_p2v_data,
                     id_vendor,
                     p2v_price,
+                    shipping_locations: array_shipping_locations,
+                    sku,
                     id_product: new_product_id,
                     is_active,
-                    shipping_locations: array_shipping_locations,
                 },
                 "products_m2m_vendors"
             )
@@ -152,8 +155,9 @@ exports.handler = async (event, context) => {
         }
 
         //P.S product_images is a multidimensional array nesting each image object
-        if (optional_fields.includes("product_images")) {
-            const { product_images } = optional_fields
+        if (optional_fields.includes("product_images") && others.product_images.length > 0) {
+            const { product_images } = others
+
             const images = JSON.stringify(product_images)
             await db.insert_new(
                 {

@@ -3,7 +3,7 @@ provider:
     name: aws
     runtime: nodejs14.x
     region: ${file(./secret.json):DefaultRegion}
-    stage: prod
+    stage: dev
 
 functions:
     product_search:
@@ -428,6 +428,15 @@ functions:
             - http:
                   path: /api/vendor_orders_get
                   method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    comp_leaders_details_get:
+        handler: src/lambda/comp/comp_leaders_details_get.handler
+        events:
+            - http:
+                  path: /api/about_us_get
+                  method: get
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------

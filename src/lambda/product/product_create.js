@@ -22,6 +22,7 @@ exports.handler = async (event, context) => {
             "id_vendor",
             "product_title",
             "product_desc",
+            "sku",
         ]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
@@ -30,7 +31,8 @@ exports.handler = async (event, context) => {
             throw Error(missing_fields)
         }
 
-        const { p2v_price, id_category, id_vendor, product_title, product_desc, ...others } = body
+        const { p2v_price, id_category, id_vendor, product_title, product_desc, sku, ...others } =
+            body
 
         const category_id = await db.search_one(
             "product_categories",
@@ -115,7 +117,14 @@ exports.handler = async (event, context) => {
 
         async function getNewProductVendorId() {
             const new_product_m2m_vendor = await db.insert_new(
-                { ...new_p2v_data, id_vendor, p2v_price, id_product: new_product_id, is_active },
+                {
+                    ...new_p2v_data,
+                    id_vendor,
+                    p2v_price,
+                    sku,
+                    id_product: new_product_id,
+                    is_active,
+                },
                 "products_m2m_vendors"
             )
             return new_product_m2m_vendor.insertId
@@ -128,8 +137,9 @@ exports.handler = async (event, context) => {
         }
 
         //P.S product_images is a multidimensional array nesting each image object
-        if (optional_fields.includes("product_images")) {
-            const { product_images } = optional_fields
+        if (optional_fields.includes("product_images") && others.product_images.length > 0) {
+            const { product_images } = others
+
             const images = JSON.stringify(product_images)
             await db.insert_new(
                 {

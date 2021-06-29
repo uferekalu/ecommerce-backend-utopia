@@ -1,9 +1,9 @@
-service: ${file(./secrets.json):ApiName}
+service: ${file(./secret.json):ApiName}
 provider:
     name: aws
     runtime: nodejs14.x
-    region: ${file(./secrets.json):DefaultRegion}
-    stage: prod
+    region: ${file(./secret.json):DefaultRegion}
+    stage: dev
 
 functions:
     product_search:

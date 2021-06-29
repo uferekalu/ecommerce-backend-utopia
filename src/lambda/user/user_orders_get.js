@@ -32,6 +32,8 @@ exports.handler = async (event, context) => {
 
         const { token } = body
 
+        console.log("TOKEN", token)
+
         const id_user = await auth_token.verify(token)
 
         if (!id_user) {
@@ -48,6 +50,8 @@ exports.handler = async (event, context) => {
             "id_product",
             { id_user }
         )
+
+        console.log("RESPONSE", response)
 
         const orders = []
         const code = []

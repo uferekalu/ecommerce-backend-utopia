@@ -40,14 +40,16 @@ exports.handler = async (event, context) => {
             throw `${custom_errors[1]}`
         }
 
-        const response = await db.select_all_from_join4_with_conditionB(
+        const response = await db.select_all_from_join5_with_conditionB(
             "orders_m2m_products",
             "orders",
             "products_m2m_vendors",
             "products",
+            "order_statuses",
             "id_order",
             "id_product_m2m_vendor",
             "id_product",
+            "id_order_status",
             { id_user }
         )
 

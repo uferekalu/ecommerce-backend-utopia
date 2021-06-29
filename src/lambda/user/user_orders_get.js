@@ -3,13 +3,20 @@ const db = require("../../lib/database/query")
 const auth_token = require("../../middleware/token_handler")
 
 const api_name = "User orders"
-const errors_array = ["body is empty", "authentication required", "no orders found"]
+const custom_errors = ["body is empty", "authentication required"]
+class CustomError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "customError"
+    }
+}
+
 exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
 
         if (!body || JSON.stringify(body) === "{}") {
-            throw `${errors_array[0]}`
+            throw `${custom_errors[0]}`
         }
 
         const all_fields = Object.keys(body)
@@ -20,15 +27,17 @@ exports.handler = async (event, context) => {
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
         if (missing_fields.length > 0) {
-            throw Error(missing_fields)
+            throw new CustomError(missing_fields)
         }
 
         const { token } = body
 
+        console.log("TOKEN", token)
+
         const id_user = await auth_token.verify(token)
 
         if (!id_user) {
-            throw `${errors_array[1]}`
+            throw `${custom_errors[1]}`
         }
 
         const response = await db.select_all_from_join4_with_conditionB(
@@ -41,6 +50,8 @@ exports.handler = async (event, context) => {
             "id_product",
             { id_user }
         )
+
+        console.log("RESPONSE", response)
 
         const orders = []
         const code = []
@@ -58,15 +69,16 @@ exports.handler = async (event, context) => {
             }
         })
 
-        if (!products) {
-            throw `${errors_array[2]}`
-        }
-
         return handler.returner([true, products], api_name)
     } catch (e) {
-        if (errors_array.includes(e)) {
-            return handler.returner([false, e], api_name, 400)
+        let errors = await handler.required_field_error(e)
+        console.log(errors)
+        if (custom_errors.includes(e)) {
+            errors = e
         }
-        return handler.returner([false, e], api_name, 500)
+        if (errors) {
+            return handler.returner([false, errors], api_name, 400)
+        }
+        return handler.returner([false], api_name, 500)
     }
 }

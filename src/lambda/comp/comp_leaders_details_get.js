@@ -10,8 +10,10 @@ exports.handler = async (event, context) => {
             "employees",
             "employee_positions",
             "id_employee_position",
-            "employee_positions.id_employee_position > 2"
+            2
         )
+
+        console.log(employees)
 
         if (employees.length === 0) {
             throw `${error_one}`

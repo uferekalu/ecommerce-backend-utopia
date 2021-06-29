@@ -89,7 +89,7 @@ module.exports = {
         condition
     ) => {
         let result = await connection.query(
-            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} WHERE ?`,
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} WHERE ${table2}.${joint1} > ?`,
             [condition]
         )
         return result

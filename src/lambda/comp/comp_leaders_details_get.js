@@ -10,7 +10,8 @@ exports.handler = async (event, context) => {
             "employees",
             "employee_positions",
             "id_employee_position",
-            2
+            12,
+            'employees.id_employee_position'
         )
 
         console.log(employees)

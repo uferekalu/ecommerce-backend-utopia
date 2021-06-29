@@ -95,13 +95,15 @@ exports.handler = async (event, context) => {
             id_product_thumbnail = await db.insert_new({ alt: product_title }, "product_thumbnails")
         }
 
-        if (optional_fields.includes("product_thumbnail")) {
-            const { url } = id_product_thumbnail
+        if (optional_fields.includes("product_thumbnail") && others.product_thumbnail?.url) {
+            const { url } = others.product_thumbnail
             id_product_thumbnail = await db.insert_new(
                 { url, alt: product_title, created_at: datetime },
                 "product_thumbnails"
             )
         }
+
+        const is_active = others.product_thumbnail?.url === true
 
         //collates p2v_promo_price and/or id_brand optional fields if provided
         const new_p2v_data = {}
@@ -113,7 +115,7 @@ exports.handler = async (event, context) => {
 
         async function getNewProductVendorId() {
             const new_product_m2m_vendor = await db.insert_new(
-                { ...new_p2v_data, id_vendor, p2v_price, id_product: new_product_id },
+                { ...new_p2v_data, id_vendor, p2v_price, id_product: new_product_id, is_active },
                 "products_m2m_vendors"
             )
             return new_product_m2m_vendor.insertId
@@ -145,8 +147,6 @@ exports.handler = async (event, context) => {
             product_title,
             product_desc,
         }
-
-        const is_active = id_product_thumbnail === true
 
         return handler.returner([true, { ...product, is_active }], api_name, 201)
     } catch (e) {

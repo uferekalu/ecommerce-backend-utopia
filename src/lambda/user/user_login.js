@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs")
 const qs = require("querystring")
 
 const api_name = "User login"
+
 exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
@@ -36,12 +37,16 @@ exports.handler = async (event, context) => {
             user_exist = await db.search_one("users", "user_phone_number", body.user_phone_number)
         }
 
+        console.log("USER EXISTS", user_exist.length)
+
         if (user_exist.length === 0) {
             throw "invalid login"
         }
 
         //comparing the provided password with the hashed version using the library reverse check
         const pass_valid = await bcrypt.compare(body.user_password, user_exist[0].user_password)
+
+        console.log("VALID PASS", pass_valid)
 
         if (!pass_valid) {
             throw "invalid login"
@@ -98,11 +103,11 @@ exports.handler = async (event, context) => {
         const current_user_access_level = user_access_level[0].id_user_access_level
         let access_level = [4, 5]
         if (current_user_access_level == 0) {
-            access_level.push(2, 3) // [0, 1, 2, 3, 4, 5]
+            access_level.push(2, 3) // [2, 3, 4, 5]
         } else if (current_user_access_level == 1) {
-            access_level.push(1, 2, 3) //[1, 3, 4, 5]
+            access_level.push(1, 2, 3) //[1, 2, 3, 4, 5]
         } else if (current_user_access_level == 2) {
-            access_level.push(0, 1, 2, 3)
+            access_level.push(0, 1, 2, 3) //[0, 1, 2, 3, 4, 5]
         }
 
         return handler.returner(

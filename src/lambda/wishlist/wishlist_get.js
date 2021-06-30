@@ -45,6 +45,7 @@ exports.handler = async (event) => {
 
         const wishlist = (await db.select_all_with_condition("wishlists", { id_user }))[0]
 
+
         if (!wishlist) {
             throw `${errors_array[3]}`
         }

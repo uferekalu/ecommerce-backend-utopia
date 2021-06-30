@@ -82,6 +82,14 @@ module.exports = {
         return result
     },
 
+    select_all_from_join2_with_condition: async (table1, table2, joint1, condition, order_by) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} WHERE ${table2}.${joint1} < ? ORDER BY ${order_by}`,
+            [condition]
+        )
+        return result
+    },
+
     select_all_from_join3_with_condition_and_order: async (
         table1,
         table2,

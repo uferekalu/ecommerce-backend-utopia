@@ -59,12 +59,13 @@ exports.handler = async (event) => {
 
         let new_wishlist
 
-        if (!wish_list_exist) {
+        if (wish_list_exist === 0) {
             data.wishlist_datetime_created = wishlist_datetime
+            data.wishlist_datetime_updated = wishlist_datetime
             new_wishlist = await db.insert_new(data, "wishlists")
         }
 
-        if (wish_list_exist) {
+        if (wish_list_exist > 0) {
             data.wishlist_datetime_updated = wishlist_datetime
             new_wishlist = await db.update_with_condition("wishlists", data, { id_user })
         }
@@ -77,6 +78,7 @@ exports.handler = async (event) => {
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {
+        console.log(e)
         let errors
         if (e.name === "Error") {
             errors = e.message

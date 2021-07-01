@@ -2,17 +2,14 @@ const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 
 const api_name = "Products new arrival"
-const error_one = "no products on promotion"
 
 exports.handler = async (event) => {
     try {
         const param = event.pathParameters
 
-        console.log(param);
-
         const isLimited = param?.limit
+
         let data
-        console.log("IS IT:",isLimited);
 
         if (isLimited) {
             const { limit } = param
@@ -45,16 +42,9 @@ exports.handler = async (event) => {
                 "DESC"
             )
         }
-
-        if (data.length < 1) {
-            throw `${error_one}`
-        }
-
+        console.log(data)
         return handler.returner([true, data], api_name)
     } catch (e) {
-        if (e === error_one) {
-            return handler.returner([false, e], api_name, 400)
-        }
         return handler.returner([false, e], api_name, 500)
     }
 }

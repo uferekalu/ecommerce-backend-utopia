@@ -45,7 +45,6 @@ exports.handler = async (event) => {
 
         const wishlist = (await db.select_all_with_condition("wishlists", { id_user }))[0]
 
-
         if (!wishlist) {
             throw `${errors_array[3]}`
         }
@@ -71,6 +70,6 @@ exports.handler = async (event) => {
         if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
-        return handler.returner([false, e], api_name, 500)
+        return handler.returner([false], api_name, 500)
     }
 }

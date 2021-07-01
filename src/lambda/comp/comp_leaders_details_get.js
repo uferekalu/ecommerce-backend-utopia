@@ -2,7 +2,6 @@ const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 
 const api_name = "Comp leaders details get"
-const error_one = "No leader found"
 
 exports.handler = async (event, context) => {
     try {
@@ -11,20 +10,13 @@ exports.handler = async (event, context) => {
             "employee_positions",
             "id_employee_position",
             12,
-            'employees.id_employee_position'
+            "employees.id_employee_position"
         )
 
         console.log(employees)
 
-        if (employees.length === 0) {
-            throw `${error_one}`
-        }
-
         return handler.returner([true, { employees }], api_name, 200)
     } catch (e) {
-        if (e === error_one) {
-            return handler.returner([false, e], api_name, 400)
-        }
-        return handler.returner([false, e], api_name, 500)
+        return handler.returner([false], api_name, 500)
     }
 }

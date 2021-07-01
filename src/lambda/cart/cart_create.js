@@ -44,9 +44,11 @@ exports.handler = async (event) => {
 
         const cart_string = JSON.stringify(cart)
 
-        const cart_exist = (await db.select_one("carts", {
-            id_user
-        }))?.length
+        const cart_exist = (
+            await db.select_one("carts", {
+                id_user,
+            })
+        )?.length
 
         const cart_datetime = await handler.datetime()
 
@@ -94,6 +96,6 @@ exports.handler = async (event) => {
         if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
-        return handler.returner([false, e], api_name, 500)
+        return handler.returner([false], api_name, 500)
     }
 }

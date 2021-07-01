@@ -45,6 +45,6 @@ exports.handler = async (event) => {
 
         return handler.returner([true, data], api_name)
     } catch (e) {
-        return handler.returner([false, e], api_name, 500)
+        return handler.returner([false], api_name, 500)
     }
 }

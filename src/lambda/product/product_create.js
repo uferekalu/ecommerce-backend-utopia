@@ -190,6 +190,6 @@ exports.handler = async (event, context) => {
 
             return handler.returner([false, errors], api_name, 400)
         }
-        return handler.returner([false, e], api_name, 500)
+        return handler.returner([false], api_name, 500)
     }
 }

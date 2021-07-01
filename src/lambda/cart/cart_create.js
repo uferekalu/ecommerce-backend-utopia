@@ -49,9 +49,9 @@ exports.handler = async (event) => {
 
         const cart_string = JSON.stringify(cart)
 
-        const cart_exist = await db.select_one("carts", {
-            cart_items: cart_string,
-        })
+        const cart_exist = (await db.select_one("carts", {
+            id_user
+        }))?.length
 
         const cart_datetime = await handler.datetime()
 
@@ -61,6 +61,8 @@ exports.handler = async (event) => {
         }
 
         let new_cart
+
+        console.log(cart_exist)
 
         if (!cart_exist) {
             data.cart_datetime_created = cart_datetime

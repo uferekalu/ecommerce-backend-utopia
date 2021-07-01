@@ -7,7 +7,6 @@ const errors_array = [
     "body is empty",
     "user does not exist",
     "authentication required",
-    "you have no cart",
     "cart create unsuccessful",
 ]
 
@@ -43,15 +42,11 @@ exports.handler = async (event) => {
             throw `${errors_array[2]}`
         }
 
-        if (cart.length < 1) {
-            throw `${errors_array[3]}`
-        }
-
         const cart_string = JSON.stringify(cart)
 
-        const cart_exist = await db.select_one("carts", {
-            cart_items: cart_string,
-        })
+        const cart_exist = (await db.select_one("carts", {
+            id_user
+        }))?.length
 
         const cart_datetime = await handler.datetime()
 
@@ -61,6 +56,8 @@ exports.handler = async (event) => {
         }
 
         let new_cart
+
+        console.log(cart_exist)
 
         if (!cart_exist) {
             data.cart_datetime_created = cart_datetime
@@ -73,7 +70,7 @@ exports.handler = async (event) => {
         }
 
         if (!new_cart) {
-            throw `${errors_array[4]}`
+            throw `${errors_array[3]}`
         }
 
         data.cart_items = cart

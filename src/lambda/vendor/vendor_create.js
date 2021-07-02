@@ -16,8 +16,10 @@ exports.handler = async (event, context) => {
             "vendor_phone_number",
             "vendor_address",
             "vendor_short_desc",
-            "id_vendor_status",
         ]
+
+        const dateTime = await handler.datetime()
+
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
         if (missing_fields.length > 0) {
             throw Error(missing_fields)
@@ -28,7 +30,6 @@ exports.handler = async (event, context) => {
             vendor_phone_number,
             vendor_address,
             vendor_short_desc,
-            id_vendor_status,
             ...others
         } = body
 
@@ -43,21 +44,13 @@ exports.handler = async (event, context) => {
         if (vendor_exist.length > 0) {
             throw "Business name is taken"
         }
-        const vendorStatusId = await db.search_one(
-            "vendor_statuses",
-            "id_vendor_status",
-            id_vendor_status
-        )
-        if (vendorStatusId.length < 1) {
-            throw "Vendor status is invalid"
-        }
         const data = {
             ...others,
             business_name,
             vendor_phone_number,
             vendor_address,
             vendor_short_desc,
-            id_vendor_status,
+            created_at: dateTime,
         }
         const newVendorRecord = await db.insert_new(data, "vendors")
         if (!newVendorRecord) {
@@ -83,6 +76,7 @@ exports.handler = async (event, context) => {
             201
         )
     } catch (e) {
+        console.log(e)
         if (e.name === "Error") {
             const errors = e.message
                 .split(",")

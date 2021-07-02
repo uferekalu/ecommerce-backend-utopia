@@ -5,6 +5,7 @@ const api_name = "Product create"
 
 exports.handler = async (event, context) => {
     try {
+        const datetime = await handler.datetime()
         const body = JSON.parse(event.body)
 
         //error handling
@@ -21,7 +22,8 @@ exports.handler = async (event, context) => {
             "id_vendor",
             "product_title",
             "product_desc",
-            "id_product_thumbnail",
+            "shipping_locations",
+            "sku",
         ]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
@@ -36,7 +38,8 @@ exports.handler = async (event, context) => {
             id_vendor,
             product_title,
             product_desc,
-            id_product_thumbnail,
+            shipping_locations,
+            sku,
             ...others
         } = body
 
@@ -52,44 +55,38 @@ exports.handler = async (event, context) => {
 
         const optional_fields = Object.keys(others)
 
-        //checks if tags field is provided
-        //concatenates tags[],
-        //inserts new record (concatenated tags) into product_tags table,
-        //returns tags_id
         async function getNewTagsId() {
             if (others && optional_fields.includes("tags")) {
                 const { tags } = others
-                const new_tag = await db.insert_new({ tag_name: tags.join(", ") }, "product_tags")
+                const tags_string = JSON.stringify(tags)
+                const new_tag = await db.insert_new({ tag_name: tags_string }, "product_tags")
                 return new_tag.insertId
             }
         }
 
-        //retrieves tags_id from product_tags table
         const new_tags_id = await getNewTagsId()
 
-        //recieves tags_id (if truthy) as FK ref product_tags
-        //inserts new record into the products table
-        //returns product_id
         async function getNewProductId() {
             let new_product_record
             if (new_tags_id) {
                 new_product_record = await db.insert_new(
                     {
                         id_category: category,
-                        id_product_thumbnail,
                         product_title,
                         product_desc,
                         id_tags: new_tags_id,
+                        created_at: datetime,
                     },
                     "products"
                 )
-            } else {
+            }
+
+            if (!new_tags_id) {
                 new_product_record = await db.insert_new(
                     {
                         id_category,
                         product_title,
                         product_desc,
-                        id_product_thumbnail,
                     },
                     "products"
                 )
@@ -97,12 +94,27 @@ exports.handler = async (event, context) => {
             return new_product_record.insertId
         }
 
-        //retrieves product_id from products table
         const new_product_id = await getNewProductId()
 
         if (!new_product_id) {
             throw "product create unsuccessful"
         }
+
+        let id_product_thumbnail
+
+        if (!optional_fields.includes("product_thumbnail")) {
+            id_product_thumbnail = await db.insert_new({ alt: product_title }, "product_thumbnails")
+        }
+
+        if (optional_fields.includes("product_thumbnail") && others.product_thumbnail?.url) {
+            const { url } = others.product_thumbnail
+            id_product_thumbnail = await db.insert_new(
+                { url, alt: product_title, created_at: datetime },
+                "product_thumbnails"
+            )
+        }
+
+        const is_active = others.product_thumbnail?.url === true
 
         //collates p2v_promo_price and/or id_brand optional fields if provided
         const new_p2v_data = {}
@@ -112,55 +124,61 @@ exports.handler = async (event, context) => {
             }
         }
 
-        //inserts new record into products_m2m_vendors table
-        //recieves new_product_id as FKs ref products table
+        let array_shipping_locations
+
+        if (!shipping_locations) {
+            array_shipping_locations = JSON.stringify([])
+        } else {
+            array_shipping_locations = JSON.stringify(shipping_locations)
+        }
+
         async function getNewProductVendorId() {
             const new_product_m2m_vendor = await db.insert_new(
-                { ...new_p2v_data, id_vendor, p2v_price, id_product: new_product_id },
+                {
+                    ...new_p2v_data,
+                    id_vendor,
+                    p2v_price,
+                    shipping_locations: array_shipping_locations,
+                    sku,
+                    id_product: new_product_id,
+                    is_active,
+                },
                 "products_m2m_vendors"
             )
             return new_product_m2m_vendor.insertId
         }
 
-        //retrieves id_product_m2m_vendor from products_m2m_vendors table
         const new_product_m2m_vendor_id = await getNewProductVendorId()
 
         if (!new_product_m2m_vendor_id) {
             throw "id_vendor is invalid"
         }
 
-        //inserts new record(s) into product_images
-        //recieves new_product_id and new_product_m2m_vendor.insertId as FKs
-        //ref products and products_m2m_vendors tables resp
         //P.S product_images is a multidimensional array nesting each image object
-        if (others && optional_fields.includes("product_images")) {
-            const { product_images } = optional_fields
+        if (optional_fields.includes("product_images") && others.product_images.length > 0) {
+            const { product_images } = others
 
-            product_images.map(async (image) => {
-                await db.insert_new(
-                    {
-                        ...image,
-                        product_id: new_product_id,
-                        id_product_m2m_vendor: new_product_m2m_vendor_id,
-                    },
-                    "product_images"
-                )
-            })
-        }
-
-        return handler.returner(
-            [
-                true,
+            const images = JSON.stringify(product_images)
+            await db.insert_new(
                 {
+                    images,
                     product_id: new_product_id,
                     id_product_m2m_vendor: new_product_m2m_vendor_id,
-                    product_title,
-                    product_desc,
                 },
-            ],
-            api_name,
-            201
-        )
+                "product_images"
+            )
+        }
+
+        const product = {
+            product_id: new_product_id,
+            id_product_m2m_vendor: new_product_m2m_vendor_id,
+            product_title,
+            product_desc,
+            // shipping_locations
+            shipping_locations: array_shipping_locations,
+        }
+
+        return handler.returner([true, { ...product, is_active }], api_name, 201)
     } catch (e) {
         if (e.name === "Error") {
             const errors = e.message
@@ -172,6 +190,6 @@ exports.handler = async (event, context) => {
 
             return handler.returner([false, errors], api_name, 400)
         }
-        return handler.returner([false, e], api_name, 400)
+        return handler.returner([false, e], api_name, 500)
     }
 }

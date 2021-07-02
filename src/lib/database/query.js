@@ -17,6 +17,14 @@ module.exports = {
         return result
     },
 
+    select_one_with_2conditions: async (table, condition1, condition2) => {
+        let result = await connection.query(`SELECT * FROM ${table} WHERE ? AND ?`, [
+            condition1,
+            condition2,
+        ])
+        return result
+    },
+
     select_all: async (table) => {
         let result = await connection.query(`SELECT * FROM ${table}`)
         return result
@@ -74,6 +82,14 @@ module.exports = {
         return result
     },
 
+    select_all_from_join2_with_condition: async (table1, table2, joint1, condition, order_by) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} WHERE ${table2}.${joint1} < ? ORDER BY ${order_by}`,
+            [condition]
+        )
+        return result
+    },
+
     select_all_from_join3_with_condition_and_order: async (
         table1,
         table2,
@@ -124,6 +140,24 @@ module.exports = {
     ) => {
         let result = await connection.query(
             `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table3}.${joint3} = ${table4}.${joint3} WHERE ?`,
+            [condition]
+        )
+        return result
+    },
+    select_all_from_join5_with_conditionB: async (
+        table1,
+        table2,
+        table3,
+        table4,
+        table5,
+        joint1,
+        joint2,
+        joint3,
+        joint4,
+        condition
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table3}.${joint3} = ${table4}.${joint3} JOIN ${table5} ON ${table2}.${joint4} = ${table5}.${joint4} WHERE ?`,
             [condition]
         )
         return result

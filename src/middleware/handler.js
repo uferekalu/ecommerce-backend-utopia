@@ -17,7 +17,7 @@ exports.returner = async (result, api_name, statusCode) => {
         body: JSON.stringify({
             success: result[0],
             api: api_name,
-            data: result[1],
+            data: result[1] || "Server Error, please try again later",
         }),
     }
 }
@@ -99,4 +99,18 @@ exports.get_access_level = async (id) => {
             break
     }
     return access_level
+}
+
+exports.required_field_error = async (e) => {
+    console.log(e)
+    let errors
+    if (e.name === "customError") {
+        errors = e.message
+            .split(",")
+            .map((field) => {
+                return `${field} is required`
+            })
+            .join(", ")
+    }
+    return errors
 }

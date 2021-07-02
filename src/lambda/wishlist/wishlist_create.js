@@ -7,7 +7,6 @@ const errors_array = [
     "body is empty",
     "user does not exist",
     "authentication required",
-    "you have no wishlist",
     "wishlist create unsuccessful",
 ]
 
@@ -43,15 +42,13 @@ exports.handler = async (event) => {
             throw `${errors_array[2]}`
         }
 
-        if (wishlist.length < 1) {
-            throw `${errors_array[3]}`
-        }
-
         const wishlist_string = JSON.stringify(wishlist)
 
-        const wish_list_exist = await db.select_one("wishlists", {
-            wishlist_items: wishlist_string,
-        })
+        const wish_list_exist = (
+            await db.select_one("wishlists", {
+                id_user,
+            })
+        )?.length
 
         const wishlist_datetime = await handler.datetime()
 
@@ -62,24 +59,26 @@ exports.handler = async (event) => {
 
         let new_wishlist
 
-        if (!wish_list_exist) {
+        if (wish_list_exist === 0) {
             data.wishlist_datetime_created = wishlist_datetime
+            data.wishlist_datetime_updated = wishlist_datetime
             new_wishlist = await db.insert_new(data, "wishlists")
         }
 
-        if (wish_list_exist) {
+        if (wish_list_exist > 0) {
             data.wishlist_datetime_updated = wishlist_datetime
             new_wishlist = await db.update_with_condition("wishlists", data, { id_user })
         }
 
         if (!new_wishlist) {
-            throw `${errors_array[4]}`
+            throw `${errors_array[3]}`
         }
 
         data.wishlist_items = wishlist
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {
+        console.log(e)
         let errors
         if (e.name === "Error") {
             errors = e.message

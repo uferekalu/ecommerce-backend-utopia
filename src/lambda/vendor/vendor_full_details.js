@@ -7,7 +7,6 @@ const errors_array = ["body is empty", "authentication required", "no vendor fou
 
 exports.handler = async (event, context) => {
     try {
-
         const id_vendor = event.pathParameters.id_vendor
 
         const body = JSON.parse(event.body)
@@ -30,22 +29,21 @@ exports.handler = async (event, context) => {
 
         const id_user = await auth_token.verify(token)
 
+        console.log(id_user);
+
         if (!id_user) {
-            throw errors_array[1];
+            throw errors_array[1]
         }
 
-        const data = await db.select_all_from_join_with_condition(
-            "vendors",
-            "users",
-            "id_vendor",
-            { 'vendors.id_vendor': id_vendor }
-        )
+        const data = await db.select_all_from_join_with_condition("vendors", "users", "id_vendor", {
+            "vendors.id_vendor": id_vendor,
+        })
 
         if (data.length < 1) {
-            throw  errors_array[2]
+            throw errors_array[2]
         }
 
-        delete data[0].user_password;
+        delete data[0].user_password
 
         return handler.returner([true, data[0]], api_name, 200)
     } catch (e) {

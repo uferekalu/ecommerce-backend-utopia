@@ -15,6 +15,9 @@ exports.handler = async (event, context) => {
             throw errors_array[0]
         }
 
+        console.log(body);
+        console.log(id_vendor);
+
         const all_fields = Object.keys(body)
 
         const required_fields = ["token"]

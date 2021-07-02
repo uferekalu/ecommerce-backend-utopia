@@ -301,7 +301,7 @@ functions:
         events:
             - http:
                   path: /api/vendor/full/{id_vendor}
-                  method: get
+                  method: post
         cors: true
         origin: "*"       
     #-------------------------------------------------------------------------

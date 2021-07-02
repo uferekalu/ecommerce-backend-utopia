@@ -138,10 +138,11 @@ exports.handler = async (event, context) => {
 
         await db.insert_new(userAccessRecord, "user_access_level_m2m_users")
 
-        const id_hashed = cryptr.encrypt(result.insertId)
-        email_info.message += `https://4l0nq44u0k.execute-api.us-east-2.amazonaws.com/staging/api/user_email_verify/${id_hashed}`
+        const verification_token = cryptr.encrypt({ id_user: result.insertId, type: "email" })
+        // email_info.message += `https://wwdywnrhz6.execute-api.us-east-2.amazonaws.com/prod/api/user_verify/${verification_token}`
+        email_info.message += `http://localhost:3000/api/user_verify/${verification_token}`
 
-        await send.send_email(user_email, email_info)
+        await send.email(user_email, email_info)
 
         return handler.returner([true, record], api_name, 201)
     } catch (e) {

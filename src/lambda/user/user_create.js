@@ -56,6 +56,8 @@ exports.handler = async (event, context) => {
             "user_last_name",
             "user_password",
             "id_user_access_level",
+            "city",
+            "country",
         ]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
@@ -71,6 +73,8 @@ exports.handler = async (event, context) => {
             user_last_name,
             user_password,
             id_user_access_level,
+            city,
+            country,
             ...others
         } = body
 
@@ -100,6 +104,8 @@ exports.handler = async (event, context) => {
             user_phone_number,
             user_password: password_hashed,
             user_datetime_created: datetime,
+            city,
+            country,
             ...others,
         }
 

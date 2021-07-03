@@ -60,7 +60,8 @@ exports.handler = async (event, context) => {
         const products = []
 
         response.map((item) => {
-            if (!orders.includes(item.id_product_m2m_vendor)) {
+            if (!orders.includes(item.id_order)) {
+            // if (!orders.includes(item.id_product_m2m_vendor)) {
                 orders.push(item.id_order)
                 item.quantity = 1
                 code.push(item.id_product_m2m_vendor)

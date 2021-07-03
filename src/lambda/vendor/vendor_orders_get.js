@@ -48,7 +48,7 @@ exports.handler = async (event, context) => {
         )
 
         if (data.length < 1) {
-            throw `${error_two}`
+            throw `${errors_array[2]}`
         }
 
         return handler.returner([true, data], api_name, 200)

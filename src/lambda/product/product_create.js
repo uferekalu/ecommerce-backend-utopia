@@ -106,6 +106,7 @@ exports.handler = async (event, context) => {
                         id_category,
                         product_title,
                         product_desc,
+                        created_at: datetime,
                         id_product_thumbnail: id_product_thumbnail.insertId
                     },
                     "products"

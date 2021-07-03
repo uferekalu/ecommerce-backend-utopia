@@ -9,6 +9,8 @@ exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
 
+        console.log("BODY", body)
+
         if (!body || JSON.stringify(body) === "{}") {
             throw `${errors_array[0]}`
         }
@@ -26,6 +28,8 @@ exports.handler = async (event, context) => {
         const { token } = body
 
         const id_user = await auth_token.verify(token)
+
+        console.log(id_user)
 
         if (!id_user) {
             throw `${errors_array[1]}`

@@ -60,7 +60,7 @@ exports.handler = async (event, context) => {
         const products = []
 
         response.map((item) => {
-            if (!orders.includes(item.id_order)) {
+            if (!orders.includes(item.id_product_m2m_vendor)) {
                 orders.push(item.id_order)
                 item.quantity = 1
                 code.push(item.id_product_m2m_vendor)
@@ -70,6 +70,8 @@ exports.handler = async (event, context) => {
                 products[index].quantity++
             }
         })
+
+        console.log("CODE", code)
 
         return handler.returner([true, products], api_name)
     } catch (e) {

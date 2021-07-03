@@ -2,7 +2,7 @@ const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const bcrypt = require("bcryptjs")
 
-const api_name = "User update"
+const api_name = "product update"
 
 exports.handler = async (event, context) => {
     try {

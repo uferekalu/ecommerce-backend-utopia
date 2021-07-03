@@ -52,6 +52,8 @@ module.exports = {
         return result
     },
 
+   
+
     select_all_from_join3: async (table1, table2, table3, joint1, joint2) => {
         let result = await connection.query(
             `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2}`
@@ -66,6 +68,15 @@ module.exports = {
         )
         return result
     },
+    aaron_select_all_from_join_with_condition: async (table1, table2, joint,condition1, condition2) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint} = ${table2}.${joint} WHERE ${condition1} = ${condition2}`,
+            
+        )
+        return result
+    },
+
+
 
     select_all_from_join3_with_condition: async (
         table1,
@@ -78,6 +89,21 @@ module.exports = {
         let result = await connection.query(
             `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} WHERE ?`,
             [condition]
+        )
+        return result
+    },
+    select_all_from_join3_with_2condition: async (
+        table1,
+        table2,
+        table3,
+        joint1,
+        joint2,
+        condition1,
+        condition2
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table2}.${joint2} = ${table3}.${joint2} WHERE ? AND ?`,
+            [condition1, condition2]
         )
         return result
     },
@@ -144,7 +170,7 @@ module.exports = {
         )
         return result
     },
-    select_all_from_join5_with_conditionB: async (
+    select_all_from_join5_with_conditionB_and_order: async (
         table1,
         table2,
         table3,
@@ -154,10 +180,12 @@ module.exports = {
         joint2,
         joint3,
         joint4,
-        condition
+        condition,
+        order_by,
+        dir
     ) => {
         let result = await connection.query(
-            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table3}.${joint3} = ${table4}.${joint3} JOIN ${table5} ON ${table2}.${joint4} = ${table5}.${joint4} WHERE ?`,
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table3}.${joint3} = ${table4}.${joint3} JOIN ${table5} ON ${table2}.${joint4} = ${table5}.${joint4} WHERE ? ORDER BY ${order_by} ${dir}`,
             [condition]
         )
         return result
@@ -215,6 +243,24 @@ module.exports = {
     ) => {
         let result = await connection.query(
             `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table2}.${joint3} = ${table4}.${joint3} ORDER BY ${table1}.${order_by} ${dir}`,
+            [condition]
+        )
+        return result
+    }, 
+    select_all_from_join4_with_condition_and_orderB: async (
+        table1,
+        table2,
+        table3,
+        table4,
+        joint1,
+        joint2,
+        joint3,
+        condition,
+        order_by,
+        dir
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table3}.${joint3} = ${table4}.${joint3} ORDER BY ${table2}.${order_by} ${dir}`,
             [condition]
         )
         return result
@@ -477,7 +523,9 @@ module.exports = {
     },
 
     select_sum_of_1column_1condition: async (table, column, condition) => {
-        let result = await connection.query(`SELECT sum(${column}) AS total FROM ${table} WHERE?`, [condition])
+        let result = await connection.query(`SELECT sum(${column}) AS total FROM ${table} WHERE?`, [
+            condition,
+        ])
         return result
     },
 
@@ -516,7 +564,10 @@ module.exports = {
      * @query UPDATE table SET update WHERE condition
      */
     update_with_condition: async (table, update, condition) => {
+       // console.log("vvvvvvvvvvvvvvv: ",`UPDATE ${table} SET ? WHERE ?`, [update, condition])
+       // const result = await connection.query(`UPDATE products_m2m_vendors SET p2v_price= '99' WHERE id_product_m2m_vendor = 302`)
         const result = await connection.query(`UPDATE ${table} SET ? WHERE ?`, [update, condition])
+        //console.log("kkkkkkkkkkk: ",result)
         return result
     },
 

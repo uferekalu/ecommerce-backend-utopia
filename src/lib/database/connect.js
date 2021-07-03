@@ -1,3 +1,4 @@
+
 "use strict"
 require("dotenv").config()
 console.log(`DB NAME: ${process.env.DB_NAME}`)

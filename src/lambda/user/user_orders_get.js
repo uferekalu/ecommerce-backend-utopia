@@ -40,7 +40,7 @@ exports.handler = async (event, context) => {
             throw `${custom_errors[1]}`
         }
 
-        const response = await db.select_all_from_join5_with_conditionB(
+        const response = await db.select_all_from_join5_with_conditionB_and_order(
             "orders_m2m_products",
             "orders",
             "products_m2m_vendors",
@@ -50,10 +50,10 @@ exports.handler = async (event, context) => {
             "id_product_m2m_vendor",
             "id_product",
             "id_order_status",
-            { id_user }
+            { id_user },
+            "orders.id_order",
+            "DESC"
         )
-
-        console.log("RESPONSE", response)
 
         const orders = []
         const code = []

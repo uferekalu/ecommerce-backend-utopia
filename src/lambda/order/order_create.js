@@ -87,6 +87,7 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {
+        console.log(e);
         let errors
         if (e.name === "Error") {
             errors = e.message

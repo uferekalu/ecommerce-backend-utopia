@@ -20,8 +20,9 @@ exports.handler = async () => {
             throw `${error_one}`
         }
 
+        console.log(data)
+
         return handler.returner([true, data], api_name)
-        //
     } catch (e) {
         if (e === error_one) {
             return handler.returner([false, e], api_name, 400)

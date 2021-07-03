@@ -67,6 +67,24 @@ exports.handler = async (event, context) => {
         const new_tags_id = await getNewTagsId()
 
         async function getNewProductId() {
+            let id_product_thumbnail
+
+            if (!optional_fields.includes("product_thumbnail")) {
+                id_product_thumbnail = await db.insert_new({ alt: product_title }, "product_thumbnails")
+            }
+           // console.log("before:, ", id_product_thumbnail)
+            else if (optional_fields.includes("product_thumbnail") && others.product_thumbnail?.url) {
+                const { url } = others.product_thumbnail
+
+                id_product_thumbnail = await db.insert_new(
+                    { url, alt: product_title, created_at: datetime },
+                    "product_thumbnails"
+                )
+            }
+
+
+
+
             let new_product_record
             if (new_tags_id) {
                 new_product_record = await db.insert_new(
@@ -76,6 +94,7 @@ exports.handler = async (event, context) => {
                         product_desc,
                         id_tags: new_tags_id,
                         created_at: datetime,
+                        id_product_thumbnail: id_product_thumbnail.insertId
                     },
                     "products"
                 )
@@ -87,6 +106,7 @@ exports.handler = async (event, context) => {
                         id_category,
                         product_title,
                         product_desc,
+                        id_product_thumbnail: id_product_thumbnail.insertId
                     },
                     "products"
                 )
@@ -100,20 +120,7 @@ exports.handler = async (event, context) => {
             throw "product create unsuccessful"
         }
 
-        let id_product_thumbnail
 
-        if (!optional_fields.includes("product_thumbnail")) {
-            id_product_thumbnail = await db.insert_new({ alt: product_title }, "product_thumbnails")
-        }
-
-        if (optional_fields.includes("product_thumbnail") && others.product_thumbnail?.url) {
-            const { url } = others.product_thumbnail
-
-            id_product_thumbnail = await db.insert_new(
-                { url, alt: product_title, created_at: datetime },
-                "product_thumbnails"
-            )
-        }
 
         let is_active
 

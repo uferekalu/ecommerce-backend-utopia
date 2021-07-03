@@ -10,6 +10,7 @@
         "dotenv": "^10.0.0",
         "jest": "^23.6.0",
         "mysql": "^2.18.1",
+        "mysql-parse": "^2.0.8",
         "nexmo": "^2.9.1",
         "nodemailer": "^6.5.0",
         "serverless-mysql": "^1.5.4",

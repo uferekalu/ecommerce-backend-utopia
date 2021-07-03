@@ -476,6 +476,11 @@ module.exports = {
         return result
     },
 
+    select_sum_of_1column_1condition: async (table, column, condition) => {
+        let result = await connection.query(`SELECT sum(${column}) AS total FROM ${table} WHERE?`, [condition])
+        return result
+    },
+
     insert_new: async (data, table) => {
         const result = await connection.query(`INSERT INTO ${table} SET ?`, data)
         return result

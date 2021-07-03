@@ -1,16 +1,31 @@
+
 "use strict"
 require("dotenv").config()
 console.log(`DB NAME: ${process.env.DB_NAME}`)
-
-const connection = require("serverless-mysql")({
-    config: {
-        BASE_URL: 'localhost:3000/api',
-        database: 'utopia',
-        user: 'admin',
-        password: 'TY8jGx6x23',
-        host: 'utopia-db-dev.cmj8spxpnzjj.us-east-2.rds.amazonaws.com',
-        port: '3306'
-    },
-})
-
+const production_db = false
+let connection
+if (production_db) {
+    connection = require("serverless-mysql")({
+        config: {
+            BASE_URL: 'https://wwdywnrhz6.execute-api.us-east-2.amazonaws.com/prod/api',
+            database: 'arivanna',
+            user: 'ari21uto',
+            password: ',N}S?R.eA~yLAa9(',
+            host: 'arivanna-db-prod.cmj8spxpnzjj.us-east-2.rds.amazonaws.com',
+            port: '3306'
+        },
+    })
+} 
+else {
+    connection = require("serverless-mysql")({
+        config: {
+            BASE_URL: 'localhost:3000/api',
+            database: 'utopia',
+            user: 'admin',
+            password: 'TY8jGx6x23',
+            host: 'utopia-db-dev.cmj8spxpnzjj.us-east-2.rds.amazonaws.com',
+            port: '3306'
+        },
+    })
+}
 module.exports = connection

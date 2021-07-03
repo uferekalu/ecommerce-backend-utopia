@@ -156,6 +156,7 @@ exports.handler = async (event, context) => {
                     sku,
                     id_product: new_product_id,
                     is_active,
+                    inventory: others.inventory
                 },
                 "products_m2m_vendors"
             )

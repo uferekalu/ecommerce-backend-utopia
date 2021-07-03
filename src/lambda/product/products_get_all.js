@@ -15,6 +15,12 @@ exports.handler = async () => {
             "id_vendor"
         )
 
+        if (data.length === 0) {
+            throw `${error_one}`
+        }
+
+        console.log(data)
+
         return handler.returner([true, data], api_name)
     } catch (e) {
         return handler.returner([false], api_name, 500)

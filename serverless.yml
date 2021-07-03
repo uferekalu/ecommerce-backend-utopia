@@ -55,24 +55,15 @@ functions:
         origin: "*"
     #--------------------------------------------------------------------------
 
-    user_email_or_phone_verify:
-        handler: src/lambda/user/user_email_or_phone_verify.handler
+    user_verify:
+        handler: src/lambda/user/user_verify.handler
         events:
             - http:
-                  path: /api/user_email_or_phone_verify
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
-    user_email_verify:
-        handler: src/lambda/user/user_email_verify_id_user.handler
-        events:
-            - http:
-                  path: /api/user_email_verify/{id_user}
+                  path: /api/user_verify/{token}
                   method: get
         cors: true
         origin: "*"
+
     #-------------------------------------------------------------------------
 
     user_login:
@@ -304,6 +295,15 @@ functions:
                   method: post
         cors: true
         origin: "*"       
+    #-------------------------------------------------------------------------
+    vendor_earnings_get:
+        handler: src/lambda/vendor/vendor_earnings_get.handler
+        events:
+            - http:
+                  path: /api/vendor/{id_vendor}/vendor_earnings
+                  method: get
+        cors: true
+        origin: "*"
     #-------------------------------------------------------------------------
     user_orders_get:
         handler: src/lambda/user/user_orders_get.handler

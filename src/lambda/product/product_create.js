@@ -108,13 +108,20 @@ exports.handler = async (event, context) => {
 
         if (optional_fields.includes("product_thumbnail") && others.product_thumbnail?.url) {
             const { url } = others.product_thumbnail
+
             id_product_thumbnail = await db.insert_new(
                 { url, alt: product_title, created_at: datetime },
                 "product_thumbnails"
             )
         }
 
-        const is_active = others.product_thumbnail?.url === true
+        let is_active
+
+        if (others.product_thumbnail.url) {
+            is_active = true
+        } else {
+            is_active = false
+        }
 
         //collates p2v_promo_price and/or id_brand optional fields if provided
         const new_p2v_data = {}

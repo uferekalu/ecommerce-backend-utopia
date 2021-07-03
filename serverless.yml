@@ -6,6 +6,27 @@ provider:
     stage: prod
 
 functions:
+
+ #-------------------------------------------------------------------------
+    product_update:
+        handler: src/lambda/product/product_update.handler
+        events:
+            - http:
+                  path: /api/product_update
+                  method: post
+        cors: true
+        origin: "*"
+ #-------------------------------------------------------------------------
+    product_get_vendor:
+        handler: src/lambda/product/product_get_vendor.handler
+        events:
+            - http:
+                  path: /api/product_get_vendor
+                  method: post
+        cors: true
+        origin: "*"
+ #-------------------------------------------------------------------------
+
     product_search:
         handler: src/lambda/product/product_search.handler
         events:

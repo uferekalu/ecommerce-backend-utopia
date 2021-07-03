@@ -52,6 +52,8 @@ module.exports = {
         return result
     },
 
+   
+
     select_all_from_join3: async (table1, table2, table3, joint1, joint2) => {
         let result = await connection.query(
             `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2}`
@@ -66,6 +68,15 @@ module.exports = {
         )
         return result
     },
+    aaron_select_all_from_join_with_condition: async (table1, table2, joint,condition1, condition2) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint} = ${table2}.${joint} WHERE ${condition1} = ${condition2}`,
+            
+        )
+        return result
+    },
+
+
 
     select_all_from_join3_with_condition: async (
         table1,
@@ -553,7 +564,10 @@ module.exports = {
      * @query UPDATE table SET update WHERE condition
      */
     update_with_condition: async (table, update, condition) => {
+       // console.log("vvvvvvvvvvvvvvv: ",`UPDATE ${table} SET ? WHERE ?`, [update, condition])
+       // const result = await connection.query(`UPDATE products_m2m_vendors SET p2v_price= '99' WHERE id_product_m2m_vendor = 302`)
         const result = await connection.query(`UPDATE ${table} SET ? WHERE ?`, [update, condition])
+        //console.log("kkkkkkkkkkk: ",result)
         return result
     },
 

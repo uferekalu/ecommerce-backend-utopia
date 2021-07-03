@@ -296,6 +296,15 @@ functions:
         cors: true
         origin: "*"       
     #-------------------------------------------------------------------------
+    vendor_earnings_get:
+        handler: src/lambda/vendor/vendor_earnings_get.handler
+        events:
+            - http:
+                  path: /api/vendor/{id_vendor}/vendor_earnings
+                  method: get
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
     user_orders_get:
         handler: src/lambda/user/user_orders_get.handler
         events:

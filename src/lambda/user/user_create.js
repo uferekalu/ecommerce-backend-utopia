@@ -138,7 +138,9 @@ exports.handler = async (event, context) => {
 
         await db.insert_new(userAccessRecord, "user_access_level_m2m_users")
 
-        const verification_token = cryptr.encrypt({ id_user: result.insertId, type: "email" })
+        const verification_token = cryptr.encrypt(
+            JSON.stringify({ id_user: result.insertId, type: "email" })
+        )
         // email_info.message += `https://wwdywnrhz6.execute-api.us-east-2.amazonaws.com/prod/api/user_verify/${verification_token}`
         email_info.message += `http://localhost:3000/api/user_verify/${verification_token}`
 

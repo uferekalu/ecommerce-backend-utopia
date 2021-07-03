@@ -39,24 +39,42 @@ exports.handler = async (event, context) => {
             await db.select_one_with_condition("users", "id_vendor", { id_user })
         )[0]
 
-        console.log(id_vendor)
-
-        const data = await db.select_all_from_join3_with_condition_and_order(
+        const data = await db.select_all_from_join4_with_condition_and_orderB(
             "orders_m2m_products",
             "orders",
             "products_m2m_vendors",
+            "products",
             "id_order",
             "id_product_m2m_vendor",
+            "id_product",
             { id_vendor },
-            "order_created_at"
+            "order_created_at",
+            "DESC"
         )
 
         if (data.length < 1) {
             throw `${errors_array[2]}`
         }
 
-        return handler.returner([true, data], api_name, 200)
+        const orders = []
+        const code = []
+        const products = []
+
+        data.map((item) => {
+            if (!orders.includes(item.id_order)) {
+                orders.push(item.id_order)
+                item.quantity = 1
+                code.push(item.id_product_m2m_vendor)
+                products.push(item)
+            } else {
+                const index = code.indexOf(item.id_product_m2m_vendor)
+                products[index].quantity++
+            }
+        })
+
+        return handler.returner([true, products], api_name, 200)
     } catch (e) {
+        console.log(e);
         let errors
         if (e.name === "Error") {
             errors = e.message

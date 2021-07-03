@@ -40,7 +40,7 @@ exports.handler = async (event, context) => {
             throw `${custom_errors[1]}`
         }
 
-        const response = await db.select_all_from_join5_with_conditionB(
+        const response = await db.select_all_from_join5_with_conditionB_and_order(
             "orders_m2m_products",
             "orders",
             "products_m2m_vendors",
@@ -50,10 +50,10 @@ exports.handler = async (event, context) => {
             "id_product_m2m_vendor",
             "id_product",
             "id_order_status",
-            { id_user }
+            { id_user },
+            "orders.id_order",
+            "DESC"
         )
-
-        console.log("RESPONSE", response)
 
         const orders = []
         const code = []
@@ -61,7 +61,6 @@ exports.handler = async (event, context) => {
 
         response.map((item) => {
             if (!orders.includes(item.id_order)) {
-            // if (!orders.includes(item.id_product_m2m_vendor)) {
                 orders.push(item.id_order)
                 item.quantity = 1
                 code.push(item.id_product_m2m_vendor)
@@ -71,8 +70,6 @@ exports.handler = async (event, context) => {
                 products[index].quantity++
             }
         })
-
-        console.log("CODE", code)
 
         return handler.returner([true, products], api_name)
     } catch (e) {

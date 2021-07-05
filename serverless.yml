@@ -246,7 +246,7 @@ functions:
         handler: src/lambda/vendor/vendor_update.handler
         events:
             - http:
-                  path: /api/vendor_update/{id_vendor}
+                  path: /api/vendor_update
                   method: post
         cors: true
         origin: "*"
@@ -307,8 +307,8 @@ functions:
         handler: src/lambda/vendor/vendor_details_get.handler
         events:
             - http:
-                  path: /api/vendor/{id_vendor}
-                  method: get
+                  path: /api/vendor
+                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------

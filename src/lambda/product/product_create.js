@@ -7,7 +7,6 @@ exports.handler = async (event, context) => {
     try {
         const datetime = await handler.datetime()
         const body = JSON.parse(event.body)
-
         //error handling
         if (!body || JSON.stringify(body) === "{}") {
             throw "body is empty"
@@ -72,7 +71,7 @@ exports.handler = async (event, context) => {
             if (!optional_fields.includes("product_thumbnail")) {
                 id_product_thumbnail = await db.insert_new({ alt: product_title }, "product_thumbnails")
             }
-           // console.log("before:, ", id_product_thumbnail)
+            // console.log("before:, ", id_product_thumbnail)
             else if (optional_fields.includes("product_thumbnail") && others.product_thumbnail?.url) {
                 const { url } = others.product_thumbnail
 

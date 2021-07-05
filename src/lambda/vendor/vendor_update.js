@@ -32,9 +32,9 @@ exports.handler = async (event, context) => {
 
         if (vendor_exist.length == 0) {
             return handler.returner([false, { message: "Vendor is not found" }], api_name, 404)
-        } else if (vendor_business_exist.length != 0) {
+        } /*else if (vendor_business_exist.length != 0) {
             return handler.returner([false, { message: "Vendor already exists" }], api_name, 404)
-        } else {
+        } */else {
             const created_token = await auth_token.create(id_vendor)
 
             const updated_data = {

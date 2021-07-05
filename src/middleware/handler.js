@@ -3,24 +3,45 @@ const connection = require("../lib/database/connect")
 const db = require("../lib/database/query")
 
 exports.returner = async (result, api_name, statusCode) => {
+    console.log("result: ", result[1])
     if (statusCode == undefined) {
         statusCode = 200
     }
-
-    return await {
-        statusCode: statusCode,
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "*",
-            "Access-Control-Allow-Methods": "*",
-            'Access-Control-Allow-Credentials': true,
-        },
-        body: JSON.stringify({
-            success: result[0],
-            api: api_name,
-            data: result[1] || "Server Error, please try again later",
-        }),
+    if (result[0]) {
+        return await {
+            statusCode: statusCode,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "*",
+                "Access-Control-Allow-Methods": "*",
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                success: result[0],
+                api: api_name,
+                data: result[1] || "Server Error, please try again later",
+            }),
+        }
     }
+     else {
+        return await {
+            statusCode: statusCode,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "*",
+                "Access-Control-Allow-Methods": "*",
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                success: result[0],
+                api: api_name,
+                data: result[1]?.toString() || "Server Error, please try again later",
+            }),
+        }
+    }
+
+
+   
 }
 
 exports.datetime = async () => {

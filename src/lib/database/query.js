@@ -184,6 +184,10 @@ module.exports = {
         order_by,
         dir
     ) => {
+
+        
+
+
         let result = await connection.query(
             `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table3}.${joint3} = ${table4}.${joint3} JOIN ${table5} ON ${table2}.${joint4} = ${table5}.${joint4} WHERE ? ORDER BY ${order_by} ${dir}`,
             [condition]

@@ -13,6 +13,7 @@ exports.returner = async (result, api_name, statusCode) => {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Headers": "*",
             "Access-Control-Allow-Methods": "*",
+            'Access-Control-Allow-Credentials': true,
         },
         body: JSON.stringify({
             success: result[0],

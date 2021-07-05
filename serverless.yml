@@ -7,6 +7,10 @@ provider:
 
 functions:
 
+
+
+
+
  #-------------------------------------------------------------------------
     product_update:
         handler: src/lambda/product/product_update.handler
@@ -102,7 +106,7 @@ functions:
         events:
             - http:
                   path: /api/order_update
-                  method: put
+                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
@@ -243,7 +247,7 @@ functions:
         events:
             - http:
                   path: /api/vendor_update/{id_vendor}
-                  method: put
+                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
@@ -316,6 +320,14 @@ functions:
                   method: post
         cors: true
         origin: "*"       
+        headers: # <-- Specify allowed headers
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - Access-Control-Allow-Origin
     #-------------------------------------------------------------------------
     vendor_earnings_get:
         handler: src/lambda/vendor/vendor_earnings_get.handler

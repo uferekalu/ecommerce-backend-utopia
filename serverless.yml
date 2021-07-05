@@ -102,7 +102,7 @@ functions:
         events:
             - http:
                   path: /api/order_update
-                  method: put
+                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
@@ -303,8 +303,8 @@ functions:
         handler: src/lambda/vendor/vendor_details_get.handler
         events:
             - http:
-                  path: /api/vendor/{id_vendor}
-                  method: get
+                  path: /api/vendor
+                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------

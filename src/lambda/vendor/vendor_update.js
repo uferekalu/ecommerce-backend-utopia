@@ -9,7 +9,11 @@ exports.handler = async (event, context) => {
         var datetime = await handler.datetime()
         const body = JSON.parse(event.body)
 
-        const id_vendor = JSON.parse(event.pathParameters.id_vendor)
+        const { token } = body
+
+        const id_user = await auth_token.verify(token)
+
+        const {id_vendor} = (await db.select_all_with_condition("users", { id_user }))[0]
 
         const {
             business_name,
@@ -27,10 +31,8 @@ exports.handler = async (event, context) => {
         const vendor_business_exist = await db.search_one("vendors", "business_name", business_name)
 
         if (vendor_exist.length == 0) {
-            console.log("Vendor is not found")
             return handler.returner([false, { message: "Vendor is not found" }], api_name, 404)
         } else if (vendor_business_exist.length != 0) {
-            console.log("Vendor already exists")
             return handler.returner([false, { message: "Vendor already exists" }], api_name, 404)
         } else {
             const created_token = await auth_token.create(id_vendor)

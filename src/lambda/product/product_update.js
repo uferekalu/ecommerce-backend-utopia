@@ -47,10 +47,6 @@ exports.handler = async (event, context) => {
         }
 
         const updated_data = { ...others }
-        console.log("this is the data: ", updated_data)
-
-
-
 
         const {
             p2v_price,
@@ -63,32 +59,43 @@ exports.handler = async (event, context) => {
             p2v_promo_price,
             id_product_m2m_vendor,
             id_product,
+            id_product_thumbnail,
+            product_thumbnail,
             ...other
         } = updated_data
 
-        const product_m2m_vendor_data =
-        {
+        let is_active = false
+
+        if (others.product_thumbnail?.url) {
+            const success = await db.update_with_condition(
+                "product_thumbnails",
+                { url: product_thumbnail.url },
+                {
+                    id_product_thumbnail,
+                }
+            )
+
+            success ? (is_active = 1) : (is_active = 0)
+        }
+
+        const product_m2m_vendor_data = {
             p2v_price: p2v_price,
             p2v_promo_price: p2v_promo_price,
             inventory: inventory,
             SKU: sku,
+            is_active,
         }
-        const product_data =
-        {
+        const product_data = {
             product_title: product_title,
             product_desc: product_desc,
-            
         }
 
-        await db.update_with_condition('products_m2m_vendors', product_m2m_vendor_data, { id_product_m2m_vendor })
-        await db.update_with_condition('products', product_data, { id_product })
+        await db.update_with_condition("products_m2m_vendors", product_m2m_vendor_data, {
+            id_product_m2m_vendor,
+        })
+        await db.update_with_condition("products", product_data, { id_product })
 
         //   await db.update_one("users", updated_data, "id_vendor", id_vendor)
-
-
-
-
-
 
         return handler.returner([true, updated_data], api_name, 201)
     } catch (e) {

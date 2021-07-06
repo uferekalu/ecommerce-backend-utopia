@@ -2,7 +2,7 @@ const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const auth_token = require("../../middleware/token_handler")
 
-const api_name = "Vendor products get"
+const api_name = "Vendor orders get"
 const errors_array = ["body is empty", "authentication required", "no orders found"]
 
 exports.handler = async (event, context) => {

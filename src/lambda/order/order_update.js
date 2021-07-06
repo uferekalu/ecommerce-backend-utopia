@@ -12,34 +12,7 @@ const errors_array = [
 
 exports.handler = async (event, context) => {
     try {
-        const body = JSON.parse(event.body)
-
-        if (!body || JSON.stringify(body) === "{}") {
-            throw `${errors_array[0]}`
-        }
-
-        const all_fields = Object.keys(body)
-
-        //more error handling
-        const required_fields = ["id_order", "token"]
-
-        const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
-
-        if (missing_fields.length > 0) {
-            throw Error(missing_fields)
-        }
-
-        const { id_order, token, ...others } = body
-
-        const id_user = await auth_token.verify(token)
-
-        if (!id_user) {
-            throw `${errors_array[1]}`
-        }
-
-        const { id_vendor } = (await db.select_all_with_condition("users", { id_user }))[0]
-        let order_exist
-        let data
+      x
 
         if (id_vendor) {
             order_exist = await db.select_all_from_join3_with_2condition(

@@ -58,7 +58,7 @@ exports.handler = async (event, context) => {
             product_title,
             product_desc,
             shipping_locations,
-            SKU,
+            sku,
             inventory,
             p2v_promo_price,
             id_product_m2m_vendor,
@@ -71,7 +71,7 @@ exports.handler = async (event, context) => {
             p2v_price: p2v_price,
             p2v_promo_price: p2v_promo_price,
             inventory: inventory,
-            SKU: SKU,
+            SKU: sku,
         }
         const product_data =
         {

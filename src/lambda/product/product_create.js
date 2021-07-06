@@ -68,7 +68,7 @@ exports.handler = async (event, context) => {
         async function getNewProductId() {
             let id_product_thumbnail
 
-            if (!optional_fields.includes("product_thumbnail")) {
+            if (!others.product_thumbnail?.url) {
                 id_product_thumbnail = await db.insert_new({ alt: product_title }, "product_thumbnails")
             }
             // console.log("before:, ", id_product_thumbnail)

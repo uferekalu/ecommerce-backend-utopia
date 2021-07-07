@@ -34,28 +34,30 @@ exports.handler = async (event, context) => {
 
         const { id_vendor } = (await db.select_all_with_condition("users", { id_user }))[0]
 
+        console.log("IDVENDOR", id_vendor)
+
         if (!id_vendor) {
             throw `${errors_array[1]}`
         }
 
-        const product = await db.aaron_select_all_from_join_with_condition(
+        const product = await db.select_one_from_join3_with_2conditions(
             "products",
             "products_m2m_vendors",
-            "product_thumbnails",
+            "product_thumbnails", //
             "id_product",
-            "products.id_product",
-            "id_thumbnail",
-            { id_product },
-            { id_vendor }
+            "id_product_thumbnail",
+            `${id_product}`
+            // { id_vendor }
         )
+        console.log("SINGELE", product)
 
         if (product.length === 0) {
-            throw `${error_one}`
+            throw `${errors_array[3]}`
         }
 
         return handler.returner([true, product[0]], api_name, 200)
     } catch (e) {
-        console.log("ggg: ", e)
+        console.log(e)
         return handler.returner([false, e], api_name, 404)
     }
 }

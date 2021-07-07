@@ -106,11 +106,8 @@ exports.handler = async (event, context) => {
                     return `${field} is required`
                 })
                 .join(", ")
-            console.log("ggggggggg: ", errors)
             return handler.returner([false, errors], api_name, 400)
         }
-        console.log("gggggggggeeeee: ", e)
-
         return handler.returner([false, e], api_name, 400)
     }
 }

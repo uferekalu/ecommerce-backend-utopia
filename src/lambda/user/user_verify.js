@@ -13,9 +13,6 @@ exports.handler = async (event, context) => {
         const token = event.pathParameters
         const decrypt_token = cryptr.decrypt(token)
 
-        console.log(token)
-        console.log(JSON.parse(decrypt_token))
-
         // const { id_user, type } = decrypt_param
 
         // let is_email, is_phone
@@ -33,7 +30,6 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true], api_name, 201)
     } catch (e) {
-        console.log(e)
         return handler.returner([false, e], api_name)
     }
 }

@@ -71,7 +71,6 @@ exports.handler = async (event, context) => {
             if (!others.product_thumbnail?.url) {
                 id_product_thumbnail = await db.insert_new({ alt: product_title }, "product_thumbnails")
             }
-            // console.log("before:, ", id_product_thumbnail)
             else if (optional_fields.includes("product_thumbnail") && others.product_thumbnail?.url) {
                 const { url } = others.product_thumbnail
 

@@ -13,8 +13,6 @@ exports.handler = async (event, context) => {
             "employees.id_employee_position"
         )
 
-        console.log(employees)
-
         return handler.returner([true, { employees }], api_name, 200)
     } catch (e) {
         return handler.returner([false], api_name, 500)

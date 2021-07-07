@@ -42,7 +42,6 @@ exports.handler = async (event) => {
                 "DESC"
             )
         }
-        console.log(data)
         return handler.returner([true, data], api_name)
     } catch (e) {
         return handler.returner([false], api_name, 500)

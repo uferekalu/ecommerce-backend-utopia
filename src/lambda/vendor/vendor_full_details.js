@@ -15,9 +15,6 @@ exports.handler = async (event, context) => {
             throw errors_array[0]
         }
 
-        console.log(body);
-        console.log(id_vendor);
-
         const all_fields = Object.keys(body)
 
         const required_fields = ["token"]
@@ -31,8 +28,6 @@ exports.handler = async (event, context) => {
         const { token } = body
 
         const id_user = await auth_token.verify(token)
-
-        console.log(id_user);
 
         if (!id_user) {
             throw errors_array[1]

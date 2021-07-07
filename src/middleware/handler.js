@@ -3,7 +3,6 @@ const connection = require("../lib/database/connect")
 const db = require("../lib/database/query")
 
 exports.returner = async (result, api_name, statusCode) => {
-    console.log("result: ", result[1])
     if (statusCode == undefined) {
         statusCode = 200
     }
@@ -87,7 +86,6 @@ exports.db_insert = async (data, table) => {
     var table = Object.values(data)
     full_query = mysql.format(full_query, table)
     const result = await query(full_query)
-    // console.log("full_query: ", full_query)
     return result
 }
 
@@ -124,7 +122,6 @@ exports.get_access_level = async (id) => {
 }
 
 exports.required_field_error = async (e) => {
-    console.log(e)
     let errors
     if (e.name === "customError") {
         errors = e.message

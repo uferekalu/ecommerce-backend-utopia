@@ -37,8 +37,6 @@ exports.handler = async (event, context) => {
             user_exist = await db.search_one("users", "user_phone_number", body.user_phone_number)
         }
 
-        console.log("USER EXISTS", user_exist.length)
-
         if (user_exist.length === 0) {
             throw "invalid login"
         }
@@ -57,7 +55,6 @@ exports.handler = async (event, context) => {
 
         const id_user = user_exist[0].id_user
         const user_first_name = user_exist[0].user_first_name
-        //console.log("id_user:", id_user)
         //newly created token
         const created_token = await auth_token.create(user_exist[0].id_user)
 
@@ -129,7 +126,6 @@ exports.handler = async (event, context) => {
             201
         )
     } catch (e) {
-        console.log("Error: ", e)
         return handler.returner([false, e], api_name)
     }
 }

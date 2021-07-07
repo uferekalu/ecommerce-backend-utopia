@@ -194,6 +194,7 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, { ...product, is_active }], api_name, 201)
     } catch (e) {
+        console.log(e);
         if (e.name === "Error") {
             const errors = e.message
                 .split(",")

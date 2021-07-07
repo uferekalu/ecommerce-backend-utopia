@@ -59,8 +59,6 @@ exports.handler = async (event) => {
 
         let new_cart
 
-        console.log(cart_exist)
-
         if (!cart_exist) {
             data.cart_datetime_created = cart_datetime
             new_cart = await db.insert_new(data, "carts")

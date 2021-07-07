@@ -32,8 +32,6 @@ exports.handler = async (event, context) => {
 
         const { id_user, id_product_m2m_vendor, paymentMethod } = body
 
-        console.log(body)
-
         // ensure user exists
         const user_exist = await db.search_one("users", "id_user", id_user)
 
@@ -87,7 +85,6 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {
-        console.log(e);
         let errors
         if (e.name === "Error") {
             errors = e.message

@@ -12,7 +12,6 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, { id_access_level: id_user_access_level }], api_name)
     } catch (e) {
-        console.log(e)
         return handler.returner([false], api_name, 500)
     }
 }

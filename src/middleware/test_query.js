@@ -21,7 +21,6 @@ let Employee = employee => {
 
 Employee.findAll = async function (event, context) {
   let results = connection.query("SELECT * FROM users");
-  console.log(results);
   await connection.end();
   return results;
 };
@@ -32,11 +31,9 @@ exports.query = async (event, context) => {
 
     // Get your query
     const data = event.body ? JSON.parse(event.body) : {};
-    console.log(data);
     // Run your query
     const [result1] = await Promise.all([Employee.findAll()]);
     //let dataresult = Object.values(JSON.parse(JSON.stringify(result1)));
-    console.log(result1)
     // Return the results
     return {
       statusCode: 200,

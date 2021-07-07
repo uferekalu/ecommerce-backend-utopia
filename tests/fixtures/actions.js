@@ -88,7 +88,6 @@ async function deleteProductRecord(data) {
         await db.delete_one("products_m2m_vendors", "id_product", data)
         await db.delete_one("products", "id_product", data)
     } catch (err) {
-        console.log(err)
     }
 }
 async function deleteVendorRecord(data) {
@@ -96,7 +95,6 @@ async function deleteVendorRecord(data) {
         await db.delete_one("vendors", "id_vendor", data)
         await db.delete_one("vendor_tokens", "id_vendor", data)
     } catch (err) {
-        console.log(err)
     }
 }
 

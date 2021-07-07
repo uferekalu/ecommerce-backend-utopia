@@ -62,9 +62,19 @@ exports.handler = async (event, context) => {
             inventory,
             p2v_promo_price,
             id_product_m2m_vendor,
+            shipping_cost_local,
+            shipping_cost_intl,
             id_product,
             ...other
         } = updated_data
+
+        let array_shipping_locations
+
+        if (!shipping_locations) {
+            array_shipping_locations = JSON.stringify({})
+        } else {
+            array_shipping_locations = JSON.stringify(shipping_locations)
+        }
 
         const product_m2m_vendor_data =
         {
@@ -72,6 +82,9 @@ exports.handler = async (event, context) => {
             p2v_promo_price: p2v_promo_price,
             inventory: inventory,
             SKU: SKU,
+            shipping_cost_local: shipping_cost_local,
+            shipping_cost_intl: shipping_cost_intl,
+            shipping_locations: array_shipping_locations
         }
         const product_data =
         {

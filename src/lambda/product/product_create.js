@@ -134,7 +134,8 @@ exports.handler = async (event, context) => {
         //collates p2v_promo_price and/or id_brand optional fields if provided
         const new_p2v_data = {}
         for (let prop in others) {
-            if (prop === "p2v_promo_price" || prop === "id_brand") {
+            if (prop === "p2v_promo_price" || prop === "id_brand" 
+                || prop === 'shipping_cost_local' || prop === 'shipping_cost_intl') {
                 new_p2v_data[prop] = others[prop]
             }
         }
@@ -142,7 +143,7 @@ exports.handler = async (event, context) => {
         let array_shipping_locations
 
         if (!shipping_locations) {
-            array_shipping_locations = JSON.stringify([])
+            array_shipping_locations = JSON.stringify({})
         } else {
             array_shipping_locations = JSON.stringify(shipping_locations)
         }

@@ -3,6 +3,7 @@ const connection = require("../lib/database/connect")
 const db = require("../lib/database/query")
 
 exports.returner = async (result, api_name, statusCode) => {
+    console.log("result: ", result[1])
     if (statusCode == undefined) {
         statusCode = 200
     }
@@ -42,6 +43,7 @@ exports.returner = async (result, api_name, statusCode) => {
 
    
 }
+
 
 exports.datetime = async () => {
     return new Date().toISOString().slice(0, 19).replace("T", " ")

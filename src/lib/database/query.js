@@ -8,6 +8,13 @@ module.exports = {
         return result
     },
 
+    select_columns_with_condictions: async (columns, table, column, data) => {
+        let result = await connection.query(`SELECT ${columns.join(", ")} FROM ${table} WHERE ${column} = ?`, [data])
+        return result
+    },
+
+
+
     /**
      * @desc Returns one record from a table by condition
      * @query SELECT * FROM table WHERE condition

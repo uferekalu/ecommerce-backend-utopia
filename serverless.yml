@@ -279,6 +279,16 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+
+    request_order_return:
+        handler: src/lambda/order/request_order_return.handler
+        events:
+            - http:
+                  path: /api/request_order_return
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
     vendor_products_get:
         handler: src/lambda/vendor/vendor_products_get.handler
         events:

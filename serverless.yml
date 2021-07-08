@@ -7,7 +7,15 @@ provider:
 
 functions:
 
-
+    vendor_public_details:
+        handler: src/lambda/vendor/vendor_public_details.handler
+        events:
+            - http:
+                  path: /api/vendor_public_details/{id_vendor}
+                  method: get
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
 
 
 

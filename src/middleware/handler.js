@@ -44,6 +44,7 @@ exports.returner = async (result, api_name, statusCode) => {
    
 }
 
+
 exports.datetime = async () => {
     return new Date().toISOString().slice(0, 19).replace("T", " ")
 }
@@ -87,7 +88,6 @@ exports.db_insert = async (data, table) => {
     var table = Object.values(data)
     full_query = mysql.format(full_query, table)
     const result = await query(full_query)
-    // console.log("full_query: ", full_query)
     return result
 }
 
@@ -124,7 +124,6 @@ exports.get_access_level = async (id) => {
 }
 
 exports.required_field_error = async (e) => {
-    console.log(e)
     let errors
     if (e.name === "customError") {
         errors = e.message

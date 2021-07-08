@@ -15,7 +15,7 @@ exports.handler = async (event, context) => {
       body.token,
       body.id_user
     );
-    console.log("user exist:", user_exist);
+
     if (user_exist.length == 0)
       return handler.returner(
         [false, { message: "Token is expired/ Wrong user id with the token" }],
@@ -28,7 +28,7 @@ exports.handler = async (event, context) => {
       "id_user",
       body.id_user
     );
-    console.log("whish_list", whish_list);
+
     let wishlist_name_list = whish_list.map((item) => {
       return item.wishlist_name;
     });
@@ -44,7 +44,6 @@ exports.handler = async (event, context) => {
       201
     );
   } catch (e) {
-    console.log("Error: ", e);
     return handler.returner([false, e], api_name);
   }
 };

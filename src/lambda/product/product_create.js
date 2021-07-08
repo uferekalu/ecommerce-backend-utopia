@@ -7,7 +7,6 @@ exports.handler = async (event, context) => {
     try {
         const datetime = await handler.datetime()
         const body = JSON.parse(event.body)
-
         //error handling
         if (!body || JSON.stringify(body) === "{}") {
             throw "body is empty"
@@ -69,10 +68,9 @@ exports.handler = async (event, context) => {
         async function getNewProductId() {
             let id_product_thumbnail
 
-            if (!optional_fields.includes("product_thumbnail")) {
+            if (!others.product_thumbnail?.url) {
                 id_product_thumbnail = await db.insert_new({ alt: product_title }, "product_thumbnails")
             }
-           // console.log("before:, ", id_product_thumbnail)
             else if (optional_fields.includes("product_thumbnail") && others.product_thumbnail?.url) {
                 const { url } = others.product_thumbnail
 
@@ -197,6 +195,7 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, { ...product, is_active }], api_name, 201)
     } catch (e) {
+        console.log(e);
         if (e.name === "Error") {
             const errors = e.message
                 .split(",")

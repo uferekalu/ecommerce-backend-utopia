@@ -76,7 +76,6 @@ exports.handler = async (event, context) => {
             201
         )
     } catch (e) {
-        console.log(e)
         if (e.name === "Error") {
             const errors = e.message
                 .split(",")

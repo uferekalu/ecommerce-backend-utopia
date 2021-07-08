@@ -59,6 +59,8 @@ exports.handler = async (event, context) => {
             }
 
             data = { ...others }
+
+            await db.update_with_condition("orders", data, { id_order })
         } else {
             order_exist = (
                 await db.select_one_with_2conditions("orders", { id_order }, { id_user })
@@ -78,14 +80,22 @@ exports.handler = async (event, context) => {
 
             data = { ...others }
 
-            if (
-                data.id_order_status != 6 &&
-                data.id_order_status != 7 &&
-                data.id_order_status != 13
-            ) {
-                throw `${errors_array[3]}`
-            } else {
+            console.log("DATA:", data)
+
+            if (data.isPaid == 1) {
                 await db.update_with_condition("orders", data, { id_order })
+            }
+
+            if (data.id_order_status) {
+                if (
+                    data.id_order_status != 6 &&
+                    data.id_order_status != 7 &&
+                    data.id_order_status != 13
+                ) {
+                    throw `${errors_array[3]}`
+                } else {
+                    await db.update_with_condition("orders", data, { id_order })
+                }
             }
         }
 

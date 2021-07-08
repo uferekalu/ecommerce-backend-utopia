@@ -37,8 +37,6 @@ exports.handler = async (event, context) => {
             user_exist = await db.search_one("users", "user_phone_number", body.user_phone_number)
         }
 
-        console.log("USER EXISTS", user_exist.length)
-
         if (user_exist.length === 0) {
             throw "invalid login"
         }
@@ -57,7 +55,9 @@ exports.handler = async (event, context) => {
 
         const id_user = user_exist[0].id_user
         const user_first_name = user_exist[0].user_first_name
-        //console.log("id_user:", id_user)
+        const city = user_exist[0].city
+        const country = user_exist[0].country
+
         //newly created token
         const created_token = await auth_token.create(user_exist[0].id_user)
 
@@ -89,7 +89,7 @@ exports.handler = async (event, context) => {
 
         let vendor_details = {}
         if (user_details?.id_vendor && user_details?.business_name) {
-            const { business_name, id_vendor } = user_details
+            const { business_name, id_vendor} = user_details
             vendor_details = { business_name, id_vendor }
         }
 
@@ -116,6 +116,8 @@ exports.handler = async (event, context) => {
                 {
                     id_user,
                     user_first_name,
+                    city,
+                    country,
                     ...vendor_details,
                     user_access_level: access_level,
                     token: created_token,
@@ -125,7 +127,6 @@ exports.handler = async (event, context) => {
             201
         )
     } catch (e) {
-        console.log("Error: ", e)
         return handler.returner([false, e], api_name)
     }
 }

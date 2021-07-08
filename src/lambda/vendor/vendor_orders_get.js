@@ -2,14 +2,12 @@ const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const auth_token = require("../../middleware/token_handler")
 
-const api_name = "Vendor products get"
+const api_name = "Vendor orders get"
 const errors_array = ["body is empty", "authentication required", "no orders found"]
 
 exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
-
-        console.log("BODY", body)
 
         if (!body || JSON.stringify(body) === "{}") {
             throw `${errors_array[0]}`
@@ -28,8 +26,6 @@ exports.handler = async (event, context) => {
         const { token } = body
 
         const id_user = await auth_token.verify(token)
-
-        console.log(id_user)
 
         if (!id_user) {
             throw `${errors_array[1]}`
@@ -74,7 +70,6 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, products], api_name, 200)
     } catch (e) {
-        console.log(e);
         let errors
         if (e.name === "Error") {
             errors = e.message

@@ -47,10 +47,6 @@ exports.handler = async (event, context) => {
         }
 
         const updated_data = { ...others }
-        console.log("this is the data: ", updated_data)
-
-
-
 
         const {
             p2v_price,
@@ -58,13 +54,15 @@ exports.handler = async (event, context) => {
             product_title,
             product_desc,
             shipping_locations,
-            SKU,
+            sku,
             inventory,
             p2v_promo_price,
             id_product_m2m_vendor,
             shipping_cost_local,
             shipping_cost_intl,
             id_product,
+            id_product_thumbnail,
+            product_thumbnail,
             ...other
         } = updated_data
 
@@ -86,22 +84,17 @@ exports.handler = async (event, context) => {
             shipping_cost_intl: shipping_cost_intl,
             shipping_locations: array_shipping_locations
         }
-        const product_data =
-        {
+        const product_data = {
             product_title: product_title,
             product_desc: product_desc,
-            
         }
 
-        await db.update_with_condition('products_m2m_vendors', product_m2m_vendor_data, { id_product_m2m_vendor })
-        await db.update_with_condition('products', product_data, { id_product })
+        await db.update_with_condition("products_m2m_vendors", product_m2m_vendor_data, {
+            id_product_m2m_vendor,
+        })
+        await db.update_with_condition("products", product_data, { id_product })
 
         //   await db.update_one("users", updated_data, "id_vendor", id_vendor)
-
-
-
-
-
 
         return handler.returner([true, updated_data], api_name, 201)
     } catch (e) {
@@ -112,11 +105,8 @@ exports.handler = async (event, context) => {
                     return `${field} is required`
                 })
                 .join(", ")
-            console.log("ggggggggg: ", errors)
             return handler.returner([false, errors], api_name, 400)
         }
-        console.log("gggggggggeeeee: ", e)
-
         return handler.returner([false, e], api_name, 400)
     }
 }

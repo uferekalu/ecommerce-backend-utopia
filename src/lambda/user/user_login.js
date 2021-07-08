@@ -93,8 +93,6 @@ exports.handler = async (event, context) => {
             vendor_details = { business_name, id_vendor }
         }
 
-        const { city, country } = user_details;
-
         const user_access_level = await db.select_oneColumn(
             "user_access_level_m2m_users",
             "id_user_access_level",

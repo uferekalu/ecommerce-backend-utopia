@@ -80,7 +80,7 @@ exports.handler = async (event, context) => {
 
             data = { ...others }
 
-            console.log("DATA:", data)
+            // console.log("DATA:", data)
 
             if (data.isPaid == 1) {
                 await db.update_with_condition("orders", data, { id_order })

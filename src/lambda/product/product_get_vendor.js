@@ -34,7 +34,7 @@ exports.handler = async (event, context) => {
 
         const { id_vendor } = (await db.select_all_with_condition("users", { id_user }))[0]
 
-        console.log("IDVENDOR", id_vendor)
+        // console.log("IDVENDOR", id_vendor)
 
         if (!id_vendor) {
             throw `${errors_array[1]}`
@@ -49,7 +49,7 @@ exports.handler = async (event, context) => {
             `${id_product}`
             // { id_vendor }
         )
-        console.log("SINGELE", product)
+        // console.log("SINGELE", product)
 
         if (product.length === 0) {
             throw `${errors_array[3]}`

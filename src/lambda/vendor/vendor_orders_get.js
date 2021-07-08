@@ -35,7 +35,7 @@ exports.handler = async (event, context) => {
             await db.select_one_with_condition("users", "id_vendor", { id_user })
         )[0]
 
-        console.log(id_vendor);
+        // console.log(id_vendor);
 
         const data = await db.select_all_from_join4_with_condition_and_orderB(
             "orders_m2m_products",
@@ -54,7 +54,7 @@ exports.handler = async (event, context) => {
             throw `${errors_array[2]}`
         }
 
-        console.log(data);
+        // console.log(data);
 
         const orders = []
         const code = []

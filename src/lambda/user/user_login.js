@@ -55,6 +55,9 @@ exports.handler = async (event, context) => {
 
         const id_user = user_exist[0].id_user
         const user_first_name = user_exist[0].user_first_name
+        const city = user_exist[0].city
+        const country = user_exist[0].country
+
         //newly created token
         const created_token = await auth_token.create(user_exist[0].id_user)
 

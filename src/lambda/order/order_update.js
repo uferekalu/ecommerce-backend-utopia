@@ -20,8 +20,6 @@ exports.handler = async (event, context) => {
 
         const all_fields = Object.keys(body)
 
-        console.log("BODY", body)
-
         //more error handling
         const required_fields = ["id_order", "token"]
 
@@ -61,7 +59,6 @@ exports.handler = async (event, context) => {
             }
 
             data = { ...others }
-            console.log(data)
 
             await db.update_with_condition("orders", data, { id_order })
         } else {
@@ -73,8 +70,6 @@ exports.handler = async (event, context) => {
                 throw `${errors_array[2]}`
             }
 
-            console.log("ORDER", order_exists)
-
             if (all_fields.includes("id_user")) {
                 delete others.id_user
             }
@@ -85,19 +80,22 @@ exports.handler = async (event, context) => {
 
             data = { ...others }
 
+            console.log("DATA:", data)
 
             if (data.isPaid == 1) {
                 await db.update_with_condition("orders", data, { id_order })
             }
 
-            if (
-                data.id_order_status != 6 &&
-                data.id_order_status != 7 &&
-                data.id_order_status != 13
-            ) {
-                throw `${errors_array[3]}`
-            } else {
-                await db.update_with_condition("orders", data, { id_order })
+            if (data.id_order_status) {
+                if (
+                    data.id_order_status != 6 &&
+                    data.id_order_status != 7 &&
+                    data.id_order_status != 13
+                ) {
+                    throw `${errors_array[3]}`
+                } else {
+                    await db.update_with_condition("orders", data, { id_order })
+                }
             }
         }
 

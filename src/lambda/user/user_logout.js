@@ -8,7 +8,6 @@ exports.handler = async (event, context) => {
         const body = JSON.parse(event.body)
 
         if (body?.token) {
-            console.log(body.token)
             const token_exist = (
                 await db.select_all_with_condition("user_tokens", {
                     token: body.token,

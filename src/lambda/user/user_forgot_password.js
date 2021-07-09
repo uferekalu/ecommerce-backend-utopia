@@ -43,7 +43,7 @@ exports.handler = async (event, context) => {
 
         //Send email 
         email_info.message += randomString;
-        await send.send_email(user_id_exist[0].user_email, email_info);
+        await send.email(user_id_exist[0].user_email, email_info);
         
         return handler.returner(
             [true, { user_email: user_id_exist[0].user_email, message: "New password sent to your email address" }],

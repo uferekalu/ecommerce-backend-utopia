@@ -52,6 +52,8 @@ exports.handler = async (event) => {
             id_vendor_status,
             vendor_password,
             id_user_access_level,
+            city,
+            country,
             ...others
         } = body
 
@@ -108,6 +110,8 @@ exports.handler = async (event) => {
             id_user_title: 1,
             email_verified: 0,
             phone_verified: 0,
+            city: city,
+            country: country
         }
 
         const new_user = await db.insert_new(userData, "users")
@@ -124,6 +128,7 @@ exports.handler = async (event) => {
             vendor_address,
             vendor_short_desc,
             id_vendor_status,
+            vendor_country: country
         }
 
         const new_vendor = await db.insert_new(vendorData, "vendors")

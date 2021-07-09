@@ -7,7 +7,6 @@ exports.handler = async (event, context) => {
     try {
         const { id_vendor } = event.pathParameters
 
-        console.log("bbbbbbbbbbbbbbbbbbbbbbbbb: ", id_vendor)
 
         const columns = [
             "id_vendor",
@@ -17,6 +16,7 @@ exports.handler = async (event, context) => {
             "vendor_photo"
         ]
 
+      //  console.log("THIS IS VENDOR ID: ", id_vendor)
 
         const vendor_public_details = await db.select_columns_with_condictions(columns, "vendors", "id_vendor", id_vendor)
 

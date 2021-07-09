@@ -22,7 +22,7 @@ exports.handler = async (event, context) => {
             }
         }
 
-        return handler.returner([true], api_name, 201)
+        return handler.returner([true, { message: "user logged out successfully" }], api_name, 201)
     } catch (e) {
         return handler.returner([false], api_name, 500)
     }

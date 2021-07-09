@@ -12,7 +12,34 @@ const errors_array = [
 
 exports.handler = async (event, context) => {
     try {
-      x
+        const body = JSON.parse(event.body)
+
+        if (!body || JSON.stringify(body) === "{}") {
+            throw `${errors_array[0]}`
+        }
+
+        const all_fields = Object.keys(body)
+
+        //more error handling
+        const required_fields = ["id_order", "token"]
+
+        const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
+
+        if (missing_fields.length > 0) {
+            throw Error(missing_fields)
+        }
+
+        const { id_order, token, ...others } = body
+
+        const id_user = await auth_token.verify(token)
+
+        if (!id_user) {
+            throw `${errors_array[1]}`
+        }
+
+        const { id_vendor } = (await db.select_all_with_condition("users", { id_user }))[0]
+        let order_exist
+        let data
 
         if (id_vendor) {
             order_exist = await db.select_all_from_join3_with_2condition(
@@ -32,6 +59,8 @@ exports.handler = async (event, context) => {
             }
 
             data = { ...others }
+
+            await db.update_with_condition("orders", data, { id_order })
         } else {
             order_exist = (
                 await db.select_one_with_2conditions("orders", { id_order }, { id_user })
@@ -51,14 +80,20 @@ exports.handler = async (event, context) => {
 
             data = { ...others }
 
-            if (
-                data.id_order_status != 6 &&
-                data.id_order_status != 7 &&
-                data.id_order_status != 13
-            ) {
-                throw `${errors_array[3]}`
-            } else {
+            if (data.isPaid == 1) {
                 await db.update_with_condition("orders", data, { id_order })
+            }
+
+            if (data.id_order_status) {
+                if (
+                    data.id_order_status != 6 &&
+                    data.id_order_status != 7 &&
+                    data.id_order_status != 13
+                ) {
+                    throw `${errors_array[3]}`
+                } else {
+                    await db.update_with_condition("orders", data, { id_order })
+                }
             }
         }
 

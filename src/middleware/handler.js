@@ -13,7 +13,7 @@ exports.returner = async (result, api_name, statusCode) => {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Methods": "*",
-                'Access-Control-Allow-Credentials': true,
+                "Access-Control-Allow-Credentials": true,
             },
             body: JSON.stringify({
                 success: result[0],
@@ -21,15 +21,14 @@ exports.returner = async (result, api_name, statusCode) => {
                 data: result[1] || "Server Error, please try again later",
             }),
         }
-    }
-     else {
+    } else {
         return await {
             statusCode: statusCode,
             headers: {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Methods": "*",
-                'Access-Control-Allow-Credentials': true,
+                "Access-Control-Allow-Credentials": true,
             },
             body: JSON.stringify({
                 success: result[0],
@@ -38,9 +37,6 @@ exports.returner = async (result, api_name, statusCode) => {
             }),
         }
     }
-
-
-   
 }
 
 exports.datetime = async () => {

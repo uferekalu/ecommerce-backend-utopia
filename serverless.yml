@@ -3,10 +3,9 @@ provider:
     name: aws
     runtime: nodejs14.x
     region: ${file(./secret.json):DefaultRegion}
-    stage: prod
+    stage: dev
 
 functions:
-
     vendor_public_details:
         handler: src/lambda/vendor/vendor_public_details.handler
         events:
@@ -17,9 +16,7 @@ functions:
         origin: "*"
     #-------------------------------------------------------------------------
 
-
-
- #-------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     product_update:
         handler: src/lambda/product/product_update.handler
         events:
@@ -28,7 +25,7 @@ functions:
                   method: post
         cors: true
         origin: "*"
- #-------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
     product_get_vendor:
         handler: src/lambda/product/product_get_vendor.handler
         events:
@@ -37,7 +34,7 @@ functions:
                   method: post
         cors: true
         origin: "*"
- #-------------------------------------------------------------------------
+    #-------------------------------------------------------------------------
 
     product_search:
         handler: src/lambda/product/product_search.handler
@@ -287,6 +284,16 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+
+    request_order_return:
+        handler: src/lambda/order/request_order_return.handler
+        events:
+            - http:
+                  path: /api/request_order_return
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
     vendor_products_get:
         handler: src/lambda/vendor/vendor_products_get.handler
         events:
@@ -327,15 +334,15 @@ functions:
                   path: /api/vendor/full/{id_vendor}
                   method: post
         cors: true
-        origin: "*"       
+        origin: "*"
         headers: # <-- Specify allowed headers
-              - Content-Type
-              - X-Amz-Date
-              - Authorization
-              - X-Api-Key
-              - X-Amz-Security-Token
-              - X-Amz-User-Agent
-              - Access-Control-Allow-Origin
+            - Content-Type
+            - X-Amz-Date
+            - Authorization
+            - X-Api-Key
+            - X-Amz-Security-Token
+            - X-Amz-User-Agent
+            - Access-Control-Allow-Origin
     #-------------------------------------------------------------------------
     vendor_earnings_get:
         handler: src/lambda/vendor/vendor_earnings_get.handler

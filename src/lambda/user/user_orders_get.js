@@ -12,7 +12,6 @@ class CustomError extends Error {
 }
 
 exports.handler = async (event, context) => {
-    
     try {
         const body = JSON.parse(event.body)
 
@@ -33,15 +32,12 @@ exports.handler = async (event, context) => {
 
         const { token } = body
 
-        console.log("TOKEN", token)
 
         const id_user = await auth_token.verify(token)
-        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",id_user)
 
         if (!id_user) {
             throw `${custom_errors[1]}`
         }
-        console.log("bbbbbbbbbbbbbbbb",id_user)
         const response = await db.select_all_from_join5_with_conditionB_and_order(
             "orders_m2m_products",
             "orders",
@@ -56,7 +52,6 @@ exports.handler = async (event, context) => {
             "orders.id_order",
             "DESC"
         )
-        console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",response)
         const orders = []
         const code = []
         const products = []
@@ -76,7 +71,6 @@ exports.handler = async (event, context) => {
         return handler.returner([true, products], api_name)
     } catch (e) {
         let errors = await handler.required_field_error(e)
-        console.log(errors)
         if (custom_errors.includes(e)) {
             errors = e
         }

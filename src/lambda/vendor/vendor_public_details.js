@@ -7,8 +7,6 @@ exports.handler = async (event, context) => {
     try {
         const { id_vendor } = event.pathParameters
 
-        // console.log("bbbbbbbbbbbbbbbbbbbbbbbbb: ", id_vendor)
-
         const columns = [
             "id_vendor",
             "business_name",
@@ -26,7 +24,6 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, vendor_public_details[0]], api_name, 200)
     } catch (e) {
-        console.log("Error in ", api_name, " try catch: ", e)
         return handler.returner([false], api_name, 500)
     }
 }

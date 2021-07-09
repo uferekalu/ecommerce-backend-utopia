@@ -44,8 +44,6 @@ exports.handler = async (event, context) => {
         //comparing the provided password with the hashed version using the library reverse check
         const pass_valid = await bcrypt.compare(body.user_password, user_exist[0].user_password)
 
-        console.log("VALID PASS", pass_valid)
-
         if (!pass_valid) {
             throw "invalid login"
         }
@@ -67,19 +65,22 @@ exports.handler = async (event, context) => {
             ut_datetime_created: await handler.datetime(),
         }
 
-        //checking if the user already have a session token stored
-        const check_token = await db.search_one("user_tokens", "id_user", id_user)
+        const all_tokens = await db.select_one_with_condition_and_order(
+            "user_tokens",
+            "token",
+            { id_user },
+            "ut_datetime_created",
+            "ASC"
+        )
 
-        //if user was not already logged in, signified by absence of a token,
-        //then the newly created token will be added to the user_tokens table
-        //if user was already logged in, signified by presence of a token,
-        //then the newly created token will replace the old one
-        //potentially logging the user out if he was previously logged in on another device
-        if (check_token.length > 0) {
-            await db.update_one("user_tokens", data, "id_user", id_user)
-        } else {
-            await db.insert_new(data, "user_tokens")
+        if (all_tokens.length > 3) {
+            const oldest_token = all_tokens[0].token
+            await db.delete_with_condition("user_tokens", {
+                token: oldest_token,
+            })
         }
+
+        await db.insert_new(data, "user_tokens")
 
         const user_details = (
             await db.select_all_from_join_with_condition("users", "vendors", "id_vendor", {
@@ -89,7 +90,7 @@ exports.handler = async (event, context) => {
 
         let vendor_details = {}
         if (user_details?.id_vendor && user_details?.business_name) {
-            const { business_name, id_vendor} = user_details
+            const { business_name, id_vendor } = user_details
             vendor_details = { business_name, id_vendor }
         }
 

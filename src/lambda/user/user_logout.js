@@ -8,10 +8,16 @@ exports.handler = async (event, context) => {
         const body = JSON.parse(event.body)
 
         if (body?.token) {
-            const token_exist = await db.search_one("user_tokens", "token", body.token)
+            const token_exist = (
+                await db.select_all_with_condition("user_tokens", {
+                    token: body.token,
+                })
+            )[0]
 
-            if (token_exist.length > 0) {
-                await delete_one("user_tokens", "token", body.token)
+            if (token_exist) {
+                await db.delete_with_condition("user_tokens", {
+                    token: body.token,
+                })
             }
         }
 

@@ -48,9 +48,9 @@ exports.handler = async (event, context) => {
             "DESC"
         )
 
-        if (data.length < 1) {
-            throw `${errors_array[2]}`
-        }
+        // if (data.length < 1) {
+        //     throw `${errors_array[2]}`
+        // }
 
         const orders = []
         const code = []

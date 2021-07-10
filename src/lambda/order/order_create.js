@@ -50,23 +50,35 @@ exports.handler = async (event, context) => {
         const vcode = []
         const vsubtotal = []
         const vproducts = []
+        const quantity = []
 
         const mapped_prices = id_product_m2m_vendor.map(async (_id) => {
             const res = (
                 await db.search_one("products_m2m_vendors", "id_product_m2m_vendor", _id)
             )[0]
 
+            const price = res.p2v_promo_price ?? res.p2v_price
+
             if (!vcode.includes(res.id_vendor)) {
                 vcode.push(res.id_vendor)
-                vsubtotal.push(res.p2v_promo_price ?? res.p2v_price)
+                vsubtotal.push(price)
+                quantity.push(1)
                 vproducts.push([res.id_product_m2m_vendor])
                 return
             }
 
             if (vcode.includes(res.id_vendor)) {
                 const idx = vcode.indexOf(res.id_vendor)
-                vsubtotal[idx] + (res.p2v_promo_price ?? res.p2v_price)
-                vproducts[idx].push(res.id_product_m2m_vendor)
+
+                if (vproducts.flat().includes(res.id_product_m2m_vendor)) {
+                    const qty = quantity[idx] + 1
+                    vsubtotal[idx] = price * qty
+                    quantity[idx]++
+                } else {
+                    vsubtotal[idx] + price
+                    quantity.push(1)
+                    vproducts[idx].push(res.id_product_m2m_vendor)
+                }
                 return
             }
         })
@@ -83,15 +95,14 @@ exports.handler = async (event, context) => {
         })
 
         const new_orders = await Promise.all(mapped_new_order)
-
         const values = vproducts.map((product, index) => {
-            const arr = product.map((_id) => [_id, new_orders[index]])
+            const arr = product.map((_id) => [_id, new_orders[index], quantity[index]])
             return arr.flat()
         })
 
         const new_order_m2m_product = await db.insert_many(
             values,
-            ["id_product_m2m_vendor", "id_order"],
+            ["id_product_m2m_vendor", "id_order", "quantity"],
             "orders_m2m_products"
         )
 

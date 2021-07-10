@@ -13,6 +13,7 @@ exports.handler = async (event, context) => {
         const datetime = await handler.datetime()
 
         const body = JSON.parse(event.body)
+        console.log(body)
 
         //error handling
         if (!body || JSON.stringify(body) === "{}") {
@@ -40,26 +41,60 @@ exports.handler = async (event, context) => {
             throw `${errors_array[1]}`
         }
 
+        const vcode = []
+        const vsubtotal = []
+        const vproducts = []
+
         const mapped_prices = id_product_m2m_vendor.map(async (_id) => {
-            const res = await db.search_one("products_m2m_vendors", "id_product_m2m_vendor", _id)
-            return res[0].p2v_price
+            const res = (
+                await db.search_one("products_m2m_vendors", "id_product_m2m_vendor", _id)
+            )[0]
+
+            if (!vcode.includes(res.id_vendor)) {
+                vcode.push(res.id_vendor)
+                vsubtotal.push(res.p2v_promo_price ?? res.p2v_price)
+                vproducts.push([res.id_product_m2m_vendor])
+            }
+
+            if (vcode.includes(res.id_vendor)) {
+                const idx = vcode.indexOf(res.id_vendor)
+                vsubtotal[idx] + (res.p2v_promo_price ?? res.p2v_price)
+                vproducts[idx].push(res.id_product_m2m_vendor)
+            }
+
+            // return res.p2v_price
         })
-        const prices = await Promise.all(mapped_prices)
 
-        const total = prices.reduce((sum, price) => sum + price)
+        // const prices = await Promise.all(mapped_prices)
 
-        const new_order = await db.insert_new(
-            { total, id_user, order_created_at: datetime, paymentMethod },
-            "orders"
-        )
+        // const total = prices.reduce((sum, price) => sum + price)
 
-        if (!new_order) {
-            throw `${errors_array[2]}`
-        }
+        const mapped_new_order = vsubtotal.map(async (total) => {
+            const res = await db.insert_new(
+                { total, id_user, order_created_at: datetime, paymentMethod },
+                "orders"
+            )
+            return res.insertId
+        })
 
-        const id_order = new_order.insertId
+        const new_orders = await Promise.all(mapped_new_order)
 
-        const values = id_product_m2m_vendor.map((_id) => [_id, id_order])
+        // const new_order = await db.insert_new(
+        //     { total, id_user, order_created_at: datetime, paymentMethod },
+        //     "orders"
+        // )
+
+        // if (!new_order) {
+        //     throw `${errors_array[2]}`
+        // }
+
+        // const id_order = new_order.insertId
+
+        const values = vproducts.map((product, index) => {
+            product.forEach((_id) => [_id, new_orders[index]])
+        })
+
+        // const values = id_product_m2m_vendor.map((_id) => [_id, id_order])
 
         const new_order_m2m_product = await db.insert_many(
             values,
@@ -79,7 +114,6 @@ exports.handler = async (event, context) => {
 
         const data = {
             message: "order created successfully",
-            id_order,
             id_order_m2m_product,
         }
 

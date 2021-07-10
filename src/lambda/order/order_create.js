@@ -4,7 +4,6 @@ const api_name = "Order create"
 const custom_errors = [
     "body is empty",
     "user not found",
-    "order not created successfully",
     "orders_m2m_products not created successfully",
 ]
 
@@ -107,7 +106,7 @@ exports.handler = async (event, context) => {
         )
 
         if (!new_order_m2m_product) {
-            throw `${custom_errors[3]}`
+            throw `${custom_errors[2]}`
         }
 
         const { affectedRows, insertId } = new_order_m2m_product

@@ -3,7 +3,6 @@ const connection = require("../lib/database/connect")
 const db = require("../lib/database/query")
 
 exports.returner = async (result, api_name, statusCode) => {
-    console.log("result: ", result[1])
     if (statusCode == undefined) {
         statusCode = 200
     }
@@ -14,7 +13,7 @@ exports.returner = async (result, api_name, statusCode) => {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Methods": "*",
-                'Access-Control-Allow-Credentials': true,
+                "Access-Control-Allow-Credentials": true,
             },
             body: JSON.stringify({
                 success: result[0],
@@ -22,15 +21,14 @@ exports.returner = async (result, api_name, statusCode) => {
                 data: result[1] || "Server Error, please try again later",
             }),
         }
-    }
-     else {
+    } else {
         return await {
             statusCode: statusCode,
             headers: {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Headers": "*",
                 "Access-Control-Allow-Methods": "*",
-                'Access-Control-Allow-Credentials': true,
+                "Access-Control-Allow-Credentials": true,
             },
             body: JSON.stringify({
                 success: result[0],
@@ -39,11 +37,7 @@ exports.returner = async (result, api_name, statusCode) => {
             }),
         }
     }
-
-
-   
 }
-
 
 exports.datetime = async () => {
     return new Date().toISOString().slice(0, 19).replace("T", " ")

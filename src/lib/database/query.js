@@ -9,11 +9,12 @@ module.exports = {
     },
 
     select_columns_with_condictions: async (columns, table, column, data) => {
-        let result = await connection.query(`SELECT ${columns.join(", ")} FROM ${table} WHERE ${column} = ?`, [data])
+        let result = await connection.query(
+            `SELECT ${columns.join(", ")} FROM ${table} WHERE ${column} = ?`,
+            [data]
+        )
         return result
     },
-
-
 
     /**
      * @desc Returns one record from a table by condition
@@ -424,6 +425,17 @@ module.exports = {
         return result
     },
 
+    /**
+     * @desc Returns one column from a table with condition and orders
+     * @query SELECT target FROM table WHERE condition ORDER BY order_by dir
+     */
+    select_one_with_condition_and_order: async (table, target, condition, order_by, dir) => {
+        let result = await connection.query(
+            `SELECT ${target} FROM ${table} WHERE ? ORDER BY ${order_by} ${dir}`,
+            [condition]
+        )
+        return result
+    },
     select_all_with_condition_and_order: async (table, column, condition, dir) => {
         let result = await connection.query(
             `SELECT * FROM ${table} WHERE ? ORDER BY ${column} ${dir}`,
@@ -585,6 +597,11 @@ module.exports = {
     },
     delete_one: async (table, column, data) => {
         const result = await connection.query(`DELETE FROM ${table} WHERE ${column} = ?`, data)
+        return result
+    },
+
+    delete_with_condition: async (table, condition) => {
+        const result = await connection.query(`DELETE FROM ${table} WHERE ?`, condition)
         return result
     },
 

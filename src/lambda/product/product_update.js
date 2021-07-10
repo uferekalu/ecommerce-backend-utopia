@@ -54,7 +54,7 @@ exports.handler = async (event, context) => {
             product_title,
             product_desc,
             shipping_locations,
-            sku,
+            SKU,
             inventory,
             p2v_promo_price,
             id_product_m2m_vendor,

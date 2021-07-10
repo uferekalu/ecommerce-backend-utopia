@@ -52,23 +52,23 @@ exports.handler = async (event, context) => {
             throw `${errors_array[2]}`
         }
 
-        const orders = []
-        const code = []
-        const products = []
+        // const orders = []
+        // const code = []
+        // const products = []
 
-        data.map((item) => {
-            if (!orders.includes(item.id_order)) {
-                orders.push(item.id_order)
-                item.quantity = 1
-                code.push(item.id_product_m2m_vendor)
-                products.push(item)
-            } else {
-                const index = code.indexOf(item.id_product_m2m_vendor)
-                products[index].quantity++
-            }
-        })
+        // data.map((item) => {
+        //     if (!orders.includes(item.id_order)) {
+        //         orders.push(item.id_order)
+        //         item.quantity = 1
+        //         code.push(item.id_product_m2m_vendor)
+        //         products.push(item)
+        //     } else {
+        //         const index = code.indexOf(item.id_product_m2m_vendor)
+        //         products[index].quantity++
+        //     }
+        // })
 
-        return handler.returner([true, products], api_name, 200)
+        return handler.returner([true, data], api_name, 200)
     } catch (e) {
         let errors
         if (e.name === "Error") {

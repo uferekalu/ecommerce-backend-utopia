@@ -118,6 +118,7 @@ exports.get_access_level = async (id) => {
 }
 
 exports.required_field_error = async (e) => {
+    console.log(e)
     let errors
     if (e.name === "customError") {
         errors = e.message

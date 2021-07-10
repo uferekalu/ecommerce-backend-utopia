@@ -1,23 +1,29 @@
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const api_name = "Order create"
-const errors_array = [
+const custom_errors = [
     "body is empty",
     "user not found",
     "order not created successfully",
     "orders_m2m_products not created successfully",
 ]
 
+class CustomError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "customError"
+    }
+}
+
 exports.handler = async (event, context) => {
     try {
         const datetime = await handler.datetime()
 
         const body = JSON.parse(event.body)
-        console.log(body)
 
         //error handling
         if (!body || JSON.stringify(body) === "{}") {
-            throw `${errors_array[0]}`
+            throw `${custom_errors[0]}`
         }
 
         const all_fields = Object.keys(body)
@@ -28,7 +34,7 @@ exports.handler = async (event, context) => {
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
         if (missing_fields.length > 0) {
-            throw Error(missing_fields)
+            throw new CustomError(missing_fields)
         }
 
         const { id_user, id_product_m2m_vendor, paymentMethod } = body
@@ -38,7 +44,7 @@ exports.handler = async (event, context) => {
 
         //if user does not exist return error
         if (user_exist.length === 0) {
-            throw `${errors_array[1]}`
+            throw `${custom_errors[1]}`
         }
 
         const vcode = []
@@ -54,20 +60,19 @@ exports.handler = async (event, context) => {
                 vcode.push(res.id_vendor)
                 vsubtotal.push(res.p2v_promo_price ?? res.p2v_price)
                 vproducts.push([res.id_product_m2m_vendor])
+                return
             }
 
             if (vcode.includes(res.id_vendor)) {
                 const idx = vcode.indexOf(res.id_vendor)
                 vsubtotal[idx] + (res.p2v_promo_price ?? res.p2v_price)
                 vproducts[idx].push(res.id_product_m2m_vendor)
+                return
             }
-
-            // return res.p2v_price
         })
 
-        // const prices = await Promise.all(mapped_prices)
-
-        // const total = prices.reduce((sum, price) => sum + price)
+        const prices = await Promise.all(mapped_prices)
+        const total = prices.reduce((sum, price) => sum + price)
 
         const mapped_new_order = vsubtotal.map(async (total) => {
             const res = await db.insert_new(
@@ -79,22 +84,10 @@ exports.handler = async (event, context) => {
 
         const new_orders = await Promise.all(mapped_new_order)
 
-        // const new_order = await db.insert_new(
-        //     { total, id_user, order_created_at: datetime, paymentMethod },
-        //     "orders"
-        // )
-
-        // if (!new_order) {
-        //     throw `${errors_array[2]}`
-        // }
-
-        // const id_order = new_order.insertId
-
         const values = vproducts.map((product, index) => {
-            product.forEach((_id) => [_id, new_orders[index]])
+            const arr = product.map((_id) => [_id, new_orders[index]])
+            return arr.flat()
         })
-
-        // const values = id_product_m2m_vendor.map((_id) => [_id, id_order])
 
         const new_order_m2m_product = await db.insert_many(
             values,
@@ -103,7 +96,7 @@ exports.handler = async (event, context) => {
         )
 
         if (!new_order_m2m_product) {
-            throw `${errors_array[3]}`
+            throw `${custom_errors[3]}`
         }
 
         const { affectedRows, insertId } = new_order_m2m_product
@@ -119,17 +112,9 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {
-        let errors
-        if (e.name === "Error") {
-            errors = e.message
-                .split(",")
-                .map((field) => {
-                    return `${field} is required`
-                })
-                .join(", ")
-        }
+        let errors = await handler.required_field_error(e)
 
-        if (errors_array.includes(e)) {
+        if (custom_errors.includes(e)) {
             errors = e
         }
 

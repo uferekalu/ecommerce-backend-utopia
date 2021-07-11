@@ -41,6 +41,25 @@ exports.handler = async (event, context) => {
         let order_exist
         let data
 
+        data = { ...others }
+
+        const orders = JSON.parse(id_order)
+
+        if (Array.isArray(orders)) {
+            const order_update = orders.map(async (order) => {
+                order_exist = (
+                    await db.select_one_with_2conditions("orders", { id_order: order }, { id_user })
+                )[0]
+
+                if (!order_exist) {
+                    throw `${errors_array[2]}`
+                }
+
+                await db.update_with_condition("orders", data, { id_order: order })
+            })
+            await Promise.all(order_update)
+        }
+
         if (id_vendor) {
             order_exist = await db.select_all_from_join3_with_2condition(
                 "orders",
@@ -99,6 +118,7 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, { message: "Order updated successfully" }], api_name, 201)
     } catch (e) {
+        console.log(e)
         let errors
         if (e.name === "Error") {
             errors = e.message

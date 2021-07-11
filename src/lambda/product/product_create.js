@@ -22,7 +22,7 @@ exports.handler = async (event, context) => {
             "product_title",
             "product_desc",
             "shipping_locations",
-            "sku",
+            "SKU",
         ]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
@@ -38,7 +38,7 @@ exports.handler = async (event, context) => {
             product_title,
             product_desc,
             shipping_locations,
-            sku,
+            SKU,
             ...others
         } = body
 
@@ -153,7 +153,7 @@ exports.handler = async (event, context) => {
                     id_vendor,
                     p2v_price,
                     shipping_locations: array_shipping_locations,
-                    sku,
+                    SKU,
                     id_product: new_product_id,
                     is_active,
                     inventory: others.inventory

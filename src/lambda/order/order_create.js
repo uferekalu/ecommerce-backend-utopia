@@ -117,7 +117,7 @@ exports.handler = async (event, context) => {
 
         const data = {
             message: "order created successfully",
-            id_order_m2m_product,
+            id_order: new_orders,
         }
 
         return handler.returner([true, data], api_name, 201)

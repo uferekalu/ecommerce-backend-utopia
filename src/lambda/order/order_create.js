@@ -46,14 +46,20 @@ exports.handler = async (event, context) => {
             throw `${custom_errors[1]}`
         }
 
+        const country = (
+            await db.search_get_one_column_oncondition("users", "country", "id_user", id_user)
+        )[0].country
+
         const vcode = []
         const vsubtotal = []
+        const vshippings = []
         const vproducts = []
         const quantity = []
 
         const mapped_prices = id_product_m2m_vendor.map(async (_id) => {
             const res = (
-                await db.search_one("products_m2m_vendors", "id_product_m2m_vendor", _id)
+                await db.select_all_from_join2_with_condition_order(
+                    "products_m2m_vendors", "vendors", "id_vendor", {"id_product_m2m_vendor" : _id})
             )[0]
 
             const price = res.p2v_promo_price ?? res.p2v_price
@@ -63,6 +69,11 @@ exports.handler = async (event, context) => {
                 vsubtotal.push(price)
                 quantity.push(1)
                 vproducts.push([res.id_product_m2m_vendor])
+
+                vshippings.push(
+                    country === res.vendor_country ? (res.shipping_cost_local ?? 0) : (res.shipping_cost_intl ?? 0)
+                )
+
                 return
             }
 
@@ -85,9 +96,13 @@ exports.handler = async (event, context) => {
         const prices = await Promise.all(mapped_prices)
         const total = prices.reduce((sum, price) => sum + price)
 
-        const mapped_new_order = vsubtotal.map(async (total) => {
+        const mapped_new_order = vsubtotal.map(async (total, idx) => {
             const res = await db.insert_new(
-                { total, id_user, order_created_at: datetime, paymentMethod },
+                {
+                    total: Number(Number(total) + Number(vshippings[idx])).toFixed(2),
+                    shipping: vshippings[idx],
+                    id_user, order_created_at: datetime, paymentMethod
+                },
                 "orders"
             )
             return res.insertId
@@ -131,6 +146,7 @@ exports.handler = async (event, context) => {
         if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
+
         return handler.returner([false], api_name, 500)
     }
 }

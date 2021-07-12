@@ -216,7 +216,7 @@ functions:
         events:
             - http:
                   path: /api/user_update
-                  method: put
+                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
@@ -270,7 +270,7 @@ functions:
         events:
             - http:
                   path: /api/user_addresses_update
-                  method: put
+                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
@@ -380,7 +380,7 @@ functions:
         events:
             - http:
                   path: /api/forgot_password
-                  method: put
+                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------

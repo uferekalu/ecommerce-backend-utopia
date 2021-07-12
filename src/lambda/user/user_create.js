@@ -6,7 +6,6 @@ const send = require("../../lib/services/email/send_email")
 const bcrypt = require("bcryptjs")
 
 const secret = process.env.mySecret
-console.log("Secret: ", secret)
 const Cryptr = require("cryptr")
 const cryptr = new Cryptr(`${secret}`)
 
@@ -137,8 +136,6 @@ exports.handler = async (event, context) => {
         await db.insert_new(user_access_level, "user_access_level_m2m_users")
 
         const verification_token = cryptr.encrypt(`${id_user}`)
-
-        console.log(verification_token)
 
         // email_info.message += `https://wwdywnrhz6.execute-api.us-east-2.amazonaws.com/prod/api/user_verify/${verification_token}`
         // email_info.message += `http://localhost:3000/api/user_verify/${verification_token}`

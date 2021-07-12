@@ -66,6 +66,20 @@ exports.handler = async (event, context) => {
             ...other
         } = updated_data
 
+        let is_active = 0
+
+        if (others.product_thumbnail?.url) {
+            const success = await db.update_with_condition(
+                "product_thumbnails",
+                { url: product_thumbnail.url },
+                {
+                    id_product_thumbnail,
+                }
+            )
+
+            success ? (is_active = 1) : (is_active = 0)
+        }
+
         let array_shipping_locations
 
         if (!shipping_locations) {
@@ -74,15 +88,15 @@ exports.handler = async (event, context) => {
             array_shipping_locations = JSON.stringify(shipping_locations)
         }
 
-        const product_m2m_vendor_data =
-        {
+        const product_m2m_vendor_data = {
             p2v_price: p2v_price,
             p2v_promo_price: p2v_promo_price,
             inventory: inventory,
             SKU: SKU,
             shipping_cost_local: shipping_cost_local,
             shipping_cost_intl: shipping_cost_intl,
-            shipping_locations: array_shipping_locations
+            shipping_locations: array_shipping_locations,
+            is_active
         }
         const product_data = {
             product_title: product_title,

@@ -17,7 +17,6 @@ exports.handler = async (event, context) => {
         if (param) {
             const { token } = param
             id_user = cryptr.decrypt(token)
-            console.log("decrytped: ", id_user)
             is_email = (await db.select_all_with_condition("users", { id_user }))[0]
         }
 

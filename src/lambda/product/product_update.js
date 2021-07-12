@@ -8,6 +8,8 @@ exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
 
+        console.log(body)
+
         if (!body || JSON.stringify(body) === "{}") {
             throw "body is empty"
         }
@@ -63,6 +65,8 @@ exports.handler = async (event, context) => {
             id_product,
             id_product_thumbnail,
             product_thumbnail,
+            p2v_promo_off,
+            is_sale,
             ...other
         } = updated_data
 
@@ -96,7 +100,9 @@ exports.handler = async (event, context) => {
             shipping_cost_local: shipping_cost_local,
             shipping_cost_intl: shipping_cost_intl,
             shipping_locations: array_shipping_locations,
-            is_active
+            is_active,
+            p2v_promo_off,
+            is_sale,
         }
         const product_data = {
             product_title: product_title,

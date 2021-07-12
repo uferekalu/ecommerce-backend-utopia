@@ -270,7 +270,7 @@ functions:
         events:
             - http:
                   path: /api/user_addresses_update
-                  method: put
+                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------

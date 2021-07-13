@@ -8,8 +8,6 @@ exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
 
-        console.log(body)
-
         if (!body || JSON.stringify(body) === "{}") {
             throw "body is empty"
         }

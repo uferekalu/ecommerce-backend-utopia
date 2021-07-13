@@ -15,6 +15,7 @@ exports.handler = async (event, context) => {
 
         //Send email 
         email_info.message += order_id;
+        // await send.email('mejabidurotimi@yahoo.com', email_info);
         await send.email('customercare@utopiatech.io', email_info);
 
         return handler.returner(

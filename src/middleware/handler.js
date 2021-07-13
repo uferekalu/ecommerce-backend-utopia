@@ -3,7 +3,6 @@ const connection = require("../lib/database/connect")
 const db = require("../lib/database/query")
 
 exports.returner = async (result, api_name, statusCode) => {
-    console.log("result", result)
     if (statusCode == undefined) {
         statusCode = 200
     }

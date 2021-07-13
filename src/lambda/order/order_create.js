@@ -101,7 +101,7 @@ exports.handler = async (event, context) => {
                 {
                     total: Number(Number(total) + Number(vshippings[idx])).toFixed(2),
                     shipping: vshippings[idx],
-                    id_user, order_created_at: datetime, paymentMethod
+                    id_user, id_vendor: vcode[idx], order_created_at: datetime, paymentMethod
                 },
                 "orders"
             )

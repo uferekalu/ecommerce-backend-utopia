@@ -89,8 +89,11 @@ functions:
         handler: src/lambda/user/user_verify.handler
         events:
             - http:
-                  path: /api/user_verify/{token}
-                  method: get
+                  path: /api/user_verify/email/{token}
+                  method: post
+            - http:
+                  path: /api/user_verify/phone
+                  method: post
         cors: true
         origin: "*"
 
@@ -335,7 +338,7 @@ functions:
             - X-Amz-User-Agent
             - Access-Control-Allow-Origin
     #-------------------------------------------------------------------------
-    
+
     user_orders_get:
         handler: src/lambda/user/user_orders_get.handler
         events:

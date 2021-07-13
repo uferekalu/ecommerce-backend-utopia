@@ -33,13 +33,21 @@ exports.handler = async (event, context) => {
         }
 
         //if phone number was chosen as preferred login detail
-        if (all_fields.includes("user_phone_number")) {
-            user_exist = await db.search_one("users", "user_phone_number", body.user_phone_number)
-        }
+        // if (all_fields.includes("user_phone_number")) {
+        //     user_exist = await db.search_one("users", "user_phone_number", body.user_phone_number)
+        // }
 
         if (user_exist.length === 0) {
             throw "invalid login"
         }
+
+        if (user_exist[0].email_verified === 0) {
+            throw "verify email"
+        }
+
+        // if (isVerified ==) {
+        //     throw "invalid login"
+        // }
 
         //comparing the provided password with the hashed version using the library reverse check
         const pass_valid = await bcrypt.compare(body.user_password, user_exist[0].user_password)

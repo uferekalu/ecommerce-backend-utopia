@@ -105,6 +105,7 @@ exports.handler = async (event, context) => {
         const product_data = {
             product_title: product_title,
             product_desc: product_desc,
+            id_category
         }
 
         await db.update_with_condition("products_m2m_vendors", product_m2m_vendor_data, {

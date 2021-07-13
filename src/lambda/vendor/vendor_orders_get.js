@@ -9,6 +9,8 @@ exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
 
+        console.log(body);
+
         if (!body || JSON.stringify(body) === "{}") {
             throw `${errors_array[0]}`
         }
@@ -48,28 +50,31 @@ exports.handler = async (event, context) => {
             "DESC"
         )
 
-        if (data.length < 1) {
-            throw `${errors_array[2]}`
-        }
+        console.log(data);
 
-        const orders = []
-        const code = []
-        const products = []
+        // if (data.length < 1) {
+        //     throw `${errors_array[2]}`
+        // }
 
-        data.map((item) => {
-            if (!orders.includes(item.id_order)) {
-                orders.push(item.id_order)
-                item.quantity = 1
-                code.push(item.id_product_m2m_vendor)
-                products.push(item)
-            } else {
-                const index = code.indexOf(item.id_product_m2m_vendor)
-                products[index].quantity++
-            }
-        })
+        // const orders = []
+        // const code = []
+        // const products = []
 
-        return handler.returner([true, products], api_name, 200)
+        // data.map((item) => {
+        //     if (!orders.includes(item.id_order)) {
+        //         orders.push(item.id_order)
+        //         item.quantity = 1
+        //         code.push(item.id_product_m2m_vendor)
+        //         products.push(item)
+        //     } else {
+        //         const index = code.indexOf(item.id_product_m2m_vendor)
+        //         products[index].quantity++
+        //     }
+        // })
+
+        return handler.returner([true, data], api_name, 200)
     } catch (e) {
+        console.log(e);
         let errors
         if (e.name === "Error") {
             errors = e.message

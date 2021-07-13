@@ -32,7 +32,6 @@ exports.handler = async (event, context) => {
 
         const { token } = body
 
-
         const id_user = await auth_token.verify(token)
 
         if (!id_user) {
@@ -52,23 +51,23 @@ exports.handler = async (event, context) => {
             "orders.id_order",
             "DESC"
         )
-        const orders = []
-        const code = []
-        const products = []
+        // const orders = []
+        // const code = []
+        // const products = []
 
-        response.map((item) => {
-            if (!orders.includes(item.id_order)) {
-                orders.push(item.id_order)
-                item.quantity = 1
-                code.push(item.id_product_m2m_vendor)
-                products.push(item)
-            } else {
-                const index = code.indexOf(item.id_product_m2m_vendor)
-                products[index].quantity++
-            }
-        })
+        // response.map((item) => {
+        //     if (!orders.includes(item.id_order)) {
+        //         orders.push(item.id_order)
+        //         item.quantity = 1
+        //         code.push(item.id_product_m2m_vendor)
+        //         products.push(item)
+        //     } else {
+        //         const index = code.indexOf(item.id_product_m2m_vendor)
+        //         products[index].quantity++
+        //     }
+        // })
 
-        return handler.returner([true, products], api_name)
+        return handler.returner([true, response], api_name)
     } catch (e) {
         let errors = await handler.required_field_error(e)
         if (custom_errors.includes(e)) {

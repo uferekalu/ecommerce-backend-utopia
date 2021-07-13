@@ -27,6 +27,7 @@ exports.handler = async (event, context) => {
         }
 
         if (user_id_exist.length == 0)
+        
             return handler.returner(
                 [false, { message: `${body.user_email || body.user_phone_number} is not found` }],
                 api_name,
@@ -44,12 +45,15 @@ exports.handler = async (event, context) => {
         //Send email 
         email_info.message += randomString;
         await send.email(user_id_exist[0].user_email, email_info);
-        
+
         return handler.returner(
             [true, { user_email: user_id_exist[0].user_email, message: "New password sent to your email address" }],
             api_name,
             201
         )
+
+
+
     } catch (e) {
         return handler.returner([false, e], api_name)
     }

@@ -1,12 +1,18 @@
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const api_name = "Order create"
-const errors_array = [
+const custom_errors = [
     "body is empty",
     "user not found",
-    "order not created successfully",
     "orders_m2m_products not created successfully",
 ]
+
+class CustomError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "customError"
+    }
+}
 
 exports.handler = async (event, context) => {
     try {
@@ -16,7 +22,7 @@ exports.handler = async (event, context) => {
 
         //error handling
         if (!body || JSON.stringify(body) === "{}") {
-            throw `${errors_array[0]}`
+            throw `${custom_errors[0]}`
         }
 
         const all_fields = Object.keys(body)
@@ -27,7 +33,7 @@ exports.handler = async (event, context) => {
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
         if (missing_fields.length > 0) {
-            throw Error(missing_fields)
+            throw new CustomError(missing_fields)
         }
 
         const { id_user, id_product_m2m_vendor, paymentMethod } = body
@@ -37,38 +43,87 @@ exports.handler = async (event, context) => {
 
         //if user does not exist return error
         if (user_exist.length === 0) {
-            throw `${errors_array[1]}`
+            throw `${custom_errors[1]}`
         }
+
+        const country = (
+            await db.search_get_one_column_oncondition("users", "country", "id_user", id_user)
+        )[0].country
+
+        const vcode = []
+        const vsubtotal = []
+        const vshippings = []
+        const vproducts = []
+        const quantity = []
 
         const mapped_prices = id_product_m2m_vendor.map(async (_id) => {
-            const res = await db.search_one("products_m2m_vendors", "id_product_m2m_vendor", _id)
-            return res[0].p2v_price
-        })
-        const prices = await Promise.all(mapped_prices)
+            const res = (
+                await db.select_all_from_join2_with_condition_order(
+                    "products_m2m_vendors", "vendors", "id_vendor", {"id_product_m2m_vendor" : _id})
+            )[0]
 
+            const price = res.p2v_promo_price ?? res.p2v_price
+
+            if (!vcode.includes(res.id_vendor)) {
+                vcode.push(res.id_vendor)
+                vsubtotal.push(price)
+                quantity.push(1)
+                vproducts.push([res.id_product_m2m_vendor])
+
+                vshippings.push(
+                    country === res.vendor_country ? (res.shipping_cost_local ?? 0) : (res.shipping_cost_intl ?? 0)
+                )
+
+                return
+            }
+
+            if (vcode.includes(res.id_vendor)) {
+                const idx = vcode.indexOf(res.id_vendor)
+
+                if (vproducts.flat().includes(res.id_product_m2m_vendor)) {
+                    const qty = quantity[idx] + 1
+                    vsubtotal[idx] = price * qty
+                    quantity[idx]++
+                } else {
+                    vsubtotal[idx] + price
+                    quantity.push(1)
+                    vproducts[idx].push(res.id_product_m2m_vendor)
+                }
+                return
+            }
+        })
+
+        const prices = await Promise.all(mapped_prices)
         const total = prices.reduce((sum, price) => sum + price)
 
-        const new_order = await db.insert_new(
-            { total, id_user, order_created_at: datetime, paymentMethod },
-            "orders"
-        )
+        const mapped_new_order = vsubtotal.map(async (total, idx) => {
+            const res = await db.insert_new(
+                {
+                    total: Number(Number(total) + Number(vshippings[idx])).toFixed(2),
+                    shipping: vshippings[idx],
+                    id_user,
+                    // id_vendor: vcode[idx], 
+                    order_created_at: datetime, paymentMethod
+                },
+                "orders"
+            )
+            return res.insertId
+        })
 
-        if (!new_order) {
-            throw `${errors_array[2]}`
-        }
-
-        const id_order = new_order.insertId
-
-        const values = id_product_m2m_vendor.map((_id) => [_id, id_order])
+        const new_orders = await Promise.all(mapped_new_order)
+        const values = vproducts.map((product, index) => {
+            const arr = product.map((_id) => [_id, new_orders[index], quantity[index]])
+            return arr.flat()
+        })
 
         const new_order_m2m_product = await db.insert_many(
             values,
-            ["id_product_m2m_vendor", "id_order"],
+            ["id_product_m2m_vendor", "id_order", "quantity"],
             "orders_m2m_products"
         )
 
         if (!new_order_m2m_product) {
-            throw `${errors_array[3]}`
+            throw `${custom_errors[2]}`
         }
 
         const { affectedRows, insertId } = new_order_m2m_product
@@ -79,29 +134,21 @@ exports.handler = async (event, context) => {
 
         const data = {
             message: "order created successfully",
-            id_order,
-            id_order_m2m_product,
+            id_order: new_orders,
         }
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {
-        let errors
-        if (e.name === "Error") {
-            errors = e.message
-                .split(",")
-                .map((field) => {
-                    return `${field} is required`
-                })
-                .join(", ")
-        }
+        let errors = await handler.required_field_error(e)
 
-        if (errors_array.includes(e)) {
+        if (custom_errors.includes(e)) {
             errors = e
         }
 
         if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
+
         return handler.returner([false], api_name, 500)
     }
 }

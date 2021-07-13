@@ -3,7 +3,7 @@ provider:
     name: aws
     runtime: nodejs14.x
     region: ${file(./secret.json):DefaultRegion}
-    stage: dev
+    stage: prod
 
 functions:
     vendor_public_details:
@@ -216,7 +216,7 @@ functions:
         events:
             - http:
                   path: /api/user_update
-                  method: put
+                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
@@ -270,7 +270,7 @@ functions:
         events:
             - http:
                   path: /api/user_addresses_update
-                  method: put
+                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
@@ -389,7 +389,7 @@ functions:
         events:
             - http:
                   path: /api/forgot_password
-                  method: put
+                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------

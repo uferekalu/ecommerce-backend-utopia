@@ -22,7 +22,7 @@ exports.handler = async (event, context) => {
             "product_title",
             "product_desc",
             "shipping_locations",
-            "sku",
+            "SKU",
         ]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
@@ -38,7 +38,9 @@ exports.handler = async (event, context) => {
             product_title,
             product_desc,
             shipping_locations,
-            sku,
+            SKU,
+            p2v_promo_off,
+            is_sale,
             ...others
         } = body
 
@@ -69,9 +71,14 @@ exports.handler = async (event, context) => {
             let id_product_thumbnail
 
             if (!others.product_thumbnail?.url) {
-                id_product_thumbnail = await db.insert_new({ alt: product_title }, "product_thumbnails")
-            }
-            else if (optional_fields.includes("product_thumbnail") && others.product_thumbnail?.url) {
+                id_product_thumbnail = await db.insert_new(
+                    { alt: product_title },
+                    "product_thumbnails"
+                )
+            } else if (
+                optional_fields.includes("product_thumbnail") &&
+                others.product_thumbnail?.url
+            ) {
                 const { url } = others.product_thumbnail
 
                 id_product_thumbnail = await db.insert_new(
@@ -79,9 +86,6 @@ exports.handler = async (event, context) => {
                     "product_thumbnails"
                 )
             }
-
-
-
 
             let new_product_record
             if (new_tags_id) {
@@ -92,7 +96,7 @@ exports.handler = async (event, context) => {
                         product_desc,
                         id_tags: new_tags_id,
                         created_at: datetime,
-                        id_product_thumbnail: id_product_thumbnail.insertId
+                        id_product_thumbnail: id_product_thumbnail.insertId,
                     },
                     "products"
                 )
@@ -105,7 +109,7 @@ exports.handler = async (event, context) => {
                         product_title,
                         product_desc,
                         created_at: datetime,
-                        id_product_thumbnail: id_product_thumbnail.insertId
+                        id_product_thumbnail: id_product_thumbnail.insertId,
                     },
                     "products"
                 )
@@ -119,8 +123,6 @@ exports.handler = async (event, context) => {
             throw "product create unsuccessful"
         }
 
-
-
         let is_active
 
         if (others.product_thumbnail.url) {
@@ -132,8 +134,12 @@ exports.handler = async (event, context) => {
         //collates p2v_promo_price and/or id_brand optional fields if provided
         const new_p2v_data = {}
         for (let prop in others) {
-            if (prop === "p2v_promo_price" || prop === "id_brand" 
-                || prop === 'shipping_cost_local' || prop === 'shipping_cost_intl') {
+            if (
+                prop === "p2v_promo_price" ||
+                prop === "id_brand" ||
+                prop === "shipping_cost_local" ||
+                prop === "shipping_cost_intl"
+            ) {
                 new_p2v_data[prop] = others[prop]
             }
         }
@@ -153,10 +159,12 @@ exports.handler = async (event, context) => {
                     id_vendor,
                     p2v_price,
                     shipping_locations: array_shipping_locations,
-                    sku,
+                    SKU,
                     id_product: new_product_id,
                     is_active,
-                    inventory: others.inventory
+                    inventory: others.inventory,
+                    p2v_promo_off,
+                    is_sale,
                 },
                 "products_m2m_vendors"
             )

@@ -21,7 +21,7 @@ exports.handler = async (event) => {
                 "id_product",
                 "id_product_thumbnail",
                 "id_vendor",
-                { is_sale: "true" },
+                { is_sale: 1 },
                 "p2v_promo_off",
                 limit,
                 "DESC"
@@ -37,7 +37,7 @@ exports.handler = async (event) => {
                 "id_product",
                 "id_product_thumbnail",
                 "id_vendor",
-                { is_sale: "true" },
+                { is_sale: 1 },
                 "p2v_promo_off",
                 "DESC"
             )

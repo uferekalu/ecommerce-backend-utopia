@@ -1,10 +1,13 @@
+require("dotenv").config()
 const handler = require("../../middleware/handler")
 const auth_token = require("../../middleware/token_handler")
 const db = require("../../lib/database/query")
 const send = require("../../lib/services/email/send_email")
 const bcrypt = require("bcryptjs")
+
+const secret = process.env.mySecret
 const Cryptr = require("cryptr")
-const cryptr = new Cryptr("myTotalySecretKey")
+const cryptr = new Cryptr(`${secret}`)
 
 const passwordHash = async (password) => {
     const salt = await bcrypt.genSalt(10)
@@ -111,6 +114,8 @@ exports.handler = async (event, context) => {
 
         const result = await db.insert_new(record, "users")
 
+        const id_user = result.insertId
+
         delete record.user_password
 
         if (!result) {
@@ -123,28 +128,18 @@ exports.handler = async (event, context) => {
             { referral_code }
         )
 
-        //get the id_user
-        const user_id = await db.select_oneColumn(
-            "users",
-            "id_user",
-            "user_email",
-            record.user_email
-        )
-
-        const userAccessRecord = {
-            id_id_user: user_id[0].id_user,
+        const user_access_level = {
+            id_id_user: id_user,
             id_user_access_level,
         }
 
-        await db.insert_new(userAccessRecord, "user_access_level_m2m_users")
+        await db.insert_new(user_access_level, "user_access_level_m2m_users")
 
-        const verification_token = cryptr.encrypt(
-            JSON.stringify({ id_user: result.insertId, type: "email" })
-        )
+        const verification_token = cryptr.encrypt(`${id_user}`)
+
         // email_info.message += `https://wwdywnrhz6.execute-api.us-east-2.amazonaws.com/prod/api/user_verify/${verification_token}`
-        email_info.message += `http://localhost:3000/api/user_verify/${verification_token}`
-
-        await send.email(user_email, email_info)
+        // email_info.message += `http://localhost:3000/api/user_verify/${verification_token}`
+        // await send.email(user_email, email_info)
 
         return handler.returner([true, record], api_name, 201)
     } catch (e) {

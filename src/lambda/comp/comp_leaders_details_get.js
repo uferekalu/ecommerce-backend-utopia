@@ -12,7 +12,6 @@ exports.handler = async (event, context) => {
             12,
             "employees.id_employee_position"
         )
-        console.log("llllllllllllllllllllllllemployees: ", employees)
         return handler.returner([true, { employees }], api_name, 200)
     } catch (e) {
         return handler.returner([false], api_name, 500)

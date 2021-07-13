@@ -9,8 +9,6 @@ exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
 
-        console.log(body);
-
         if (!body || JSON.stringify(body) === "{}") {
             throw `${errors_array[0]}`
         }
@@ -50,8 +48,6 @@ exports.handler = async (event, context) => {
             "DESC"
         )
 
-        console.log(data);
-
         // if (data.length < 1) {
         //     throw `${errors_array[2]}`
         // }
@@ -74,7 +70,6 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, data], api_name, 200)
     } catch (e) {
-        console.log(e);
         let errors
         if (e.name === "Error") {
             errors = e.message

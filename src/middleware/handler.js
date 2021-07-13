@@ -22,11 +22,8 @@ exports.returner = async (result, api_name, statusCode) => {
             }),
         }
     } else {
-
         //console.log("this is the return: ", JSON.stringify(result[1]))
         return await {
-
-
             statusCode: statusCode,
             headers: {
                 "Access-Control-Allow-Origin": "*",
@@ -37,7 +34,9 @@ exports.returner = async (result, api_name, statusCode) => {
             body: JSON.stringify({
                 success: result[0],
                 api: api_name,
-                data: isJson ? result[1] : (result[1]?.toString()) || ("Server Error, please try again later"),
+                data: isJson
+                    ? result[1]
+                    : result[1]?.toString() || "Server Error, please try again later",
             }),
         }
     }
@@ -45,11 +44,11 @@ exports.returner = async (result, api_name, statusCode) => {
 
 function isJson(str) {
     try {
-        JSON.parse(str);
+        JSON.parse(str)
     } catch (e) {
-        return false;
+        return false
     }
-    return true;
+    return true
 }
 
 exports.datetime = async () => {

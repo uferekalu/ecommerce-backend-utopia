@@ -35,15 +35,17 @@ exports.handler = async (event, context) => {
             await db.select_one_with_condition("users", "id_vendor", { id_user })
         )[0]
 
-        const data = await db.select_all_from_join4_with_condition_and_orderB(
+        const data = await db.select_all_from_join5_with_conditionB_and_order(
             "orders_m2m_products",
             "orders",
             "products_m2m_vendors",
             "products",
+            "users",
             "id_order",
             "id_product_m2m_vendor",
             "id_product",
-            { id_vendor },
+            "id_user",
+            { "products_m2m_vendors.id_vendor": id_vendor },
             "order_created_at",
             "DESC"
         )

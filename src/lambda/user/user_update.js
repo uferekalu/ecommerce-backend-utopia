@@ -45,12 +45,21 @@ exports.handler = async (event, context) => {
             delete others.user_password
         }
 
+        if(others.url){
+            if (others.id_user_profile_image === 0 ){
+
+            }else{
+
+            }
+        }
+
         const updated_data = { ...others }
 
         await db.update_one("users", updated_data, "id_user", id_user)
 
         return handler.returner([true, updated_data], api_name, 201)
     } catch (e) {
+        console.log(e);
         if (e.name === "Error") {
             const errors = e.message
                 .split(",")

@@ -137,8 +137,8 @@ exports.handler = async (event, context) => {
 
         const verification_token = cryptr.encrypt(`${id_user}`)
 
-        // email_info.message += `https://arivanna.com/user-verification/email/${verification_token}`
-        email_info.message += `http://localhost:3003/user-verification/email/${verification_token}`
+        email_info.message += `https://arivanna.com/user-verification/email/${verification_token}`
+        // email_info.message += `http://localhost:3003/user-verification/email/${verification_token}`
         await send.email(user_email, email_info)
 
         return handler.returner([true, record], api_name, 201)

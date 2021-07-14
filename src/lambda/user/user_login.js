@@ -26,6 +26,7 @@ exports.handler = async (event, context) => {
         }
 
         let user_exist
+        const user_email = body.user_email
 
         //if email was chosen as preferred login detail
         if (all_fields.includes("user_email")) {
@@ -61,6 +62,8 @@ exports.handler = async (event, context) => {
 
         const id_user = user_exist[0].id_user
         const user_first_name = user_exist[0].user_first_name
+        const user_last_name = user_exist[0].user_last_name
+        const user_phone_number = user_exist[0].user_phone_number
         const city = user_exist[0].city
         const country = user_exist[0].country
 
@@ -139,6 +142,7 @@ exports.handler = async (event, context) => {
             201
         )
     } catch (e) {
+        console.log(e);
         return handler.returner([false, e], api_name)
     }
 }

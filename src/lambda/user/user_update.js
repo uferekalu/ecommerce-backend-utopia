@@ -47,11 +47,25 @@ exports.handler = async (event, context) => {
 
         // Update profile image
         if (others.url_info) {
-            if (others.id_user_profile_image === 0) {
-                console.log(0)
+            let id_user_profile_image
+
+            if (!others.url_info.id_user_profile_image) {
+                console.log(1);
+                const result = await db.insert_new(others.url_info, "user_profile_images")
+                id_user_profile_image = result.insertId
+                await db.update_one("users", { id_user_profile_image }, "id_user", id_user)
             } else {
-                console.log(others.url_info)
+                console.log(others.url_info);
+                console.log(2);
+                await db.update_one(
+                    "user_profile_images",
+                    others.url_info,
+                    "id_user_profile_image",
+                    others.url_info.id_user_profile_image
+                )
             }
+
+            return handler.returner([true, others.url_info], api_name, 201)
         }
 
         // Update normal user info

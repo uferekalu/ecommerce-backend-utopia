@@ -45,21 +45,27 @@ exports.handler = async (event, context) => {
             delete others.user_password
         }
 
-        if(others.url){
-            if (others.id_user_profile_image === 0 ){
-
-            }else{
-
+        // Update profile image
+        if (others.url_info) {
+            if (others.id_user_profile_image === 0) {
+                console.log(0)
+            } else {
+                console.log(others.url_info)
             }
         }
 
-        const updated_data = { ...others }
+        // Update normal user info
+        if (!others.url_info) {
+            if (optional_fields.includes("url_info")) {
+                delete others.url_info
+            }
+            const updated_data = { ...others }
 
-        await db.update_one("users", updated_data, "id_user", id_user)
-
-        return handler.returner([true, updated_data], api_name, 201)
+            await db.update_one("users", updated_data, "id_user", id_user)
+            return handler.returner([true, updated_data], api_name, 201)
+        }
     } catch (e) {
-        console.log(e);
+        console.log(e)
         if (e.name === "Error") {
             const errors = e.message
                 .split(",")

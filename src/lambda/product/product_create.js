@@ -2,6 +2,19 @@ const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 
 const api_name = "Product create"
+const custom_errors = [
+    "body is empty",
+    "category is invalid",
+    "product create unsuccessful",
+    "vendor is invalid",
+]
+
+class CustomError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "utopiaError"
+    }
+}
 
 exports.handler = async (event, context) => {
     try {
@@ -9,7 +22,7 @@ exports.handler = async (event, context) => {
         const body = JSON.parse(event.body)
         //error handling
         if (!body || JSON.stringify(body) === "{}") {
-            throw "body is empty"
+            throw `${custom_errors[0]}`
         }
 
         const all_fields = Object.keys(body)
@@ -28,7 +41,7 @@ exports.handler = async (event, context) => {
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
         if (missing_fields.length > 0) {
-            throw Error(missing_fields)
+            throw new CustomError(missing_fields)
         }
 
         const {
@@ -51,7 +64,7 @@ exports.handler = async (event, context) => {
         )
 
         if (category_id.length < 1) {
-            throw "Category is invalid"
+            throw `${custom_errors[1]}`
         }
 
         const optional_fields = Object.keys(others)
@@ -120,7 +133,7 @@ exports.handler = async (event, context) => {
         const new_product_id = await getNewProductId()
 
         if (!new_product_id) {
-            throw "product create unsuccessful"
+            throw `${custom_errors[2]}`
         }
 
         let is_active
@@ -174,7 +187,7 @@ exports.handler = async (event, context) => {
         const new_product_m2m_vendor_id = await getNewProductVendorId()
 
         if (!new_product_m2m_vendor_id) {
-            throw "id_vendor is invalid"
+            throw `${custom_errors[3]}`
         }
 
         //P.S product_images is a multidimensional array nesting each image object
@@ -203,14 +216,11 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, { ...product, is_active }], api_name, 201)
     } catch (e) {
-        if (e.name === "Error") {
-            const errors = e.message
-                .split(",")
-                .map((field) => {
-                    return `${field} is required`
-                })
-                .join(", ")
-
+        let errors = await handler.required_field_error(e)
+        if (custom_errors.includes(e)) {
+            errors = e
+        }
+        if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
         return handler.returner([false], api_name, 500)

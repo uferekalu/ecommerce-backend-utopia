@@ -624,6 +624,7 @@ module.exports = {
     /**
      * @desc Updates one record in a table by condition
      * @query UPDATE table SET update WHERE condition
+     * @usage await db.update_with_condition(table: string, update: object, condition: object)
      */
     update_with_condition: async (table, update, condition) => {
         // const result = await connection.query(`UPDATE products_m2m_vendors SET p2v_price= '99' WHERE id_product_m2m_vendor = 302`)

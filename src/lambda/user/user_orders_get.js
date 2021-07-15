@@ -7,7 +7,7 @@ const custom_errors = ["body is empty", "authentication required"]
 class CustomError extends Error {
     constructor(message) {
         super(message)
-        this.name = "customError"
+        this.name = "utopiaError"
     }
 }
 

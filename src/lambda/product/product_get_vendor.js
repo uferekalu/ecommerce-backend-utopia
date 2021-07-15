@@ -3,14 +3,21 @@ const db = require("../../lib/database/query")
 const auth_token = require("../../middleware/token_handler")
 
 const api_name = "product get"
-const errors_array = ["body is empty", "authentication required", "no product found"]
+const custom_errors = ["body is empty", "authentication required", "no product found"]
+
+class CustomError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "utopiaError"
+    }
+}
 
 exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
 
         if (!body || JSON.stringify(body) === "{}") {
-            throw `${errors_array[0]}`
+            throw `${custom_errors[0]}`
         }
 
         const all_fields = Object.keys(body)
@@ -21,7 +28,7 @@ exports.handler = async (event, context) => {
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
         if (missing_fields.length > 0) {
-            throw Error(missing_fields)
+            throw new CustomError(missing_fields)
         }
 
         const { token, id_product } = body
@@ -29,31 +36,37 @@ exports.handler = async (event, context) => {
         const id_user = await auth_token.verify(token)
 
         if (!id_user) {
-            throw `${errors_array[1]}`
+            throw `${custom_errors[1]}`
         }
 
         const { id_vendor } = (await db.select_all_with_condition("users", { id_user }))[0]
 
         if (!id_vendor) {
-            throw `${errors_array[1]}`
+            throw `${custom_errors[1]}`
         }
 
         const product = await db.select_one_from_join3_with_2conditions(
             "products",
             "products_m2m_vendors",
-            "product_thumbnails", //
+            "product_thumbnails",
             "id_product",
             "id_product_thumbnail",
             `${id_product}`
-            // { id_vendor }
         )
 
         if (product.length === 0) {
-            throw `${errors_array[3]}`
+            throw `${custom_errors[2]}`
         }
 
         return handler.returner([true, product[0]], api_name, 200)
     } catch (e) {
-        return handler.returner([false, e], api_name, 404)
+        let errors = await handler.required_field_error(e)
+        if (custom_errors.includes(e)) {
+            errors = e
+        }
+        if (errors) {
+            return handler.returner([false, errors], api_name, 400)
+        }
+        return handler.returner([false], api_name, 500)
     }
 }

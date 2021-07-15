@@ -2,6 +2,13 @@ const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const api_name = "Order tracking"
 
+class CustomError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "utopiaError"
+    }
+}
+
 exports.handler = async (event, context) => {
     try {
         var datetime = await handler.datetime()
@@ -20,7 +27,7 @@ exports.handler = async (event, context) => {
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
         if (missing_fields.length > 0) {
-            throw Error(missing_fields)
+            throw new CustomError(missing_fields)
         }
 
         const { os_tracking_number } = body
@@ -71,15 +78,13 @@ exports.handler = async (event, context) => {
             return handler.returner([true, oss_name], api_name, 200)
         }
     } catch (e) {
-        if (e.name === "Error") {
-            const errors = e.message
-                .split(",")
-                .map((field) => {
-                    return `${field} is required`
-                })
-                .join(", ")
+        let errors = await handler.required_field_error(e)
+        if (custom_errors.includes(e)) {
+            errors = e
+        }
+        if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
-        return handler.returner([false, e], api_name, 400)
+        return handler.returner([false], api_name, 500)
     }
 }

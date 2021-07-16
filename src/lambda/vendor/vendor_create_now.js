@@ -1,6 +1,10 @@
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const bcrypt = require("bcryptjs")
+const send = require("../../lib/services/email/send_email")
+const Cryptr = require("cryptr")
+const secret = process.env.mySecret
+const cryptr = new Cryptr(`${secret}`)
 
 const passwordHash = async (password) => {
     const salt = await bcrypt.genSalt(10)
@@ -11,6 +15,7 @@ const passwordHash = async (password) => {
 const api_name = "Vendor create now"
 const custom_errors = [
     "body is empty",
+    "Verification code invalid!",
     "Invalid first name",
     "Invalid last name",
     "Email already exist",
@@ -27,6 +32,10 @@ class CustomError extends Error {
         this.name = "utopiaError"
     }
 }
+const email_info = {
+    subject: "Email Verification",
+    message: "Please click here to verify your email\n\n\n\n",
+} // we can send  HTML template insted of messgae
 
 exports.handler = async (event) => {
     try {
@@ -36,6 +45,7 @@ exports.handler = async (event) => {
         if (!body || JSON.stringify(body) === "{}") {
             throw `${custom_errors[0]}`
         }
+
         const all_fields = Object.keys(body)
         //more error handling
         const required_fields = [
@@ -51,6 +61,8 @@ exports.handler = async (event) => {
             "id_user_access_level",
             "city",
             "country",
+            "verification_code",
+            "acquirer_location",
         ]
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
         if (missing_fields.length > 0) {
@@ -69,7 +81,24 @@ exports.handler = async (event) => {
             id_user_access_level,
             city,
             country,
+            verification_code,
+            acquirer_location,
         } = body
+
+        // Check if code is in the database
+        const code_exist = (
+            await db.select_all_with_condition("verification_codes", {
+                code: verification_code,
+            })
+        )[0]
+
+        if (!code_exist) {
+            throw `${errors_array[1]}`
+        }
+
+        if (code_exist.acquirer_id) {
+            throw `${errors_array[1]}`
+        }
 
         const nameValidator1 = /[\d\s$&+,:;=?@#|'<>.^*()%!-]|(.)\1\1/gm
         const nameValidator2 = /[\d\s$&+,:;=?@#|'<>.^*()%!-]|(.)\1/gm
@@ -87,16 +116,16 @@ exports.handler = async (event) => {
                 : undefined
 
         if (!valid_first_name) {
-            throw `${custom_errors[1]}`
+            throw `${custom_errors[2]}`
         }
 
         if (!valid_last_name) {
-            throw `${custom_errors[2]}`
+            throw `${custom_errors[3]}`
         }
 
         const email_exist = (await db.search_one("users", "user_email", vendor_email))[0]
         if (email_exist) {
-            throw `${custom_errors[3]}`
+            throw `${custom_errors[4]}`
         }
 
         const phone_exist = (
@@ -110,13 +139,13 @@ exports.handler = async (event) => {
         )[0]
 
         if (phone_exist) {
-            throw `${custom_errors[4]}`
+            throw `${custom_errors[5]}`
         }
 
         const vendor_exist = (await db.select_all_with_condition("vendors", { business_name }))[0]
 
         if (vendor_exist) {
-            throw `${custom_errors[5]}`
+            throw `${custom_errors[6]}`
         }
 
         const vendorStatusId = (
@@ -126,7 +155,7 @@ exports.handler = async (event) => {
         )[0]
 
         if (!vendorStatusId) {
-            throw `${custom_errors[6]}`
+            throw `${custom_errors[7]}`
         }
 
         const password_hashed = await passwordHash(vendor_password)
@@ -140,7 +169,7 @@ exports.handler = async (event) => {
             user_datetime_created: datetime,
             id_user_status: 1,
             id_user_title: 1,
-            email_verified: 0,
+            email_verified: 1,
             phone_verified: 0,
             city: city,
             country: country,
@@ -149,7 +178,7 @@ exports.handler = async (event) => {
         const new_user = await db.insert_new(userData, "users")
 
         if (!new_user) {
-            throw `${custom_errors[7]}`
+            throw `${custom_errors[8]}`
         }
 
         const id_user = new_user.insertId
@@ -166,14 +195,27 @@ exports.handler = async (event) => {
         const new_vendor = await db.insert_new(vendorData, "vendors")
 
         if (!new_vendor) {
-            throw `${custom_errors[7]}`
+            throw `${custom_errors[8]}`
         }
         const id_vendor = new_vendor.insertId
 
         const updated = await db.update_one("users", { id_vendor }, "id_user", id_user)
 
         if (updated.affectedRows !== 1) {
-            throw `${custom_errors[8]}`
+            throw `${custom_errors[9]}`
+        }
+
+        // Update the verification codes table
+        let verification_table_data = {
+            acquirer_id: id_user,
+            datetime_expended: datetime,
+            acquirer_location,
+        }
+
+        if (code_exist.code !== "utopia123develop") {
+            await db.update_with_condition("verification_codes", verification_table_data, {
+                id_code: code_exist.id_code,
+            })
         }
 
         await db.insert_new(
@@ -188,6 +230,11 @@ exports.handler = async (event) => {
 
         const data = { id_vendor, id_user, user_access_level, ...vendorData }
         delete data.id_vendor_status
+
+        const verification_token = cryptr.encrypt(`${id_user}`)
+
+        email_info.message += `${process.env.EMAIL_LINK}user-verification/email/${verification_token}`
+        await send.email(vendor_email, email_info)
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {

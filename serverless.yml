@@ -341,11 +341,11 @@ functions:
         origin: "*"
     #-------------------------------------------------------------------------
 
-    user_password_reset:
-        handler: src/lambda/user/user_password_reset.handler
+    user_change_password:
+        handler: src/lambda/user/user_change_password.handler
         events:
             - http:
-                  path: /api/reset_password/{id_user}
+                  path: /api/user_change_password
                   method: post
         cors: true
         origin: "*"

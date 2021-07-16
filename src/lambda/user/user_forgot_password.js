@@ -50,7 +50,8 @@ exports.handler = async (event, context) => {
         if (type === "email") {
             const { user_email } = others
             medium = user_email
-            id_user = (await db.search_one("users", "user_email", user_email))[0]
+            const user = (await db.search_one("users", "user_email", user_email))[0]
+            id_user = user.id_user
         }
 
         if (!id_user && type === "email") {
@@ -60,7 +61,8 @@ exports.handler = async (event, context) => {
         // if (type === "phone") {
         //     const { user_phone_number } = others
         //     medium = user_phone_number
-        //     id_user = (await db.search_one("users", "user_phone_number", user_phone_number))[0]
+        //     const user = (await db.search_one("users", "user_phone_number", user_phone_number))[0]
+        //     id_user = user.id_user
         // }
 
         // if (!id_user && type === "phone") {

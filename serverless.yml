@@ -84,6 +84,15 @@ functions:
         cors: true
         origin: "*"
     #--------------------------------------------------------------------------
+    user_resend_verification:
+        handler: src/lambda/user/user_resend_verification.handler
+        events:
+            - http:
+                  path: /api/user_resend_verification
+                  method: post
+        cors: true
+        origin: "*"
+    #--------------------------------------------------------------------------
 
     user_verify:
         handler: src/lambda/user/user_verify.handler

@@ -42,9 +42,9 @@ exports.handler = async (event, context) => {
             throw "invalid login"
         }
 
-        // if (user_exist[0].email_verified === 0) {
-        //     throw "verify email"
-        // }
+        if (user_exist[0].email_verified === 0) {
+            throw "verify email"
+        }
 
         // if (isVerified ==) {
         //     throw "invalid login"

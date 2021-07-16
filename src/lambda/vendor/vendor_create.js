@@ -64,7 +64,7 @@ exports.handler = async (event, context) => {
         if (updated.affectedRows !== 1) {
             throw "user update unsuccessfull"
         }
-
+        
         return handler.returner(
             [
                 true,
@@ -76,6 +76,7 @@ exports.handler = async (event, context) => {
             201
         )
     } catch (e) {
+        console.log(e);
         if (e.name === "Error") {
             const errors = e.message
                 .split(",")

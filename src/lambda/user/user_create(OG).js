@@ -22,7 +22,6 @@ const custom_errors = [
     "Phone number is taken",
     "Invalid referral code",
     "User create unsuccessful",
-    "Verification code invalid!",
 ]
 
 class CustomError extends Error {
@@ -99,19 +98,6 @@ exports.handler = async (event, context) => {
             accum_converts = total_conversions + 1
         }
 
-        // Check if code is in the database
-        const code_exist = await db.search_one("verification_codes", "code", body.verification_code)
-
-        if (code_exist.length == 0) {
-            throw `${custom_errors[5]}`
-        }
-
-        if (code_exist[0].acquirer_id > 1) {
-            throw `${custom_errors[5]}`
-        }
-
-        console.log(code_exist)
-
         const password_hashed = await passwordHash(user_password)
 
         const record = {
@@ -123,13 +109,8 @@ exports.handler = async (event, context) => {
             user_datetime_created: datetime,
             city,
             country,
-            email_verified: 1,
             ...others,
         }
-
-        delete record.verification_code
-        delete record.acquirer_location
-        delete record.referral_code
 
         const result = await db.insert_new(record, "users")
 
@@ -154,25 +135,6 @@ exports.handler = async (event, context) => {
 
         await db.insert_new(user_access_level, "user_access_level_m2m_users")
 
-        // Update the verification codes table
-        let verification_table_data = {
-            acquirer_id: id_user,
-            datetime_expended: datetime,
-            acquirer_location: body.acquirer_location,
-        }
-
-        if (code_exist[0].code !== "utopia123develop") {
-            await db.update_with_condition("verification_codes", verification_table_data, {
-                id_code: code_exist[0].id_code,
-            })
-        }
-
-        await db.update_with_condition(
-            "referral_codes",
-            { total_conversions: accum_converts },
-            { referral_code }
-        )
-
         const verification_token = cryptr.encrypt(`${id_user}`)
 
         email_info.message += `${process.env.EMAIL_LINK}user-verification/email/${verification_token}`
@@ -180,7 +142,6 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, record], api_name, 201)
     } catch (e) {
-        console.log(e)
         let errors = await handler.required_field_error(e)
         if (custom_errors.includes(e)) {
             errors = e

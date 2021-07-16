@@ -20,11 +20,17 @@ exports.handler = async (event, context) => {
                 vendors = await db.select_with_regex("vendors", "business_name", regex)
             }
         } else {
-            vendors = await db.select_all("vendors")
+            vendors = await db.select_all_from_join_with_condition(
+                "vendors",
+                "vendor_statuses",
+                "id_vendor_status",
+                { "vendor_statuses.id_vendor_status": 2 }
+            )
         }
 
         return handler.returner([true, { vendors }], api_name, 200)
     } catch (e) {
+        console.log(e)
         return handler.returner([false], api_name, 500)
     }
 }

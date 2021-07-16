@@ -119,16 +119,6 @@ functions:
         origin: "*"
     #-------------------------------------------------------------------------
 
-    wishlist_get_all:
-        handler: src/lambda/wishlist/wishlist_get_all.handler
-        events:
-            - http:
-                  path: /api/wishlist_get_all
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
     user_logout:
         handler: src/lambda/user/user_logout.handler
         events:

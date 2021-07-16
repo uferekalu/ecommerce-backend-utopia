@@ -9,7 +9,6 @@ const api_name = "User Email or Phone verify"
 
 exports.handler = async (event, context) => {
     try {
-        const body = JSON.parse(event.body)
         const param = event.pathParameters
 
         let is_email, is_phone, id_user
@@ -28,6 +27,6 @@ exports.handler = async (event, context) => {
 
         return handler.returner([true, { message: "email verified successfully" }], api_name, 201)
     } catch (e) {
-        return handler.returner([false, e], api_name)
+        return handler.returner([false], api_name, 500)
     }
 }

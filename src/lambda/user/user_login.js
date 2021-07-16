@@ -55,9 +55,19 @@ exports.handler = async (event, context) => {
             throw `${custom_errors[3]}`
         }
 
+<<<<<<< HEAD
         if (user_exist.email_verified === 0) {
             throw `${custom_errors[4]}`
         }
+=======
+        if (user_exist[0].email_verified === 0) {
+            throw "verify email"
+        }
+
+        // if (isVerified ==) {
+        //     throw "invalid login"
+        // }
+>>>>>>> 1a27d4fe5dd3ed3fd22146b5e9f826fbce3e0037
 
         //comparing the provided password with the hashed version using the library reverse check
         const pass_valid = await bcrypt.compare(body.user_password, user_exist.user_password)

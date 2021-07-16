@@ -4,12 +4,19 @@ const auth_token = require("../../middleware/token_handler")
 const send = require("../../lib/services/email/send_email")
 
 const api_name = "Order update"
-const errors_array = [
+const custom_errors = [
     "body is empty",
     "authentication required",
     "order not found",
     "there is nothing to update",
 ]
+
+class CustomError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "utopiaError"
+    }
+}
 
 exports.handler = async (event, context) => {
     try {
@@ -17,7 +24,7 @@ exports.handler = async (event, context) => {
 
         console.log(body)
         if (!body || JSON.stringify(body) === "{}") {
-            throw `${errors_array[0]}`
+            throw `${custom_errors[0]}`
         }
 
         const all_fields = Object.keys(body)
@@ -28,7 +35,7 @@ exports.handler = async (event, context) => {
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
         if (missing_fields.length > 0) {
-            throw Error(missing_fields)
+            throw new CustomError(missing_fields)
         }
 
         const { id_order, token, id_order_status, key, ...others } = body
@@ -39,7 +46,7 @@ exports.handler = async (event, context) => {
         const id_user = await auth_token.verify(token)
 
         if (!id_user) {
-            throw `${errors_array[1]}`
+            throw `${custom_errors[1]}`
         }
 
         if (key == "buyer") {
@@ -48,7 +55,7 @@ exports.handler = async (event, context) => {
             )[0]
 
             if (!order_exist) {
-                throw `${errors_array[2]}`
+                throw `${custom_errors[2]}`
             }
             if (id_order_status == 6 || id_order_status == 5) {
                 if (id_order_status === 6) {
@@ -66,7 +73,7 @@ exports.handler = async (event, context) => {
                 // await send.email('customercare@utopiatech.io', email_info);
                 await db.update_with_condition("orders", { id_order_status }, { id_order })
             } else {
-                throw `${errors_array[3]}`
+                throw `${custom_errors[3]}`
             }
         } else if (key == "vendor") {
             const { id_vendor } = (await db.select_all_with_condition("users", { id_user }))[0]
@@ -83,7 +90,7 @@ exports.handler = async (event, context) => {
             )
 
             if (!order_exist) {
-                throw `${errors_array[2]}`
+                throw `${custom_errors[2]}`
             }
 
             if (id_order_status == 3 || id_order_status == 4) {
@@ -95,7 +102,7 @@ exports.handler = async (event, context) => {
                     email_info.subject = `Order in transit for Order ${id_order}`
                     email_info.message = `The order with an ID of ${id_order} is now in transit and would be with you shortly!`
                     message = `Your order with ID ${id_order} is in transit!`
-                }else if (id_order_status === 7) {
+                } else if (id_order_status === 7) {
                     email_info.subject = `Order return completed for Order ${id_order}`
                     email_info.message = `The order with an ID of ${id_order} has been returned successfully!`
                     message = `Your order with ID ${id_order} has been returned successfully!`
@@ -106,7 +113,7 @@ exports.handler = async (event, context) => {
                 // await send.email('customercare@utopiatech.io', email_info);
                 await db.update_with_condition("orders", { id_order_status }, { id_order })
             } else {
-                throw `${errors_array[3]}`
+                throw `${custom_errors[3]}`
             }
         }
 
@@ -118,7 +125,7 @@ exports.handler = async (event, context) => {
                 )[0]
 
                 if (!order_exist) {
-                    throw `${errors_array[2]}`
+                    throw `${custom_errors[2]}`
                 }
 
                 await db.update_with_condition("orders", data, { id_order: order })
@@ -153,7 +160,7 @@ exports.handler = async (event, context) => {
             )
 
             if (!order_exist) {
-                throw `${errors_array[2]}`
+                throw `${custom_errors[2]}`
             }
 
             data = { ...others }
@@ -165,7 +172,7 @@ exports.handler = async (event, context) => {
             )[0]
 
             if (!order_exist) {
-                throw `${errors_array[2]}`
+                throw `${custom_errors[2]}`
             }
 
             if (all_fields.includes("id_user")) {
@@ -173,7 +180,7 @@ exports.handler = async (event, context) => {
             }
 
             if (Object.keys(others).length < 1) {
-                throw `${errors_array[3]}`
+                throw `${custom_errors[3]}`
             }
 
             data = { ...others }
@@ -188,7 +195,7 @@ exports.handler = async (event, context) => {
                     data.id_order_status != 7 &&
                     data.id_order_status != 13
                 ) {
-                    throw `${errors_array[3]}`
+                    throw `${custom_errors[3]}`
                 } else {
                     await db.update_with_condition("orders", data, { id_order })
                 }
@@ -198,21 +205,10 @@ exports.handler = async (event, context) => {
         */
         return handler.returner([true, { id_order, message }], api_name, 201)
     } catch (e) {
-        console.log(e)
-        let errors
-        if (e.name === "Error") {
-            errors = e.message
-                .split(",")
-                .map((field) => {
-                    return `${field} is required`
-                })
-                .join(", ")
-        }
-
-        if (errors_array.includes(e)) {
+        let errors = await handler.required_field_error(e)
+        if (custom_errors.includes(e)) {
             errors = e
         }
-
         if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }

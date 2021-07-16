@@ -7,7 +7,7 @@ const custom_errors = ["body is empty", "authentication required"]
 class CustomError extends Error {
     constructor(message) {
         super(message)
-        this.name = "customError"
+        this.name = "utopiaError"
     }
 }
 
@@ -51,21 +51,6 @@ exports.handler = async (event, context) => {
             "orders.id_order",
             "DESC"
         )
-        // const orders = []
-        // const code = []
-        // const products = []
-
-        // response.map((item) => {
-        //     if (!orders.includes(item.id_order)) {
-        //         orders.push(item.id_order)
-        //         item.quantity = 1
-        //         code.push(item.id_product_m2m_vendor)
-        //         products.push(item)
-        //     } else {
-        //         const index = code.indexOf(item.id_product_m2m_vendor)
-        //         products[index].quantity++
-        //     }
-        // })
 
         return handler.returner([true, response], api_name)
     } catch (e) {

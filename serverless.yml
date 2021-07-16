@@ -3,7 +3,7 @@ provider:
     name: aws
     runtime: nodejs14.x
     region: ${file(./secret.json):DefaultRegion}
-    stage: prod
+    stage: dev
 
 functions:
     vendor_public_details:
@@ -84,6 +84,15 @@ functions:
         cors: true
         origin: "*"
     #--------------------------------------------------------------------------
+    user_resend_verification:
+        handler: src/lambda/user/user_resend_verification.handler
+        events:
+            - http:
+                  path: /api/user_resend_verification
+                  method: post
+        cors: true
+        origin: "*"
+    #--------------------------------------------------------------------------
 
     user_verify:
         handler: src/lambda/user/user_verify.handler
@@ -114,16 +123,6 @@ functions:
         events:
             - http:
                   path: /api/order_update
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
-    wishlist_get_all:
-        handler: src/lambda/wishlist/wishlist_get_all.handler
-        events:
-            - http:
-                  path: /api/wishlist_get_all
                   method: post
         cors: true
         origin: "*"
@@ -259,24 +258,6 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-    user_addresses_get:
-        handler: src/lambda/user/user_addresses_get.handler
-        events:
-            - http:
-                  path: /api/user_addresses_get/{user_id}
-                  method: get
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-    user_addresses_update:
-        handler: src/lambda/user/user_addresses_update.handler
-        events:
-            - http:
-                  path: /api/user_addresses_update
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
 
     order_tracking:
         handler: src/lambda/order/order_tracking.handler
@@ -359,11 +340,11 @@ functions:
         origin: "*"
     #-------------------------------------------------------------------------
 
-    user_password_reset:
-        handler: src/lambda/user/user_password_reset.handler
+    user_change_password:
+        handler: src/lambda/user/user_change_password.handler
         events:
             - http:
-                  path: /api/reset_password/{id_user}
+                  path: /api/user_change_password
                   method: post
         cors: true
         origin: "*"

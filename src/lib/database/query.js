@@ -32,6 +32,34 @@ module.exports = {
         ])
         return result
     },
+
+    select_all_from_join2_with_2conditions: async (
+        table1,
+        table2,
+        joint1,
+        condition1,
+        condition2
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} WHERE ? OR ?`,
+            [condition1, condition2]
+        )
+        return result
+    },
+    select_all_from_join_with_2conditions: async (
+        table1,
+        table2,
+        joint1,
+        condition1,
+        condition2
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} WHERE ? AND ?`,
+            [condition1, condition2]
+        )
+        return result
+    },
+
     select_one_from_join3_with_2conditions: async (
         table1,
         table2,
@@ -624,6 +652,7 @@ module.exports = {
     /**
      * @desc Updates one record in a table by condition
      * @query UPDATE table SET update WHERE condition
+     * @usage await db.update_with_condition(table: string, update: object, condition: object)
      */
     update_with_condition: async (table, update, condition) => {
         // const result = await connection.query(`UPDATE products_m2m_vendors SET p2v_price= '99' WHERE id_product_m2m_vendor = 302`)

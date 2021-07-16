@@ -48,6 +48,6 @@ exports.handler = async (event, context) => {
         if (e === errors_array[0] || e === errors_array[2]) {
             return handler.returner([false, e], api_name, 404)
         }
-        return handler.returner([false, e], api_name, 500)
+        return handler.returner([false], api_name, 500)
     }
 }

@@ -114,4 +114,5 @@ dist
 # extras
 prototype.txt
 secret.json
-/generate_codes.js
+prototype
+generate_codes.js

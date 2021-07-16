@@ -17,6 +17,8 @@ const passwordHash = async (password) => {
 const api_name = "User create"
 const custom_errors = [
     "body is empty",
+    "Invalid first name",
+    "Invalid last name",
     "Email already exist",
     "Phone number is taken",
     "Invalid referral code",
@@ -81,19 +83,42 @@ exports.handler = async (event, context) => {
             ...others
         } = body
 
+        const nameValidator1 = /[\d\s$&+,:;=?@#|'<>.^*()%!-]|(.)\1\1/gm
+        const nameValidator2 = /[\d\s$&+,:;=?@#|'<>.^*()%!-]|(.)\1/gm
+
+        const valid_first_name =
+            (user_first_name.length > 2 && !nameValidator1.test(user_first_name)) ||
+            (user_first_name.length = 2 && !nameValidator2.test(user_first_name))
+                ? user_first_name
+                : undefined
+
+        const valid_last_name =
+            (user_last_name.length > 2 && !nameValidator1.test(user_last_name)) ||
+            (user_last_name.length = 2 && !nameValidator2.test(user_last_name))
+                ? user_last_name
+                : undefined
+
+        if (!valid_first_name) {
+            throw `${custom_errors[1]}`
+        }
+
+        if (!valid_last_name) {
+            throw `${custom_errors[2]}`
+        }
+
         const email_exist = await db.search_one("users", "user_email", user_email)
         if (email_exist.length != 0) {
-            throw `${custom_errors[1]}`
+            throw `${custom_errors[3]}`
         }
 
         const phone_exist = await db.search_one("users", "user_phone_number", user_phone_number)
         if (phone_exist.length != 0) {
-            throw `${custom_errors[2]}`
+            throw `${custom_errors[4]}`
         }
 
         if (referral_code) {
             const referee = (await db.select_one("referral_codes", { referral_code }))[0]
-            if (!referee) throw `${custom_errors[3]}`
+            if (!referee) throw `${custom_errors[5]}`
             const { total_conversions } = referee
             accum_converts = total_conversions + 1
         }
@@ -137,7 +162,7 @@ exports.handler = async (event, context) => {
         delete record.user_password
 
         if (!result) {
-            throw `${custom_errors[4]}`
+            throw `${custom_errors[6]}`
         }
 
         await db.update_with_condition(

@@ -12,9 +12,14 @@ exports.handler = async (event, context) => {
         const id_user = await auth_token.verify(token)
         const { id_vendor } = (await db.select_all_with_condition("users", { id_user }))[0]
         // const vendor = await db.search_one("vendors", "id_vendor", id_vendor)
-        const vendor = await db.select_all_from_join_with_condition("vendors", "users", "id_vendor", {
-            "vendors.id_vendor": id_vendor,
-        })
+        const vendor = await db.select_all_from_join_with_condition(
+            "vendors",
+            "users",
+            "id_vendor",
+            {
+                "vendors.id_vendor": id_vendor,
+            }
+        )
         if (vendor.length < 1) {
             throw `${error_one}`
         }
@@ -26,6 +31,6 @@ exports.handler = async (event, context) => {
         if (e === error_one) {
             return handler.returner([false, e], api_name, 404)
         }
-        return handler.returner([false,e], api_name, 500)
+        return handler.returner([false], api_name, 500)
     }
 }

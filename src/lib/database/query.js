@@ -32,6 +32,34 @@ module.exports = {
         ])
         return result
     },
+
+    select_all_from_join2_with_2conditions: async (
+        table1,
+        table2,
+        joint1,
+        condition1,
+        condition2
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} WHERE ? OR ?`,
+            [condition1, condition2]
+        )
+        return result
+    },
+    select_all_from_join_with_2conditions: async (
+        table1,
+        table2,
+        joint1,
+        condition1,
+        condition2
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} WHERE ? AND ?`,
+            [condition1, condition2]
+        )
+        return result
+    },
+
     select_one_from_join3_with_2conditions: async (
         table1,
         table2,

@@ -75,7 +75,7 @@ exports.handler = async (event) => {
             throw `${errors_array[7]}`
         }
 
-        if (code_exist[0].acquirer_id > 1) {
+        if (code_exist[0].acquirer_id) {
             throw `${errors_array[7]}`
         }
 

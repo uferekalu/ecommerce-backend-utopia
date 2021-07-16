@@ -93,11 +93,11 @@ exports.handler = async (event) => {
         )[0]
 
         if (!code_exist) {
-            throw `${errors_array[1]}`
+            throw `${custom_errors[1]}`
         }
 
         if (code_exist.acquirer_id) {
-            throw `${errors_array[1]}`
+            throw `${custom_errors[1]}`
         }
 
         const nameValidator1 = /[\d\s$&+,:;=?@#|'<>.^*()%!-]|(.)\1\1/gm
@@ -238,6 +238,7 @@ exports.handler = async (event) => {
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {
+        console.log(e);
         let errors = await handler.required_field_error(e)
         if (custom_errors.includes(e)) {
             errors = e

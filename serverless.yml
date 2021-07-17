@@ -6,18 +6,69 @@ provider:
     stage: prod
 
 functions:
-    vendor_public_details:
-        handler: src/lambda/vendor/vendor_public_details.handler
+    #   >>>CART ROUTES
+    #-------------------------------------------------------------------------------
+    cart_create:
+        handler: src/lambda/cart/cart_create.handler
         events:
             - http:
-                  path: /api/vendor_public_details/{id_vendor}
+                  path: /api/cart_create
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    cart_get:
+        handler: src/lambda/cart/cart_get.handler
+        events:
+            - http:
+                  path: /api/cart_get
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    #   >>>COMP ROUTES 
+    #-------------------------------------------------------------------------------
+    comp_leaders_details_get:
+        handler: src/lambda/comp/comp_leaders_details_get.handler
+        events:
+            - http:
+                  path: /api/about_us_get
                   method: get
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-
+    #   >>>ORDER ROUTES
+    #-------------------------------------------------------------------------------
+        order_update:
+        handler: src/lambda/order/order_update.handler
+        events:
+            - http:
+                  path: /api/order_update
+                  method: post
+        cors: true
+        origin: "*"
     #-------------------------------------------------------------------------
-    product_update:
+    order_create:
+        handler: src/lambda/order/order_create.handler
+        events:
+            - http:
+                  path: /api/order_create
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    order_tracking:
+        handler: src/lambda/order/order_tracking.handler
+        events:
+            - http:
+                  path: /api/order_tracking
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    #   >>>PRODUCT ROUTES
+    #-------------------------------------------------------------------------------
+        product_update:
         handler: src/lambda/product/product_update.handler
         events:
             - http:
@@ -35,7 +86,6 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-
     product_search:
         handler: src/lambda/product/product_search.handler
         events:
@@ -51,138 +101,12 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-
-    user_access_level_get: #//fake endpoint
-        handler: src/lambda/user/user_access_level_get.handler
-        events:
-            - http:
-                  path: /api/user_access_level_get
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
     product_details_get:
         handler: src/lambda/product/product_details_get.handler
         events:
             - http:
                   path: /api/product/{id_product_m2m_vendor}
                   method: get
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
-    user_create:
-        handler: src/lambda/user/user_create.handler
-        events:
-            - http:
-                  path: /api/user_create/{code}
-                  method: post
-            - http:
-                  path: /api/user_create
-                  method: post
-        cors: true
-        origin: "*"
-    #--------------------------------------------------------------------------
-    user_resend_verification:
-        handler: src/lambda/user/user_resend_verification.handler
-        events:
-            - http:
-                  path: /api/user_resend_verification
-                  method: post
-        cors: true
-        origin: "*"
-    #--------------------------------------------------------------------------
-
-    user_verify:
-        handler: src/lambda/user/user_verify.handler
-        events:
-            - http:
-                  path: /api/user_verify/email/{token}
-                  method: post
-            - http:
-                  path: /api/user_verify/phone
-                  method: post
-        cors: true
-        origin: "*"
-
-    #-------------------------------------------------------------------------
-
-    user_login:
-        handler: src/lambda/user/user_login.handler
-        events:
-            - http:
-                  path: /api/user_login
-                  method: post
-        cors: true
-        origin: "*"
-    #------------------------------------------------------------------------
-
-    order_update:
-        handler: src/lambda/order/order_update.handler
-        events:
-            - http:
-                  path: /api/order_update
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
-    user_logout:
-        handler: src/lambda/user/user_logout.handler
-        events:
-            - http:
-                  path: /api/user_logout
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
-    user_name_get:
-        handler: src/lambda/user/user_name_get.handler
-        events:
-            - http:
-                  path: /api/user-first-last-get-all
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
-    product_create:
-        handler: src/lambda/product/product_create.handler
-        events:
-            - http:
-                  path: /api/product-create
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
-    shipping_create:
-        handler: src/lambda/shipping/shipping_create.handler
-        events:
-            - http:
-                  path: /api/shipping-create
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
-    shipping_update:
-        handler: src/lambda/shipping/shipping_update.handler
-        events:
-            - http:
-                  path: /api/shipping-update
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-    order_create:
-        handler: src/lambda/order/order_create.handler
-        events:
-            - http:
-                  path: /api/order_create
-                  method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
@@ -204,6 +128,160 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+    product_create:
+        handler: src/lambda/product/product_create.handler
+        events:
+            - http:
+                  path: /api/product-create
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    product_categories_get:
+        handler: src/lambda/product/product_categories_get.handler
+        events:
+            - http:
+                  path: /api/product_categories
+                  method: get
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    products_get_all:
+        handler: src/lambda/product/products_get_all.handler
+        events:
+            - http:
+                  path: /api/products
+                  method: get
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    products_on_promo:
+        handler: src/lambda/product/products_on_promo.handler
+        events:
+            - http:
+                  path: /api/promo_products
+                  method: get
+            - http:
+                  path: /api/promo_products/{limit}
+                  method: get
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    product_newest_arrival:
+        handler: src/lambda/product/product_newest_arrival.handler
+        events:
+            - http:
+                  path: /api/product_newest
+                  method: get
+            - http:
+                  path: /api/product_newest/{limit}
+                  method: get
+        cors: true
+        origin: "*"
+    #----------------------------------------------------------------------------
+    #   >>>RFERRAL ROUTES
+    #-------------------------------------------------------------------------------
+    referral_code_create:
+        handler: src/lambda/referral/referral_code_create.handler
+        events:
+            - http:
+                  path: /api/referral_code_create
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    referral_code_get:
+        handler: src/lambda/referral/referral_code_get.handler
+        events:
+            - http:
+                  path: /api/referral_code_get
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    #   >>>SHIIPING ROUTES
+    #-------------------------------------------------------------------------------
+    shipping_create:
+        handler: src/lambda/shipping/shipping_create.handler
+        events:
+            - http:
+                  path: /api/shipping-create
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+
+    shipping_update:
+        handler: src/lambda/shipping/shipping_update.handler
+        events:
+            - http:
+                  path: /api/shipping-update
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    #   >>>USER ROUTES
+    #-------------------------------------------------------------------------------
+    user_access_level_get: #//fake endpoint
+        handler: src/lambda/user/user_access_level_get.handler
+        events:
+            - http:
+                  path: /api/user_access_level_get
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    user_create:
+        handler: src/lambda/user/user_create.handler
+        events:
+            - http:
+                  path: /api/user_create/{code}
+                  method: post
+            - http:
+                  path: /api/user_create
+                  method: post
+        cors: true
+        origin: "*"
+    #--------------------------------------------------------------------------
+        user_verify:
+        handler: src/lambda/user/user_verify.handler
+        events:
+            - http:
+                  path: /api/user_verify/email/{token}
+                  method: post
+            - http:
+                  path: /api/user_verify/phone
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    user_login:
+        handler: src/lambda/user/user_login.handler
+        events:
+            - http:
+                  path: /api/user_login
+                  method: post
+        cors: true
+        origin: "*"
+    #------------------------------------------------------------------------
+        user_logout:
+        handler: src/lambda/user/user_logout.handler
+        events:
+            - http:
+                  path: /api/user_logout
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    user_name_get:
+        handler: src/lambda/user/user_name_get.handler
+        events:
+            - http:
+                  path: /api/user-first-last-get-all
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
     user_details:
         handler: src/lambda/user/user_details.handler
         events:
@@ -219,6 +297,45 @@ functions:
             - http:
                   path: /api/user_update
                   method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    user_change_password:
+        handler: src/lambda/user/user_change_password.handler
+        events:
+            - http:
+                  path: /api/user_change_password
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+
+    user_forgot_password:
+        handler: src/lambda/user/user_forgot_password.handler
+        events:
+            - http:
+                  path: /api/forgot_password
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    user_orders_get:
+        handler: src/lambda/user/user_orders_get.handler
+        events:
+            - http:
+                  path: /api/user/orders
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+    #   >>>VENDOR ROUTES
+    #-------------------------------------------------------------------------------
+    vendor_public_details:
+        handler: src/lambda/vendor/vendor_public_details.handler
+        events:
+            - http:
+                  path: /api/vendor_public_details/{id_vendor}
+                  method: get
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
@@ -258,17 +375,6 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-
-    order_tracking:
-        handler: src/lambda/order/order_tracking.handler
-        events:
-            - http:
-                  path: /api/order_tracking
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
     vendor_products_get:
         handler: src/lambda/vendor/vendor_products_get.handler
         events:
@@ -302,79 +408,18 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-
-    user_orders_get:
-        handler: src/lambda/user/user_orders_get.handler
+    vendor_orders_get:
+        handler: src/lambda/vendor/vendor_orders_get.handler
         events:
             - http:
-                  path: /api/user/orders
+                  path: /api/vendor_orders_get
                   method: post
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-
-    product_categories_get:
-        handler: src/lambda/product/product_categories_get.handler
-        events:
-            - http:
-                  path: /api/product_categories
-                  method: get
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
-    user_change_password:
-        handler: src/lambda/user/user_change_password.handler
-        events:
-            - http:
-                  path: /api/user_change_password
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-
-    user_forgot_password:
-        handler: src/lambda/user/user_forgot_password.handler
-        events:
-            - http:
-                  path: /api/forgot_password
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-    products_get_all:
-        handler: src/lambda/product/products_get_all.handler
-        events:
-            - http:
-                  path: /api/products
-                  method: get
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-    products_on_promo:
-        handler: src/lambda/product/products_on_promo.handler
-        events:
-            - http:
-                  path: /api/promo_products
-                  method: get
-            - http:
-                  path: /api/promo_products/{limit}
-                  method: get
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-    product_newest_arrival:
-        handler: src/lambda/product/product_newest_arrival.handler
-        events:
-            - http:
-                  path: /api/product_newest
-                  method: get
-            - http:
-                  path: /api/product_newest/{limit}
-                  method: get
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
+    
+    #   >>>WISHLIST ROUTES
+    #-------------------------------------------------------------------------------
     wishlist_create:
         handler: src/lambda/wishlist/wishlist_create.handler
         events:
@@ -390,60 +435,6 @@ functions:
             - http:
                   path: /api/wishlist_get
                   method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-    cart_create:
-        handler: src/lambda/cart/cart_create.handler
-        events:
-            - http:
-                  path: /api/cart_create
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-    cart_get:
-        handler: src/lambda/cart/cart_get.handler
-        events:
-            - http:
-                  path: /api/cart_get
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-    referral_code_create:
-        handler: src/lambda/referral/referral_code_create.handler
-        events:
-            - http:
-                  path: /api/referral_code_create
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-    referral_code_get:
-        handler: src/lambda/referral/referral_code_get.handler
-        events:
-            - http:
-                  path: /api/referral_code_get
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-    vendor_orders_get:
-        handler: src/lambda/vendor/vendor_orders_get.handler
-        events:
-            - http:
-                  path: /api/vendor_orders_get
-                  method: post
-        cors: true
-        origin: "*"
-    #-------------------------------------------------------------------------
-    comp_leaders_details_get:
-        handler: src/lambda/comp/comp_leaders_details_get.handler
-        events:
-            - http:
-                  path: /api/about_us_get
-                  method: get
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------

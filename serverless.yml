@@ -3,7 +3,7 @@ provider:
     name: aws
     runtime: nodejs14.x
     region: ${file(./secret.json):DefaultRegion}
-    stage: dev
+    stage: prod
 
 functions:
     vendor_public_details:
@@ -301,23 +301,6 @@ functions:
                   method: post
         cors: true
         origin: "*"
-    #-------------------------------------------------------------------------
-    vendor_full_details:
-        handler: src/lambda/vendor/vendor_full_details.handler
-        events:
-            - http:
-                  path: /api/vendor/full/{id_vendor}
-                  method: post
-        cors: true
-        origin: "*"
-        headers: # <-- Specify allowed headers
-            - Content-Type
-            - X-Amz-Date
-            - Authorization
-            - X-Api-Key
-            - X-Amz-Security-Token
-            - X-Amz-User-Agent
-            - Access-Control-Allow-Origin
     #-------------------------------------------------------------------------
 
     user_orders_get:

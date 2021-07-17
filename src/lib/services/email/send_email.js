@@ -37,7 +37,6 @@ const handler = require("../../../middleware/handler")
 
 module.exports = {
     email: async (user, email) => {
-        console.log(user, email)
         const transporter = nodemailer.createTransport({
             host: "sub5.mail.dreamhost.com",
             // port: 467,
@@ -59,7 +58,6 @@ module.exports = {
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
-                console.log(error)
                 return handler.returner([false, error])
             } else {
                 console.log("Email sent: ", info)

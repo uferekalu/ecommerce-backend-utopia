@@ -47,8 +47,6 @@ exports.handler = async (event, context) => {
 
         const isAuthUser = await auth_token.verify(token)
 
-        console.log(isAuthUser)
-
         const user_exist = (await db.search_one("users", "id_user", isAuthUser))[0]
 
         if (!user_exist) {

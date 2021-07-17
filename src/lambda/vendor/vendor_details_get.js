@@ -8,6 +8,7 @@ const error_one = "vendor not found"
 exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
+        console.log(body);
         const { token } = body
         const id_user = await auth_token.verify(token)
         const { id_vendor } = (await db.select_all_with_condition("users", { id_user }))[0]
@@ -28,6 +29,7 @@ exports.handler = async (event, context) => {
         delete data.updated_at
         return handler.returner([true, data], api_name)
     } catch (e) {
+        console.log(e);
         if (e === error_one) {
             return handler.returner([false, e], api_name, 404)
         }

@@ -127,11 +127,11 @@ exports.handler = async (event, context) => {
         const code_exist = await db.search_one("verification_codes", "code", body.verification_code)
 
         if (code_exist.length == 0) {
-            throw `${custom_errors[5]}`
+            throw `${custom_errors[7]}`
         }
 
         if (code_exist[0].acquirer_id) {
-            throw `${custom_errors[5]}`
+            throw `${custom_errors[7]}`
         }
 
         console.log(code_exist)

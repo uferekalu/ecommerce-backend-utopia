@@ -238,7 +238,6 @@ exports.handler = async (event) => {
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {
-        console.log(e);
         let errors = await handler.required_field_error(e)
         if (custom_errors.includes(e)) {
             errors = e

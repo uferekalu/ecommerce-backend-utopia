@@ -150,7 +150,6 @@ exports.handler = async (event, context) => {
             201
         )
     } catch (e) {
-        console.log(e)
         let errors = await handler.required_field_error(e)
         if (custom_errors.includes(e)) {
             errors = e

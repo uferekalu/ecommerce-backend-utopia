@@ -26,7 +26,7 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-    #   >>>COMP ROUTES 
+    #   >>>COMP ROUTES
     #-------------------------------------------------------------------------------
     comp_leaders_details_get:
         handler: src/lambda/comp/comp_leaders_details_get.handler
@@ -39,7 +39,7 @@ functions:
     #-------------------------------------------------------------------------
     #   >>>ORDER ROUTES
     #-------------------------------------------------------------------------------
-        order_update:
+    order_update:
         handler: src/lambda/order/order_update.handler
         events:
             - http:
@@ -68,7 +68,7 @@ functions:
     #-------------------------------------------------------------------------
     #   >>>PRODUCT ROUTES
     #-------------------------------------------------------------------------------
-        product_update:
+    product_update:
         handler: src/lambda/product/product_update.handler
         events:
             - http:
@@ -243,7 +243,7 @@ functions:
         cors: true
         origin: "*"
     #--------------------------------------------------------------------------
-        user_verify:
+    user_verify:
         handler: src/lambda/user/user_verify.handler
         events:
             - http:
@@ -264,7 +264,7 @@ functions:
         cors: true
         origin: "*"
     #------------------------------------------------------------------------
-        user_logout:
+    user_logout:
         handler: src/lambda/user/user_logout.handler
         events:
             - http:
@@ -417,7 +417,7 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
-    
+
     #   >>>WISHLIST ROUTES
     #-------------------------------------------------------------------------------
     wishlist_create:

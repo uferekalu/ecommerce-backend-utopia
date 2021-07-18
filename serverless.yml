@@ -3,9 +3,21 @@ provider:
     name: aws
     runtime: nodejs14.x
     region: ${file(./secret.json):DefaultRegion}
-    stage: prod
+    stage: dev
 
 functions:
+
+ #-------------------------------------------------------------------------------
+    send_email:
+        handler: src/lambda/send_email.handler
+        events:
+            - http:
+                  path: /api/send_email
+                  method: post
+        cors: true
+        origin: "*"
+         #-------------------------------------------------------------------------------
+
     #   >>>CART ROUTES
     #-------------------------------------------------------------------------------
     cart_create:
@@ -231,6 +243,7 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+
     user_create:
         handler: src/lambda/user/user_create.handler
         events:

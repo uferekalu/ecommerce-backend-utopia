@@ -41,11 +41,9 @@ const email_info = {
 exports.handler = async (event, context) => {
     try {
         var datetime = await handler.datetime()
-
         const param = event.pathParameters
         const referral_code = param?.code
         let accum_converts
-
         const body = JSON.parse(event.body)
 
         if (!body || JSON.stringify(body) === "{}") {
@@ -88,13 +86,13 @@ exports.handler = async (event, context) => {
 
         const valid_first_name =
             (user_first_name.length > 2 && !nameValidator1.test(user_first_name)) ||
-            (user_first_name.length = 2 && !nameValidator2.test(user_first_name))
+                (user_first_name.length = 2 && !nameValidator2.test(user_first_name))
                 ? user_first_name
                 : undefined
 
         const valid_last_name =
             (user_last_name.length > 2 && !nameValidator1.test(user_last_name)) ||
-            (user_last_name.length = 2 && !nameValidator2.test(user_last_name))
+                (user_last_name.length = 2 && !nameValidator2.test(user_last_name))
                 ? user_last_name
                 : undefined
 
@@ -152,11 +150,9 @@ exports.handler = async (event, context) => {
         delete record.verification_code
         delete record.acquirer_location
         delete record.referral_code
-
+        
         const result = await db.insert_new(record, "users")
-
         const id_user = result.insertId
-
         delete record.user_password
 
         if (!result) {
@@ -196,12 +192,19 @@ exports.handler = async (event, context) => {
         )
 
         const verification_token = cryptr.encrypt(`${id_user}`)
-
         email_info.message += `${process.env.EMAIL_LINK}user-verification/email/${verification_token}`
-        await send.email(user_email, email_info)
+        // await send.email(user_email, email_info) // old
 
-        return handler.returner([true, record], api_name, 201)
+
+        //Aarons code
+        const a = await send.email_result(body.user_email, "email_info")
+        return handler.returner([true, record + "  -----  " + a], api_name, 201)
+
+
+
+        // return handler.returner([true, record], api_name, 201) //old
     } catch (e) {
+        console.log("errro: ", e)
         let errors = await handler.required_field_error(e)
         if (custom_errors.includes(e)) {
             errors = e
@@ -209,6 +212,7 @@ exports.handler = async (event, context) => {
         if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
+
         return handler.returner([false], api_name, 500)
     }
 }

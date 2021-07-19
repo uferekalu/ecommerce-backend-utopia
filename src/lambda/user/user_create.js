@@ -163,10 +163,11 @@ exports.handler = async (event, context) => {
         const verification_token = cryptr.encrypt(`${id_user}`)
 
         email_info.message += `${process.env.EMAIL_LINK}user-verification/email/${verification_token}`
-        await send.email(user_email, email_info)
+        await send.email_result(user_email, email_info)
 
         return handler.returner([true, record], api_name, 201)
     } catch (e) {
+        console.log(e);
         let errors = await handler.required_field_error(e)
         if (custom_errors.includes(e)) {
             errors = e

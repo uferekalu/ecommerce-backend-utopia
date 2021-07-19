@@ -196,7 +196,7 @@ exports.handler = async (event, context) => {
         // await send.email(user_email, email_info) // old
 
         //Aarons code
-        const a = await send.email_result(body.user_email, "email_info")
+        const a = await send.email(body.user_email, "email_info")
         return handler.returner([true, record + "  -----  " + a], api_name, 201)
 
         // return handler.returner([true, record], api_name, 201) //old

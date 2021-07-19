@@ -36,7 +36,7 @@ const nodemailer = require("nodemailer")
 const handler = require("../../../middleware/handler")
 
 module.exports = {
-    email_result: async (user, email) => {
+    email: async (user, email) => {
         return new Promise((resolve, reject) => {
             const transporter = nodemailer.createTransport({
                 host: "sub5.mail.dreamhost.com",

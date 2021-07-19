@@ -19,7 +19,7 @@ class CustomError extends Error {
 exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
-        const a = await send.email_result(body.user_email, "email_info")
+        const a = await send.email(body.user_email, "email_info")
         await console.log("end called", await a)
         return handler.returner([true, a], api_name, 201)
     } catch (e) {

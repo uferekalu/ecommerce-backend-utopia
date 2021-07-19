@@ -234,7 +234,7 @@ exports.handler = async (event) => {
         const verification_token = cryptr.encrypt(`${id_user}`)
 
         email_info.message += `${process.env.EMAIL_LINK}user-verification/email/${verification_token}`
-        await send.email(vendor_email, email_info)
+        await send.email_result(vendor_email, email_info)
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {

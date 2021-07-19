@@ -50,7 +50,7 @@ exports.handler = async (event, context) => {
         const verification_token = cryptr.encrypt(`${email_exist[0].id_user}`)
 
         email_info.message += `${process.env.EMAIL_LINK}user-verification/email/${verification_token}`
-        await send.email(user_email, email_info)
+        await send.email_result(user_email, email_info)
 
         return handler.returner([true, { message: "Verification sent!" }], api_name, 201)
     } catch (e) {

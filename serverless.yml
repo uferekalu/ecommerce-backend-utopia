@@ -327,6 +327,16 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+
+    user_resend_verification:
+        handler: src/lambda/user/user_resend_verification.handler
+        events:
+            - http:
+                  path: /api/user_resend_verification
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
     #   >>>VENDOR ROUTES
     #-------------------------------------------------------------------------------
     vendor_public_details:

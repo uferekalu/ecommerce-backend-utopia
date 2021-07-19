@@ -7,13 +7,7 @@ const Cryptr = require("cryptr")
 const cryptr = new Cryptr(`${secret}`)
 
 const api_name = "Resend verification"
-const custom_errors = [
-    "body is empty",
-    "Email already exist",
-    "Phone number is taken",
-    "Invalid referral code",
-    "User create unsuccessful",
-]
+const custom_errors = ["body is empty", "Email already exist", "Email already verified"]
 
 class CustomError extends Error {
     constructor(message) {
@@ -29,6 +23,8 @@ const email_info = {
 
 exports.handler = async (event, context) => {
     try {
+        let datetime = await handler.datetime()
+
         const required_fields = ["user_email"]
 
         const body = JSON.parse(event.body)
@@ -42,15 +38,29 @@ exports.handler = async (event, context) => {
 
         const { user_email } = body
 
-        const email_exist = await db.search_one("users", "user_email", user_email)
-        if (email_exist.length === 0) {
+        const email_exist = (await db.search_one("users", "user_email", user_email))[0]
+        if (!email_exist) {
             throw `${custom_errors[1]}`
         }
 
-        const verification_token = cryptr.encrypt(`${email_exist[0].id_user}`)
+        if (email_exist.email_verified === 1) {
+            throw `${custom_errors[2]}`
+        }
 
-        email_info.message += `${process.env.EMAIL_LINK}user-verification/email/${verification_token}`
-        await send.email_result(user_email, email_info)
+        const verification_code = Math.random().toString(36).substr(2, 8)
+
+        await db.update_with_condition(
+            "verification_codes",
+            {
+                verification_code,
+                datetime_updated: datetime,
+            },
+            { id_user: email_exist.id_user }
+        )
+
+        email_info.message += `${verification_code}`
+
+        await send.email(user_email, email_info)
 
         return handler.returner([true, { message: "Verification sent!" }], api_name, 201)
     } catch (e) {

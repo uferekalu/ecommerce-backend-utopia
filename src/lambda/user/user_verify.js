@@ -83,8 +83,6 @@ exports.handler = async (event, context) => {
             throw `${custom_errors[2]}`
         }
 
-        console.log(user)
-
         const { id_user, user_firs_name, user_last_name, city, country } = user
 
         // response = { id_user, user_firs_name, user_last_name, city, country }

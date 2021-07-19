@@ -2,40 +2,142 @@ require("dotenv").config()
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const secret = process.env.mySecret
-const Cryptr = require("cryptr")
-const cryptr = new Cryptr(`${secret}`)
+const auth_token = require("../../middleware/token_handler")
 
 const api_name = "User Email or Phone verify"
+const custom_errors = ["body is empty", "user not found", "invalid verification code"]
 
-const error_one = "Email verification failed!"
+class CustomError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "utopiaError"
+    }
+}
 
 exports.handler = async (event, context) => {
     try {
-        const param = event.pathParameters
+        const body = JSON.parse(event.body)
 
-        let is_email, is_phone, id_user
-
-        if (param) {
-            const { token } = param
-            console.log(token)
-            console.log("PARAM", param)
-            id_user = cryptr.decrypt(token)
-            is_email = (await db.select_all_with_condition("users", { id_user }))[0]
+        if (!body || JSON.stringify(body) === "{}") {
+            throw `${custom_errors[0]}`
         }
 
-        console.log("EMAIL", is_email)
+        const all_fields = Object.keys(body)
 
-        if (is_email) await db.update_with_condition("users", { email_verified: 1 }, { id_user })
+        const required_fields = ["verification_code"]
 
-        if (!is_email) throw error_one
+        const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
-        // if (is_phone) await db.update_with_condition("users", { phone_verified: 1 }, { id_user })
+        if (missing_fields.length > 0) {
+            throw new CustomError(missing_fields)
+        }
+
+        let user, update
+        // let response = {}
+
+        const user_email = body?.user_email
+        // const user_phone_number = body?.user_phone_number
+
+        if (user_email) {
+            update = { email_verified: 1 }
+            // user = (
+            //     await db.select_all_from_join3_with_condition(
+            //         "users",
+            //         "verification_codes",
+            //         "vendors",
+            //         "id_user",
+            //         "id_vendor",
+            //         { user_email }
+            //     )
+            // )[0]
+
+            user = (
+                await db.select_all_from_join_with_condition(
+                    "users",
+                    "verification_codes",
+                    "id_user",
+                    { user_email }
+                )
+            )[0]
+        }
+
+        // if (user_phone_number) {
+        //     update = { phone_verified: 1 }
+        //     user = (
+        //         await db.select_all_from_join3_with_condition(
+        //             "verification_codes",
+        //             "users",
+        //             "vendors",
+        //             "id_user",
+        //             "id_vendor",
+        //             { user_phone_number }
+        //         )
+        //     )[0]
+        // }
+
+        if (!user) {
+            throw `${custom_errors[1]}`
+        }
+
+        if (body.verification_code !== user.verification_code) {
+            throw `${custom_errors[2]}`
+        }
+
+        console.log(user)
+
+        const { id_user, user_firs_name, user_last_name, city, country } = user
+
+        // response = { id_user, user_firs_name, user_last_name, city, country }
+
+        await db.update_with_condition("users", update, { id_user })
+
+        // if (user?.id_vendor && user?.business_name) {
+        //     const { business_name, id_vendor } = user
+        //     response = { ...others, business_name, id_vendor }
+        // }
+
+        // if (user_phone_number) {
+        //     //generate and insert token in tokens table
+        //     const created_token = await auth_token.create(user_exist.id_user)
+
+        //     let data = {
+        //         id_user,
+        //         token: created_token,
+        //         ut_datetime_created: await handler.datetime(),
+        //     }
+
+        //     await db.insert_new(data, "user_tokens")
+
+        //     //add token to response
+        //     response.token = created_token
+
+        //     //generate access level array
+        //     const id_user_access_level = user.id_user_access_level
+
+        //     let access_level_arr = [4, 5]
+        //     if (id_user_access_level == 1) {
+        //         access_level_arr.push(2, 3) // [2, 3, 4, 5]
+        //     } else if (id_user_access_level == 2) {
+        //         access_level_arr.push(1, 2, 3) //[1, 2, 3, 4, 5]
+        //     } else if (id_user_access_level == 3) {
+        //         access_level_arr.push(0, 1, 2, 3) //[0, 1, 2, 3, 4, 5]
+        //     }
+
+        //     //add access level to response
+        //     response.access_level = access_level_arr
+
+        //     return handler.returner([true, response], api_name, 201)
+        // }
 
         return handler.returner([true, { message: "email verified successfully" }], api_name, 201)
     } catch (e) {
-        console.log(e);
-        if (e === error_one || e.message == 'Invalid IV length') {
-            return handler.returner([false, e], api_name, 400)
+        let errors = await handler.required_field_error(e)
+        if (custom_errors.includes(e)) {
+            errors = e
+        }
+        if (errors) {
+            console.log(errors)
+            return handler.returner([false, errors], api_name, 400)
         }
         return handler.returner([false], api_name, 500)
     }

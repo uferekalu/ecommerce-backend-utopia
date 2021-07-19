@@ -249,10 +249,7 @@ functions:
         handler: src/lambda/user/user_verify.handler
         events:
             - http:
-                  path: /api/user_verify/email/{token}
-                  method: post
-            - http:
-                  path: /api/user_verify/phone
+                  path: /api/user_verify
                   method: post
         cors: true
         origin: "*"

@@ -231,6 +231,7 @@ functions:
         cors: true
         origin: "*"
     #-------------------------------------------------------------------------
+
     user_create:
         handler: src/lambda/user/user_create.handler
         events:

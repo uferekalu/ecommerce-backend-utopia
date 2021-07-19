@@ -1,5 +1,6 @@
 require("dotenv").config()
 const handler = require("../../middleware/handler")
+const auth_token = require("../../middleware/token_handler")
 const db = require("../../lib/database/query")
 const send = require("../../lib/services/email/send_email")
 const bcrypt = require("bcryptjs")
@@ -23,13 +24,12 @@ const custom_errors = [
     "Phone number is taken",
     "Invalid referral code",
     "User create unsuccessful",
-    "Verification code invalid!",
 ]
 
 class CustomError extends Error {
     constructor(message) {
         super(message)
-        this.name = "utopiaError"
+        this.name = "customError"
     }
 }
 
@@ -118,20 +118,9 @@ exports.handler = async (event, context) => {
 
         if (referral_code) {
             const referee = (await db.select_one("referral_codes", { referral_code }))[0]
-            if (!referee) throw `${custom_errors[5]}`
+            if (!referee) throw `${custom_errors[3]}`
             const { total_conversions } = referee
             accum_converts = total_conversions + 1
-        }
-
-        // Check if code is in the database
-        const code_exist = await db.search_one("verification_codes", "code", body.verification_code)
-
-        if (code_exist.length == 0) {
-            throw `${custom_errors[7]}`
-        }
-
-        if (code_exist[0].acquirer_id) {
-            throw `${custom_errors[7]}`
         }
 
         const password_hashed = await passwordHash(user_password)
@@ -145,13 +134,8 @@ exports.handler = async (event, context) => {
             user_datetime_created: datetime,
             city,
             country,
-            email_verified: 1,
             ...others,
         }
-
-        delete record.verification_code
-        delete record.acquirer_location
-        delete record.referral_code
 
         const result = await db.insert_new(record, "users")
 
@@ -160,7 +144,7 @@ exports.handler = async (event, context) => {
         delete record.user_password
 
         if (!result) {
-            throw `${custom_errors[6]}`
+            throw `${custom_errors[5]}`
         }
 
         await db.update_with_condition(
@@ -175,25 +159,6 @@ exports.handler = async (event, context) => {
         }
 
         await db.insert_new(user_access_level, "user_access_level_m2m_users")
-
-        // Update the verification codes table
-        let verification_table_data = {
-            acquirer_id: id_user,
-            datetime_expended: datetime,
-            acquirer_location: body.acquirer_location,
-        }
-
-        if (code_exist[0].code !== "utopia123develop") {
-            await db.update_with_condition("verification_codes", verification_table_data, {
-                id_code: code_exist[0].id_code,
-            })
-        }
-
-        await db.update_with_condition(
-            "referral_codes",
-            { total_conversions: accum_converts },
-            { referral_code }
-        )
 
         const verification_token = cryptr.encrypt(`${id_user}`)
 

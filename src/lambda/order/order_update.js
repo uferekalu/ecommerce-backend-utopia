@@ -68,8 +68,7 @@ exports.handler = async (event, context) => {
                 }
 
                 //Send email
-                await send.email("mejabidurotimi@yahoo.com", email_info)
-                // await send.email('customercare@utopiatech.io', email_info);
+                await send.email_result('customercare@utopiatech.io', email_info);
                 await db.update_with_condition("orders", { id_order_status }, { id_order })
             } else {
                 throw `${custom_errors[3]}`
@@ -108,8 +107,7 @@ exports.handler = async (event, context) => {
                 }
 
                 //Send email
-                await send.email("mejabidurotimi@yahoo.com", email_info)
-                // await send.email('customercare@utopiatech.io', email_info);
+                await send.email_result('customercare@utopiatech.io', email_info);
                 await db.update_with_condition("orders", { id_order_status }, { id_order })
             } else {
                 throw `${custom_errors[3]}`

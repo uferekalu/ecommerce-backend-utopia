@@ -27,13 +27,13 @@ const custom_errors = [
 class CustomError extends Error {
     constructor(message) {
         super(message)
-        this.name = "customError"
+        this.name = "utopiaError"
     }
 }
 
 const email_info = {
     subject: "Email Verification",
-    message: "Please click here to verify your email\n\n\n\n",
+    message: "Your verification code is\n\n\n\n",
 } // we can send  HTML template insted of messgae
 
 exports.handler = async (event, context) => {
@@ -135,9 +135,15 @@ exports.handler = async (event, context) => {
 
         await db.insert_new(user_access_level, "user_access_level_m2m_users")
 
-        const verification_token = cryptr.encrypt(`${id_user}`)
+        const verification_code = Math.random().toString(36).substr(2, 8)
 
-        email_info.message += `${process.env.EMAIL_LINK}user-verification/email/${verification_token}`
+        await db.insert_new(
+            { verification_code, id_user, datetime_generated: datetime },
+            "verification_codes"
+        )
+
+        email_info.message += `${verification_code}`
+
         await send.email(user_email, email_info)
 
         return handler.returner([true, record], api_name, 201)

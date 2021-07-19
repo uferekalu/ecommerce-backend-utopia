@@ -81,7 +81,7 @@ exports.handler = async (event, context) => {
         if (type === "email") {
             //Send email
             email_info.message += randomString
-            // await send.email(medium, email_info)
+            await send.email(medium, email_info)
         }
 
         // if (type === "phone") {

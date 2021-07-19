@@ -1,5 +1,5 @@
-const handler = require("../../middleware/handler")
-const db = require("../../lib/database/query")
+const handler = require("../src/middleware/handler")
+const db = require("../src/lib/database/query")
 const bcrypt = require("bcryptjs")
 
 const passwordHash = async (password) => {

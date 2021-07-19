@@ -56,26 +56,26 @@ module.exports = {
                     email.message +
                     "\n\n\n\n\nUtopia Tech PTY LTD\n\nIf you have any questions please contact us via \nAdmin@utopiatech.io",
             }
-            let resp = false;
+            let resp = false
 
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
-                    console.log("error is " + error);
-                    
-                    resolve(false,error); // or use rejcet(false) but then you will have to handle errors
+                    console.log("error is " + error)
+
+                    resolve(false, error) // or use rejcet(false) but then you will have to handle errors
+                } else {
+                    console.log("Email sent: " + JSON.stringify(info))
+                    resolve([
+                        true,
+                        JSON.stringify(info) +
+                            "---------------------------------------" +
+                            info.response,
+                    ])
                 }
-                else {
-                    console.log('Email sent: ' + JSON.stringify(info) );
-                    resolve([true, JSON.stringify(info)+"---------------------------------------"+info.response]);
-                }
-            });
+            })
         })
-
-    }
+    },
 }
-
-
-
 
 //console.log("aaaaaaaaaaaaaa",email_result())
 
@@ -99,16 +99,3 @@ module.exports = {
 
 
 */
-
-
-
-
-
-    
-
-
-
-
-
-
-

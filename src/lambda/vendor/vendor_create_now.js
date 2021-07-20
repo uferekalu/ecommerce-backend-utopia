@@ -34,7 +34,7 @@ class CustomError extends Error {
 }
 const email_info = {
     subject: "Email Verification",
-    message: "Please click here to verify your email\n\n\n\n",
+    message: "You verification code is\n\n\n\n",
 } // we can send  HTML template insted of messgae
 
 exports.handler = async (event) => {
@@ -61,8 +61,6 @@ exports.handler = async (event) => {
             "id_user_access_level",
             "city",
             "country",
-            "verification_code",
-            "acquirer_location",
         ]
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
         if (missing_fields.length > 0) {
@@ -81,24 +79,7 @@ exports.handler = async (event) => {
             id_user_access_level,
             city,
             country,
-            verification_code,
-            acquirer_location,
         } = body
-
-        // Check if code is in the database
-        const code_exist = (
-            await db.select_all_with_condition("verification_codes", {
-                code: verification_code,
-            })
-        )[0]
-
-        if (!code_exist) {
-            throw `${custom_errors[1]}`
-        }
-
-        if (code_exist.acquirer_id) {
-            throw `${custom_errors[1]}`
-        }
 
         const nameValidator1 = /[\d\s$&+,:;=?@#|'<>.^*()%!-]|(.)\1\1/gm
         const nameValidator2 = /[\d\s$&+,:;=?@#|'<>.^*()%!-]|(.)\1/gm
@@ -169,8 +150,6 @@ exports.handler = async (event) => {
             user_datetime_created: datetime,
             id_user_status: 1,
             id_user_title: 1,
-            email_verified: 1,
-            phone_verified: 0,
             city: city,
             country: country,
         }
@@ -205,19 +184,6 @@ exports.handler = async (event) => {
             throw `${custom_errors[9]}`
         }
 
-        // Update the verification codes table
-        let verification_table_data = {
-            acquirer_id: id_user,
-            datetime_expended: datetime,
-            acquirer_location,
-        }
-
-        if (code_exist.code !== "utopia123develop") {
-            await db.update_with_condition("verification_codes", verification_table_data, {
-                id_code: code_exist.id_code,
-            })
-        }
-
         await db.insert_new(
             {
                 id_id_user: id_user,
@@ -231,10 +197,16 @@ exports.handler = async (event) => {
         const data = { id_vendor, id_user, user_access_level, ...vendorData }
         delete data.id_vendor_status
 
-        const verification_token = cryptr.encrypt(`${id_user}`)
+        const verification_code = Math.random().toString(36).substr(2, 8)
 
-        email_info.message += `${process.env.EMAIL_LINK}user-verification/email/${verification_token}`
-        await send.email_result(vendor_email, email_info)
+        await db.insert_new(
+            { verification_code, id_user, datetime_generated: datetime },
+            "verification_codes"
+        )
+
+        email_info.message += `${verification_code}`
+
+        await send.email(user_email, email_info)
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {

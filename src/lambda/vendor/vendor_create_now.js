@@ -15,7 +15,6 @@ const passwordHash = async (password) => {
 const api_name = "Vendor create now"
 const custom_errors = [
     "body is empty",
-    "Verification code invalid!",
     "Invalid first name",
     "Invalid last name",
     "Email already exist",
@@ -97,16 +96,16 @@ exports.handler = async (event) => {
                 : undefined
 
         if (!valid_first_name) {
-            throw `${custom_errors[2]}`
+            throw `${custom_errors[1]}`
         }
 
         if (!valid_last_name) {
-            throw `${custom_errors[3]}`
+            throw `${custom_errors[2]}`
         }
 
         const email_exist = (await db.search_one("users", "user_email", vendor_email))[0]
         if (email_exist) {
-            throw `${custom_errors[4]}`
+            throw `${custom_errors[3]}`
         }
 
         const phone_exist = (
@@ -120,13 +119,13 @@ exports.handler = async (event) => {
         )[0]
 
         if (phone_exist) {
-            throw `${custom_errors[5]}`
+            throw `${custom_errors[4]}`
         }
 
         const vendor_exist = (await db.select_all_with_condition("vendors", { business_name }))[0]
 
         if (vendor_exist) {
-            throw `${custom_errors[6]}`
+            throw `${custom_errors[5]}`
         }
 
         const vendorStatusId = (
@@ -136,7 +135,7 @@ exports.handler = async (event) => {
         )[0]
 
         if (!vendorStatusId) {
-            throw `${custom_errors[7]}`
+            throw `${custom_errors[6]}`
         }
 
         const password_hashed = await passwordHash(vendor_password)
@@ -157,7 +156,7 @@ exports.handler = async (event) => {
         const new_user = await db.insert_new(userData, "users")
 
         if (!new_user) {
-            throw `${custom_errors[8]}`
+            throw `${custom_errors[7]}`
         }
 
         const id_user = new_user.insertId
@@ -174,14 +173,14 @@ exports.handler = async (event) => {
         const new_vendor = await db.insert_new(vendorData, "vendors")
 
         if (!new_vendor) {
-            throw `${custom_errors[8]}`
+            throw `${custom_errors[7]}`
         }
         const id_vendor = new_vendor.insertId
 
         const updated = await db.update_one("users", { id_vendor }, "id_user", id_user)
 
         if (updated.affectedRows !== 1) {
-            throw `${custom_errors[9]}`
+            throw `${custom_errors[8]}`
         }
 
         await db.insert_new(

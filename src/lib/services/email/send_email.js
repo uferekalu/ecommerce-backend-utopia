@@ -1,6 +1,5 @@
 require("dotenv").config()
 const nodemailer = require("nodemailer")
-const handler = require("../../../middleware/handler")
 
 module.exports = {
     email: async (user, email) => {
@@ -11,12 +10,12 @@ module.exports = {
                 port: 587,
                 secure: false,
                 auth: {
-                    user: "do-not-reply@utopiatech.io",
+                    user: process.env.EMAIL_ADDRESS,
                     pass: process.env.EMAIL_PASS,
                 },
             })
             const mailOptions = {
-                from: "do-not-reply@utopiatech.io",
+                from: process.env.EMAIL_ADDRESS,
                 to: user,
                 subject: email.subject,
                 text:
@@ -43,26 +42,3 @@ module.exports = {
         })
     },
 }
-
-//console.log("aaaaaaaaaaaaaa",email_result())
-
-/*
-    email: async (user, email) => {
-        console.log("trying to send email")
-      
-        console.log("aaaaaaaaaaaaaa")
-       
-
-        await transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-                return handler.returner([false, error])
-            } else {
-                console.log("Email sent: ")
-
-                return handler.returner([true, info])
-            }
-        })
-    },
-
-
-*/

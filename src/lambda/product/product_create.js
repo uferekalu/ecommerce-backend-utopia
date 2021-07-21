@@ -36,7 +36,6 @@ exports.handler = async (event, context) => {
             "product_desc",
             "shipping_locations",
             "SKU",
-            "is_active",
         ]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
@@ -55,7 +54,6 @@ exports.handler = async (event, context) => {
             SKU,
             p2v_promo_off,
             is_sale,
-            is_active,
             ...others
         } = body
 
@@ -137,6 +135,8 @@ exports.handler = async (event, context) => {
         if (!new_product_id) {
             throw `${custom_errors[2]}`
         }
+
+        let is_active
 
         if (others.product_thumbnail.url) {
             is_active = true

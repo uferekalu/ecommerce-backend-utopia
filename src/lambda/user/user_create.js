@@ -155,8 +155,6 @@ exports.handler = async (event, context) => {
         if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
-        console.log("Error", e)
-
         return handler.returner([false], api_name, 500)
     }
 }

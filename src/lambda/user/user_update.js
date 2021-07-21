@@ -63,13 +63,10 @@ exports.handler = async (event, context) => {
             let id_user_profile_image
 
             if (!others.url_info.id_user_profile_image) {
-                console.log(1)
                 const result = await db.insert_new(others.url_info, "user_profile_images")
                 id_user_profile_image = result.insertId
                 await db.update_one("users", { id_user_profile_image }, "id_user", id_user)
             } else {
-                console.log(others.url_info)
-                console.log(2)
                 await db.update_one(
                     "user_profile_images",
                     others.url_info,

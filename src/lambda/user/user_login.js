@@ -5,24 +5,37 @@ const bcrypt = require("bcryptjs")
 const qs = require("querystring")
 
 const api_name = "User login"
+const custom_errors = [
+    "body is empty",
+    "please provide and email",
+    "please provide your password",
+    "Invalid login",
+    "verify email",
+    "User create unsuccessful",
+]
 
 exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
 
         if (!body || JSON.stringify(body) === "{}") {
-            throw "body is empty"
+            throw `${custom_errors[0]}`
         }
 
         const all_fields = Object.keys(body)
 
-        //throw an error if neither user_email nor user_phone_number is provided
-        if (!all_fields.includes("user_email") && !all_fields.includes("user_phone_number")) {
-            throw "please provide an email or a phone number"
+        if (!all_fields.includes("user_email")) {
+            throw `${custom_errors[1]}`
         }
+
+        //throw an error if neither user_email nor user_phone_number is provided
+        // if (!all_fields.includes("user_email") && !all_fields.includes("user_phone_number")) {
+        //     throw "please provide an email or a phone number"
+        // }
+
         //throw an error if password is not provided
         if (!all_fields.includes("user_password")) {
-            throw "please provide your password"
+            throw `${custom_errors[2]}`
         }
 
         let user_exist
@@ -30,45 +43,40 @@ exports.handler = async (event, context) => {
 
         //if email was chosen as preferred login detail
         if (all_fields.includes("user_email")) {
-            user_exist = await db.search_one("users", "user_email", body.user_email)
+            user_exist = (await db.search_one("users", "user_email", user_email))[0]
         }
 
         //if phone number was chosen as preferred login detail
         // if (all_fields.includes("user_phone_number")) {
-        //     user_exist = await db.search_one("users", "user_phone_number", body.user_phone_number)
+        //     user_exist = (await db.search_one("users", "user_phone_number", body.user_phone_number))[0]
         // }
 
-        if (user_exist.length === 0) {
-            throw "invalid login"
+        if (!user_exist) {
+            throw `${custom_errors[3]}`
         }
 
-        // if (user_exist[0].email_verified === 0) {
-        //     throw "verify email"
-        // }
-
-        // if (isVerified ==) {
-        //     throw "invalid login"
-        // }
-
+        if (user_exist.email_verified === 0) {
+            throw `${custom_errors[4]}`
+        }
         //comparing the provided password with the hashed version using the library reverse check
-        const pass_valid = await bcrypt.compare(body.user_password, user_exist[0].user_password)
+        const pass_valid = await bcrypt.compare(body.user_password, user_exist.user_password)
 
         if (!pass_valid) {
-            throw "invalid login"
+            throw `${custom_errors[3]}`
         }
 
         //the essence of having generic error message is for security purpose,
         //you dont want to hint a potential hacker what they are getting wrong or right.
 
-        const id_user = user_exist[0].id_user
-        const user_first_name = user_exist[0].user_first_name
-        const user_last_name = user_exist[0].user_last_name
-        const user_phone_number = user_exist[0].user_phone_number
-        const city = user_exist[0].city
-        const country = user_exist[0].country
+        const id_user = user_exist.id_user
+        const user_first_name = user_exist.user_first_name
+        const user_last_name = user_exist.user_last_name
+        const user_phone_number = user_exist.user_phone_number
+        const city = user_exist.city
+        const country = user_exist.country
 
         //newly created token
-        const created_token = await auth_token.create(user_exist[0].id_user)
+        const created_token = await auth_token.create(user_exist.id_user)
 
         let data = {
             id_user,
@@ -95,7 +103,7 @@ exports.handler = async (event, context) => {
 
         const user_details = (
             await db.select_all_from_join_with_condition("users", "vendors", "id_vendor", {
-                user_email: user_exist[0].user_email,
+                user_email: user_exist.user_email,
             })
         )[0]
 
@@ -142,7 +150,13 @@ exports.handler = async (event, context) => {
             201
         )
     } catch (e) {
-        console.log(e);
-        return handler.returner([false, e], api_name)
+        let errors = await handler.required_field_error(e)
+        if (custom_errors.includes(e)) {
+            errors = e
+        }
+        if (errors) {
+            return handler.returner([false, errors], api_name, 400)
+        }
+        return handler.returner([false], api_name, 500)
     }
 }

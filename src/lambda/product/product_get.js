@@ -2,7 +2,7 @@ const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 
 const api_name = "product get"
-const error_one = "no product found"
+const custom_errors = ["no product found"]
 
 exports.handler = async (event, context) => {
     try {
@@ -18,11 +18,18 @@ exports.handler = async (event, context) => {
         )
 
         if (product.length === 0) {
-            throw `${error_one}`
+            throw `${custom_errors[0]}`
         }
 
         return handler.returner([true, product], api_name, 200)
     } catch (e) {
-        return handler.returner([false, e], api_name, 404)
+        let errors = await handler.required_field_error(e)
+        if (custom_errors.includes(e)) {
+            errors = e
+        }
+        if (errors) {
+            return handler.returner([false, errors], api_name, 400)
+        }
+        return handler.returner([false], api_name, 500)
     }
 }

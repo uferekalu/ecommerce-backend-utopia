@@ -1,44 +1,57 @@
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
-const bcrypt = require("bcryptjs")
+const auth_token = require("../../middleware/token_handler")
 
 const api_name = "User update"
+const custom_errors = [
+    "body is empty",
+    "user does not exist",
+    "authentication required",
+    "nothing to update",
+]
+
+class CustomError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "utopiaError"
+    }
+}
 
 exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
 
         if (!body || JSON.stringify(body) === "{}") {
-            throw "body is empty"
+            throw `${custom_errors[0]}`
         }
 
         const all_fields = Object.keys(body)
 
-        const required_fields = ["id_user", "token"]
+        const required_fields = ["token"]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
         if (missing_fields.length > 0) {
-            throw Error(missing_fields)
+            throw new CustomError(missing_fields)
         }
-        const { id_user, token, ...others } = body
+        const { token, ...others } = body
 
-        const user_exist = await db.search_one("users", "id_user", id_user)
+        const id_user = await auth_token.verify(token)
 
-        if (user_exist.length < 1) {
-            throw "user does not exist"
+        const user_exist = (await db.select_all_with_condition("users", { id_user }))[0]
+
+        if (!user_exist) {
+            throw `${custom_errors[1]}`
         }
 
-        const isAuth = await db.search_one("user_tokens", "id_user", id_user)
-
-        if (isAuth.length < 1) {
-            throw "authentication required"
+        if (!id_user) {
+            throw `${custom_errors[2]}`
         }
 
         const optional_fields = Object.keys(others)
 
         if (optional_fields.length < 1) {
-            throw "nothing to update"
+            throw `${custom_errors[3]}`
         }
 
         if (optional_fields.includes("user_password")) {
@@ -50,13 +63,13 @@ exports.handler = async (event, context) => {
             let id_user_profile_image
 
             if (!others.url_info.id_user_profile_image) {
-                console.log(1);
+                console.log(1)
                 const result = await db.insert_new(others.url_info, "user_profile_images")
                 id_user_profile_image = result.insertId
                 await db.update_one("users", { id_user_profile_image }, "id_user", id_user)
             } else {
-                console.log(others.url_info);
-                console.log(2);
+                console.log(others.url_info)
+                console.log(2)
                 await db.update_one(
                     "user_profile_images",
                     others.url_info,
@@ -75,21 +88,18 @@ exports.handler = async (event, context) => {
             }
             const updated_data = { ...others }
 
-            await db.update_one("users", updated_data, "id_user", id_user)
+            await db.update_with_condition("users", updated_data, { id_user })
+
             return handler.returner([true, updated_data], api_name, 201)
         }
     } catch (e) {
-        console.log(e)
-        if (e.name === "Error") {
-            const errors = e.message
-                .split(",")
-                .map((field) => {
-                    return `${field} is required`
-                })
-                .join(", ")
-
+        let errors = await handler.required_field_error(e)
+        if (custom_errors.includes(e)) {
+            errors = e
+        }
+        if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
-        return handler.returner([false, e], api_name, 400)
+        return handler.returner([false], api_name, 500)
     }
 }

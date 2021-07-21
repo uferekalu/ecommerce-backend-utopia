@@ -1,12 +1,27 @@
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const api_name = "Vendor create"
+
+const custom_errors = [
+    "body is empty",
+    "you have to be a registered user to become a vendor",
+    "Business name is taken",
+    "Vendor create not successful",
+]
+
+class CustomError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "utopiaError"
+    }
+}
+
 exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
         //error handling
         if (!body || JSON.stringify(body) === "{}") {
-            throw "body is empty"
+            throw `${custom_errors[0]}`
         }
         const all_fields = Object.keys(body)
         //more error handling
@@ -22,7 +37,7 @@ exports.handler = async (event, context) => {
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
         if (missing_fields.length > 0) {
-            throw Error(missing_fields)
+            throw new CustomError(missing_fields)
         }
         const {
             id_user,
@@ -33,16 +48,16 @@ exports.handler = async (event, context) => {
             ...others
         } = body
 
-        const isUser = await db.search_one("users", "id_user", id_user)
+        const isUser = (await db.select_all_with_condition("users", { id_user }))[0]
 
-        if (isUser.length === 0) {
-            throw "you have to be a registered user to become a vendor"
+        if (!isUser) {
+            throw `${custom_errors[1]}`
         }
 
-        const vendor_exist = await db.search_one("vendors", "business_name", business_name)
+        const vendor_exist = (await db.select_all_with_condition("vendors", { business_name }))[0]
 
-        if (vendor_exist.length > 0) {
-            throw "Business name is taken"
+        if (vendor_exist) {
+            throw `${custom_errors[2]}`
         }
         const data = {
             ...others,
@@ -54,16 +69,12 @@ exports.handler = async (event, context) => {
         }
         const newVendorRecord = await db.insert_new(data, "vendors")
         if (!newVendorRecord) {
-            throw "Vendor create not successful"
+            throw `${custom_errors[3]}`
         }
 
         const id_vendor = newVendorRecord.insertId
 
-        const updated = await db.update_one("users", { id_vendor }, "id_user", id_user)
-
-        if (updated.affectedRows !== 1) {
-            throw "user update unsuccessfull"
-        }
+        await db.update_with_condition("users", { id_vendor }, { id_user })
 
         return handler.returner(
             [
@@ -76,15 +87,13 @@ exports.handler = async (event, context) => {
             201
         )
     } catch (e) {
-        if (e.name === "Error") {
-            const errors = e.message
-                .split(",")
-                .map((field) => {
-                    return `${field} is required`
-                })
-                .join(", ")
+        let errors = await handler.required_field_error(e)
+        if (custom_errors.includes(e)) {
+            errors = e
+        }
+        if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
-        return handler.returner([false, e], api_name, 400)
+        return handler.returner([false], api_name, 500)
     }
 }

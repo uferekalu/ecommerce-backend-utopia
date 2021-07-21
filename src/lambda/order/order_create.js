@@ -10,7 +10,7 @@ const custom_errors = [
 class CustomError extends Error {
     constructor(message) {
         super(message)
-        this.name = "customError"
+        this.name = "utopiaError"
     }
 }
 
@@ -59,7 +59,11 @@ exports.handler = async (event, context) => {
         const mapped_prices = id_product_m2m_vendor.map(async (_id) => {
             const res = (
                 await db.select_all_from_join2_with_condition_order(
-                    "products_m2m_vendors", "vendors", "id_vendor", {"id_product_m2m_vendor" : _id})
+                    "products_m2m_vendors",
+                    "vendors",
+                    "id_vendor",
+                    { id_product_m2m_vendor: _id }
+                )
             )[0]
 
             const price = res.p2v_promo_price ?? res.p2v_price
@@ -71,7 +75,9 @@ exports.handler = async (event, context) => {
                 vproducts.push([res.id_product_m2m_vendor])
 
                 vshippings.push(
-                    country === res.vendor_country ? (res.shipping_cost_local ?? 0) : (res.shipping_cost_intl ?? 0)
+                    country === res.vendor_country
+                        ? res.shipping_cost_local ?? 0
+                        : res.shipping_cost_intl ?? 0
                 )
 
                 return
@@ -102,8 +108,9 @@ exports.handler = async (event, context) => {
                     total: Number(Number(total) + Number(vshippings[idx])).toFixed(2),
                     shipping: vshippings[idx],
                     id_user,
-                    // id_vendor: vcode[idx], 
-                    order_created_at: datetime, paymentMethod
+                    // id_vendor: vcode[idx],
+                    order_created_at: datetime,
+                    paymentMethod,
                 },
                 "orders"
             )

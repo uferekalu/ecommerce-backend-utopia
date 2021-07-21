@@ -13,7 +13,7 @@ exports.handler = async (event, context) => {
 
         const id_user = await auth_token.verify(token)
 
-        const {id_vendor} = (await db.select_all_with_condition("users", { id_user }))[0]
+        const { id_vendor } = (await db.select_all_with_condition("users", { id_user }))[0]
 
         const {
             business_name,
@@ -34,19 +34,19 @@ exports.handler = async (event, context) => {
             return handler.returner([false, { message: "Vendor is not found" }], api_name, 404)
         } /*else if (vendor_business_exist.length != 0) {
             return handler.returner([false, { message: "Vendor already exists" }], api_name, 404)
-        } */else {
+        } */ else {
             const created_token = await auth_token.create(id_vendor)
 
             const updated_data = {
-                business_name: business_name,
-                business_abn: business_abn,
-                vendor_phone_number: vendor_phone_number,
-                vendor_address: vendor_address,
-                vendor_long_desc: vendor_long_desc,
-                vendor_short_desc: vendor_short_desc,
-                vendor_coverphoto: vendor_coverphoto,
-                vendor_photo: vendor_photo,
-                id_vendor_status: id_vendor_status,
+                business_name,
+                business_abn,
+                vendor_phone_number,
+                vendor_address,
+                vendor_long_desc,
+                vendor_short_desc,
+                vendor_coverphoto,
+                vendor_photo,
+                id_vendor_status,
                 created_at: datetime,
                 updated_at: datetime,
             }
@@ -69,6 +69,6 @@ exports.handler = async (event, context) => {
             }
         }
     } catch (e) {
-        return handler.returner([false, e.toString()], api_name, 500)
+        return handler.returner([false], api_name, 500)
     }
 }

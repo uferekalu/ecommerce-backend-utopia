@@ -144,7 +144,8 @@ exports.handler = async (event, context) => {
 
         email_info.message += `${verification_code}`
 
-        await send.email(user_email, email_info)
+        const email_sent = await send.email(user_email, email_info)
+        console.log(email_sent)
 
         return handler.returner([true, record], api_name, 201)
     } catch (e) {

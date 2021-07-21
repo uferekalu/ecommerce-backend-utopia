@@ -58,11 +58,37 @@ exports.handler = async (event, context) => {
             delete others.user_password
         }
 
-        const updated_data = { ...others }
+        // Update profile image
+        if (others.url_info) {
+            let id_user_profile_image
 
-        await db.update_with_condition("users", updated_data, { id_user })
+            if (!others.url_info.id_user_profile_image) {
+                const result = await db.insert_new(others.url_info, "user_profile_images")
+                id_user_profile_image = result.insertId
+                await db.update_one("users", { id_user_profile_image }, "id_user", id_user)
+            } else {
+                await db.update_one(
+                    "user_profile_images",
+                    others.url_info,
+                    "id_user_profile_image",
+                    others.url_info.id_user_profile_image
+                )
+            }
 
-        return handler.returner([true, updated_data], api_name, 201)
+            return handler.returner([true, others.url_info], api_name, 201)
+        }
+
+        // Update normal user info
+        if (!others.url_info) {
+            if (optional_fields.includes("url_info")) {
+                delete others.url_info
+            }
+            const updated_data = { ...others }
+
+            await db.update_with_condition("users", updated_data, { id_user })
+
+            return handler.returner([true, updated_data], api_name, 201)
+        }
     } catch (e) {
         let errors = await handler.required_field_error(e)
         if (custom_errors.includes(e)) {

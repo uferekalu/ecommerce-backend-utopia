@@ -104,6 +104,9 @@ exports.handler = async (event) => {
         }
 
         const email_exist = (await db.search_one("users", "user_email", vendor_email))[0]
+
+        console.log(email_exist);
+
         if (email_exist) {
             throw `${custom_errors[3]}`
         }
@@ -205,7 +208,7 @@ exports.handler = async (event) => {
 
         email_info.message += `${verification_code}`
 
-        await send.email(user_email, email_info)
+        await send.email(vendor_email, email_info)
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {

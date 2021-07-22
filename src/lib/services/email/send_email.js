@@ -23,7 +23,6 @@ let htmlTemplate = (email_info) => {
 
 module.exports = {
     email: async (email_info) => {
-        console.log("EMAIL INFO:", email_info)
         return new Promise((resolve, reject) => {
             const transporter = nodemailer.createTransport({
                 host: "sub5.mail.dreamhost.com",

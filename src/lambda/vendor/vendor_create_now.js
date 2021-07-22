@@ -108,8 +108,6 @@ exports.handler = async (event) => {
 
         const email_exist = (await db.search_one("users", "user_email", vendor_email))[0]
 
-        console.log(email_exist)
-
         if (email_exist) {
             throw `${custom_errors[3]}`
         }

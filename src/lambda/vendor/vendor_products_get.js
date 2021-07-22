@@ -26,7 +26,9 @@ exports.handler = async (event, context) => {
         }
 
         if (vendor.id_vendor_status !== 2) {
-            throw `${error_two}`
+            data = [`${error_two}`]
+            // throw `${error_two}`
+            return handler.returner([true, data], api_name, 200)
         }
 
         let data = []

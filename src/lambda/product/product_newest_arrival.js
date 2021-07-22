@@ -13,7 +13,7 @@ exports.handler = async (event) => {
 
         if (isLimited) {
             const { limit } = param
-            data = await db.select_all_from_join4_with_condition_and_order_and_limit(
+            data = await db.select_all_from_join4_with_conditions_and_order_and_limit(
                 "products",
                 "products_m2m_vendors",
                 "product_thumbnails",
@@ -21,15 +21,16 @@ exports.handler = async (event) => {
                 "id_product",
                 "id_product_thumbnail",
                 "id_vendor",
-                { is_sale: "true" },
-                "created_at",
+                "products_m2m_vendors.is_active = 1",
+                "vendors.id_vendor_status = 2",
+                "products_m2m_vendors.created_at",
                 limit,
                 "DESC"
             )
         }
 
         if (!isLimited) {
-            data = await db.select_all_from_join4_with_condition_and_order(
+            data = await db.select_all_from_join4_with_conditions_and_order(
                 "products",
                 "products_m2m_vendors",
                 "product_thumbnails",
@@ -37,13 +38,15 @@ exports.handler = async (event) => {
                 "id_product",
                 "id_product_thumbnail",
                 "id_vendor",
-                { is_sale: "true" },
-                "created_at",
+                "products_m2m_vendors.is_active = 1",
+                "vendors.id_vendor_status = 2",
+                "products_m2m_vendors.created_at",
                 "DESC"
             )
         }
         return handler.returner([true, data], api_name)
     } catch (e) {
+        console.log(e)
         return handler.returner([false], api_name, 500)
     }
 }

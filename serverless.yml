@@ -448,6 +448,18 @@ functions:
         origin: "*"
     #-------------------------------------------------------------------------
 
+    #   >>>BUG ROUTES
+    #-------------------------------------------------------------------------------
+    bug_report:
+        handler: src/lambda/bug/bug_report.handler
+        events:
+            - http:
+                  path: /api/bug_report
+                  method: post
+        cors: true
+        origin: "*"
+    #-------------------------------------------------------------------------
+
     ######################################################### below are examples
 
     bye: #This Is an example

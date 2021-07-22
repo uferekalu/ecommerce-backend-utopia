@@ -21,7 +21,8 @@ exports.handler = async (event) => {
                 "id_product",
                 "id_product_thumbnail",
                 "id_vendor",
-                { is_sale: 1 },
+                "products_m2m_vendors.is_active = 1",
+                "vendors.id_vendor_status = 2",
                 "p2v_promo_off",
                 limit,
                 "DESC"
@@ -29,7 +30,7 @@ exports.handler = async (event) => {
         }
 
         if (!isLimited) {
-            data = await db.select_all_from_join4_with_condition_and_order(
+            data = await db.select_all_from_join4_with_conditions_and_order(
                 "products",
                 "products_m2m_vendors",
                 "product_thumbnails",
@@ -37,7 +38,8 @@ exports.handler = async (event) => {
                 "id_product",
                 "id_product_thumbnail",
                 "id_vendor",
-                { is_sale: 1 },
+                "products_m2m_vendors.is_active = 1",
+                "vendors.id_vendor_status = 2",
                 "p2v_promo_off",
                 "DESC"
             )

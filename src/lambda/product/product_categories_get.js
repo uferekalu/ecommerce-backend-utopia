@@ -8,6 +8,8 @@ exports.handler = async (event, context) => {
         const categories = await db.select_many("product_categories", [
             "id_product_category",
             "category_name",
+            "category_icon_url",
+            "category_image_url",
         ])
 
         return handler.returner([true, categories], api_name, 200)

@@ -1,8 +1,28 @@
 require("dotenv").config()
 const nodemailer = require("nodemailer")
 
+let htmlTemplate = (email_info) => {
+    return `
+                    <br />
+                    <br />
+                    <div style="width:80%; margin:auto; font-size:2.5rem">
+                        <h3 style="text-align:center">${email_info.subject}</h3>
+                        <p>Hello ${email_info.user_first_name},</p>
+                        <p>${email_info.message}</p>
+                        <br />
+                        <p>Thank you.</p>
+                        <p>The Utopia Team.</p>
+                        <br />
+                        <div style="background-color:#84d9b3; text-align:center; padding:1rem">
+                            <p>If you have any questions please contact us via</p>
+                            <br>admin@utopiatech.io</br>
+                        </div>
+                    </div>
+                    `
+}
+
 module.exports = {
-    email: async (user, email) => {
+    email: async (email_info) => {
         return new Promise((resolve, reject) => {
             const transporter = nodemailer.createTransport({
                 host: "sub5.mail.dreamhost.com",
@@ -16,10 +36,12 @@ module.exports = {
             })
             const mailOptions = {
                 from: process.env.EMAIL_ADDRESS,
-                to: user,
-                subject: email.subject,
+                to: email_info.user_email,
+                subject: email_info.subject,
+                html: htmlTemplate(email_info),
+
                 text:
-                    email.message +
+                    email_info.message +
                     "\n\n\n\n\nUtopia Tech PTY LTD\n\nIf you have any questions please contact us via \nAdmin@utopiatech.io",
             }
             let resp = false

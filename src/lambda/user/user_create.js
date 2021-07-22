@@ -32,9 +32,11 @@ class CustomError extends Error {
 }
 
 const email_info = {
+    user_email: "",
+    user_first_name: "",
     subject: "Email Verification",
-    message: "Your verification code is\n\n\n\n",
-} // we can send  HTML template insted of messgae
+    message: "Here is your verification code ",
+}
 
 exports.handler = async (event, context) => {
     try {
@@ -142,10 +144,11 @@ exports.handler = async (event, context) => {
             "verification_codes"
         )
 
-        email_info.message += `${verification_code}`
+        email_info.user_first_name = user_first_name
+        email_info.user_email = user_email
+        email_info.message += `<b>${verification_code}</b>`
 
-        const email_sent = await send.email(user_email, email_info)
-        console.log(email_sent)
+        const email_sent = await send.email(email_info)
 
         return handler.returner([true, record], api_name, 201)
     } catch (e) {

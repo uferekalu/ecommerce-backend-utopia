@@ -7,7 +7,12 @@ const Cryptr = require("cryptr")
 const cryptr = new Cryptr(`${secret}`)
 
 const api_name = "Resend verification"
-const custom_errors = ["body is empty", "Email already exist", "Email already verified"]
+const custom_errors = [
+    "body is empty",
+    "Email already exist",
+    "Email already verified",
+    "Verification code not sent, please enter your email again",
+]
 
 class CustomError extends Error {
     constructor(message) {
@@ -17,9 +22,11 @@ class CustomError extends Error {
 }
 
 const email_info = {
+    user_email: "",
+    user_first_name: "",
     subject: "Email Verification",
-    message: "Please click here to verify your email\n\n\n\n",
-} // we can send  HTML template insted of messgae
+    message: "Here is your verification code ",
+}
 
 exports.handler = async (event, context) => {
     try {
@@ -58,9 +65,13 @@ exports.handler = async (event, context) => {
             { id_user: email_exist.id_user }
         )
 
-        email_info.message += `${verification_code}`
+        email_info.user_first_name = email_exist.user_first_name
+        email_info.user_email = user_email
+        email_info.message += `<b>${verification_code}</b>`
 
-        await send.email(user_email, email_info)
+        const email_sent = await send.email(email_info)
+
+        if (!email_sent) throw `${custom_errors[3]}`
 
         return handler.returner([true, { message: "Verification sent!" }], api_name, 201)
     } catch (e) {

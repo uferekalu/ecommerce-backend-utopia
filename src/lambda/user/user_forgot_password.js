@@ -4,7 +4,12 @@ const bcrypt = require("bcryptjs")
 const send = require("../../lib/services/email/send_email")
 
 const api_name = "Forgot Password"
-const custom_errors = ["body is empty", "email not found", "phone number not found"]
+const custom_errors = [
+    "body is empty",
+    "email not found",
+    "phone number not found",
+    "Password not sent, please enter your email/phone number again",
+]
 
 class CustomError extends Error {
     constructor(message) {
@@ -14,9 +19,11 @@ class CustomError extends Error {
 }
 
 const email_info = {
+    user_email: "",
+    user_first_name: "",
     subject: "Forgot Password",
     message: "Your new password is ",
-} // we can send  HTML template insted of messgae
+}
 
 const passwordHash = async (password) => {
     const salt = await bcrypt.genSalt(10)
@@ -45,13 +52,14 @@ exports.handler = async (event, context) => {
         //get type = email || phone
         const { type, ...others } = body
 
-        let id_user, medium
+        let id_user, medium, user_first_name
 
         if (type === "email") {
             const { user_email } = others
             medium = user_email
             const user = (await db.search_one("users", "user_email", user_email))[0]
             id_user = user.id_user
+            user_first_name = user.user_first_name
         }
 
         if (!id_user && type === "email") {
@@ -77,13 +85,19 @@ exports.handler = async (event, context) => {
         await db.update_with_condition("users", { user_password: new_password_hashed }, { id_user })
 
         let response = {}
+        let email_sent
+        email_info.user_email = medium
+        email_info.user_first_name = user_first_name
 
         if (type === "email") {
             //Send email
-            email_info.message += randomString
-            await send.email(medium, email_info)
+            email_info.message += `<b>${randomString}</b>`
+            email_sent = await send.email(email_info)
         }
 
+        if (!email_sent) throw `${custom_errors[3]}`
+
+        // console.log(email_sent)
         // if (type === "phone") {
         //     //Send sms
         //     // ....

@@ -31,10 +31,13 @@ class CustomError extends Error {
         this.name = "utopiaError"
     }
 }
+
 const email_info = {
+    user_email: "",
+    user_first_name: "",
     subject: "Email Verification",
-    message: "You verification code is\n\n\n\n",
-} // we can send  HTML template insted of messgae
+    message: "Here is your verification code ",
+}
 
 exports.handler = async (event) => {
     try {
@@ -104,8 +107,6 @@ exports.handler = async (event) => {
         }
 
         const email_exist = (await db.search_one("users", "user_email", vendor_email))[0]
-
-        console.log(email_exist);
 
         if (email_exist) {
             throw `${custom_errors[3]}`
@@ -206,9 +207,11 @@ exports.handler = async (event) => {
             "verification_codes"
         )
 
-        email_info.message += `${verification_code}`
+        email_info.user_first_name = user_first_name
+        email_info.user_email = vendor_email
+        email_info.message += `<b>${verification_code}</b>`
 
-        await send.email(vendor_email, email_info)
+        const email_sent = await send.email(email_info)
 
         return handler.returner([true, data], api_name, 201)
     } catch (e) {

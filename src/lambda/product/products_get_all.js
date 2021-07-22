@@ -5,18 +5,21 @@ const api_name = "Product get all"
 
 exports.handler = async () => {
     try {
-        const data = await db.select_all_from_join4_with_is_active_condition(
+        const data = await db.select_all_from_join4_with_conditions(
             "products",
             "products_m2m_vendors",
             "product_thumbnails",
             "vendors",
             "id_product",
             "id_product_thumbnail",
-            "id_vendor"
+            "id_vendor",
+            "products_m2m_vendors.is_active = 1",
+            "vendors.id_vendor_status = 2"
         )
 
         return handler.returner([true, data], api_name)
     } catch (e) {
+        console.log(e)
         return handler.returner([false], api_name, 500)
     }
 }

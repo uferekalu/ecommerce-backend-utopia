@@ -197,17 +197,19 @@ module.exports = {
         return result
     },
 
-    select_all_from_join4_with_is_active_condition: async (
+    select_all_from_join4_with_conditions: async (
         table1,
         table2,
         table3,
         table4,
         joint1,
         joint2,
-        joint3
+        joint3,
+        condition1,
+        condition2
     ) => {
         let result = await connection.query(
-            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table2}.${joint3} = ${table4}.${joint3} WHERE ${table2}.is_active = 1`
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table2}.${joint3} = ${table4}.${joint3} WHERE ${condition1} AND ${condition2}`
         )
         return result
     },
@@ -263,7 +265,7 @@ module.exports = {
         )
         return result
     },
-    select_all_from_join4_with_condition_and_order: async (
+    select_all_from_join4_with_conditions_and_order: async (
         table1,
         table2,
         table3,
@@ -271,13 +273,13 @@ module.exports = {
         joint1,
         joint2,
         joint3,
-        condition,
+        condition1,
+        condition2,
         order_by,
         dir
     ) => {
         let result = await connection.query(
-            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table2}.${joint3} = ${table4}.${joint3} WHERE ? ORDER BY ${order_by} ${dir}`,
-            [condition]
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table2}.${joint3} = ${table4}.${joint3} WHERE ${condition1} AND ${condition2} ORDER BY ${order_by} ${dir}`
         )
         return result
     },
@@ -290,36 +292,17 @@ module.exports = {
         joint1,
         joint2,
         joint3,
-        condition,
+        condition1,
+        condition2,
         order_by,
         lim,
         dir
     ) => {
         let result = await connection.query(
-            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table2}.${joint3} = ${table4}.${joint3} WHERE ? ORDER BY ${order_by} ${dir} LIMIT ${lim}`,
-            [condition]
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table2}.${joint3} = ${table4}.${joint3} WHERE ${condition1} AND ${condition2} ORDER BY ${order_by} ${dir} LIMIT ${lim}`
         )
         return result
     },
-
-    // select_all_from_join4_with_condition_and_order: async (
-    //     table1,
-    //     table2,
-    //     table3,
-    //     table4,
-    //     joint1,
-    //     joint2,
-    //     joint3,
-    //     condition,
-    //     order_by,
-    //     dir
-    // ) => {
-    //     let result = await connection.query(
-    //         `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table2}.${joint3} = ${table4}.${joint3} ORDER BY ${table1}.${order_by} ${dir}`,
-    //         [condition]
-    //     )
-    //     return result
-    // },
 
     select_all_from_join4_with_condition_and_orderB: async (
         table1,
@@ -339,7 +322,7 @@ module.exports = {
         )
         return result
     },
-    select_all_from_join4_with_condition_and_order_and_limit: async (
+    select_all_from_join4_with_conditions_and_order_and_limit: async (
         table1,
         table2,
         table3,
@@ -347,14 +330,14 @@ module.exports = {
         joint1,
         joint2,
         joint3,
-        condition,
+        condition1,
+        condition2,
         order_by,
         lim,
         dir
     ) => {
         let result = await connection.query(
-            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table2}.${joint3} = ${table4}.${joint3} WHERE ${table2}.is_active = 1 ORDER BY ${table1}.${order_by} ${dir} LIMIT ${lim}`,
-            [condition]
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table2}.${joint3} = ${table4}.${joint3} WHERE ${condition1} AND ${condition2} ORDER BY ${order_by} ${dir} LIMIT ${lim}`
         )
         return result
     },

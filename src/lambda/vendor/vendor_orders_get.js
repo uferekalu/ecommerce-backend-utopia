@@ -23,6 +23,8 @@ exports.handler = async (event, context) => {
 
         const required_fields = ["token"]
 
+        console.log(body);
+
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
         if (missing_fields.length > 0) {

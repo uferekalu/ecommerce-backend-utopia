@@ -25,12 +25,6 @@ exports.handler = async (event, context) => {
             throw `${error_one}`
         }
 
-        if (vendor.id_vendor_status !== 2) {
-            data = [`${error_two}`]
-            // throw `${error_two}`
-            return handler.returner([true, data], api_name, 200)
-        }
-
         let data = []
 
         if (inactive && vendor) {

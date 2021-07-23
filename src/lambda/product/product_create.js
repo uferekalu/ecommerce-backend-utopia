@@ -36,6 +36,7 @@ exports.handler = async (event, context) => {
             "product_desc",
             "shipping_locations",
             "SKU",
+            "is_active",
         ]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
@@ -54,8 +55,11 @@ exports.handler = async (event, context) => {
             SKU,
             p2v_promo_off,
             is_sale,
+            is_active,
             ...others
         } = body
+
+        console.log(body)
 
         const category_id = await db.search_one(
             "product_categories",
@@ -136,14 +140,6 @@ exports.handler = async (event, context) => {
             throw `${custom_errors[2]}`
         }
 
-        let is_active
-
-        if (others.product_thumbnail.url) {
-            is_active = true
-        } else {
-            is_active = false
-        }
-
         //collates p2v_promo_price and/or id_brand optional fields if provided
         const new_p2v_data = {}
         for (let prop in others) {
@@ -178,6 +174,7 @@ exports.handler = async (event, context) => {
                     inventory: others.inventory,
                     p2v_promo_off,
                     is_sale,
+                    is_active,
                 },
                 "products_m2m_vendors"
             )
@@ -210,11 +207,12 @@ exports.handler = async (event, context) => {
             id_product_m2m_vendor: new_product_m2m_vendor_id,
             product_title,
             product_desc,
-            // shipping_locations
             shipping_locations: array_shipping_locations,
         }
 
         return handler.returner([true, { ...product, is_active }], api_name, 201)
+        /*
+         */
     } catch (e) {
         let errors = await handler.required_field_error(e)
         if (custom_errors.includes(e)) {

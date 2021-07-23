@@ -29,6 +29,8 @@ exports.handler = async (event, context) => {
     try {
         const body = JSON.parse(event.body)
 
+        const datetime = await handler.datetime()
+
         if (!body || JSON.stringify(body) === "{}") {
             throw `${custom_errors[0]}`
         }
@@ -74,6 +76,11 @@ exports.handler = async (event, context) => {
                     if (!order_exist) {
                         throw `${custom_errors[2]}`
                     }
+
+                    id_order_status.datetime_updated = datetime
+                    let new_order_status = JSON.parse(order_exist.id_order_status)
+                    new_order_status.push(id_order_status)
+                    data.id_order_status = JSON.stringify(new_order_status)
 
                     await db.update_with_condition("orders", data, { id_order: order })
                 })

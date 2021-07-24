@@ -122,7 +122,7 @@ exports.handler = async (event, context) => {
             }
         }
 
-        if (key == "vendor") {
+        if (key == "vendor_order_update") {
             const { id_vendor } = (await db.select_all_with_condition("users", { id_user }))[0]
             order_exist = await db.select_all_from_join3_with_2condition(
                 "orders",

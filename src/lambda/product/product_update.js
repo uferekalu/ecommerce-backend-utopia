@@ -35,8 +35,6 @@ exports.handler = async (event, context) => {
         }
         const { id_vendor, token, ...others } = body
 
-        console.log(body);
-
         //checks if vendor exists
         const user_exist = await db.search_one("vendors", "id_vendor", id_vendor)
 

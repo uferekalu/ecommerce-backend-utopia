@@ -59,8 +59,6 @@ exports.handler = async (event, context) => {
             ...others
         } = body
 
-        console.log(body)
-
         const category_id = await db.search_one(
             "product_categories",
             "id_product_category",

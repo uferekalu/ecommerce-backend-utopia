@@ -64,10 +64,12 @@ exports.handler = async (event, context) => {
         email_info.user_first_name = user_first_name
         email_info.user_email = user_email
         id_order_status.datetime_updated = datetime
+        var orderId = "";
 
         // Convert isPaid to 1
         if (key == "order_paid" && Array.isArray(id_order)) {
             const order_update = id_order.map(async (order) => {
+                orderId = order;
                 order_exist = (
                     await db.select_one_with_2conditions("orders", { id_order: order }, { id_user })
                 )[0]
@@ -87,7 +89,21 @@ exports.handler = async (event, context) => {
             email_info.subject = "Order Created!"
             email_info.message = `Your order has been placed successfully!`
 
-            email_sent = await send.email(email_info)
+            email_sent = await send.email(email_info);
+
+            email_info.subject = user_first_name + " Created an order!"
+            email_info.message = `Order has been placed successfully!`
+            email_info.user_email = await db.select_all_from_join3_with_condition(
+                "products_m2m_vendors",
+                "orders_m2m_products",
+                "users",
+                "id_product_m2m_vendor",
+                "id_vendor",
+                { orderId }
+            )[0].user_email;
+
+            email_sent = await send.email(email_info);
+
         }
 
         // Buyer update order
@@ -118,6 +134,19 @@ exports.handler = async (event, context) => {
 
                 //Send email
                 await send.email(email_info)
+
+                email_info.user_email = await db.select_all_from_join3_with_condition(
+                    "products_m2m_vendors",
+                    "orders_m2m_products",
+                    "users",
+                    "id_product_m2m_vendor",
+                    "id_vendor",
+                    { id_order }
+                )[0].user_email;
+
+                //Send email to vendior
+                await send.email(email_info)
+
                 await db.update_with_condition("orders", data, { id_order })
             }
         }
@@ -140,22 +169,23 @@ exports.handler = async (event, context) => {
                 throw `${custom_errors[2]}`
             }
 
-            if (id_order_status == 3 || id_order_status == 4) {
-                if (id_order_status === 3) {
+            if (id_order_status == 3 || id_order_status == 4 || id_order_status === 7) {
+                if (id_order_status == 3) {
                     email_info.subject = `Order ${id_order} is being processed`
                     email_info.message = `The order with an ID of ${id_order} has currently started processing.`
                     message = `Your order with ID ${id_order} has started processing.`
-                } else if (id_order_status === 4) {
+                } else if (id_order_status == 4) {
                     email_info.subject = `Order in transit for Order ${id_order}`
                     email_info.message = `The order with an ID of ${id_order} is now in transit and would be with you shortly!`
                     message = `Your order with ID ${id_order} is in transit!`
-                } else if (id_order_status === 7) {
+                } else if (id_order_status == 7) {
                     email_info.subject = `Order return completed for Order ${id_order}`
                     email_info.message = `The order with an ID of ${id_order} has been returned successfully!`
                     message = `Your order with ID ${id_order} has been returned successfully!`
                 }
 
                 //Send email
+                await send.email(email_info)
                 // await send.email_result("customercare@utopiatech.io", email_info)
                 await db.update_with_condition("orders", { id_order_status }, { id_order })
             } else {

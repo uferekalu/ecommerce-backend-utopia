@@ -2,7 +2,9 @@ require("dotenv").config()
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const secret = process.env.mySecret
-const auth_token = require("../../middleware/token_handler")
+const auth_token = require("../../middleware/token_handler");
+const send = require("../../lib/services/email/send_email");
+const vendor_sales_html = require("../../lib/templates/emails/vendor_sales_updates");
 
 const api_name = "User Email or Phone verify"
 const custom_errors = ["body is empty", "user not found", "invalid verification code"]
@@ -89,10 +91,37 @@ exports.handler = async (event, context) => {
 
         await db.update_with_condition("users", update, { id_user })
 
-        // if (user?.id_vendor && user?.business_name) {
-        //     const { business_name, id_vendor } = user
-        //     response = { ...others, business_name, id_vendor }
-        // }
+        if (user?.id_vendor) {
+
+            const { id_vendor , user_email} = user;
+
+            await db.update_one("vendors", {id_vendor_status : 2}, "id_vendor", id_vendor);
+
+            const vendor = (
+                await db.select_all_with_condition(
+                    "vendors",
+                    { id_vendor }
+                )
+            )[0]
+            
+            if(vendor){
+                const {business_name, business_abn, vendor_phone_number,
+                vendor_address} = vendor;
+
+                const html = vendor_sales_html({
+                    business_name, business_abn, vendor_phone_number, 
+                    vendor_address, user_email
+                })
+
+                await send.email({
+                    user_first_name: `Sales`,
+                    user_email: process.env.SALES_EMAIL,
+                    subject: `New Vendor Registration (${business_name})`,
+                    message: html
+                })
+            }
+
+        }
 
         // if (user_phone_number) {
         //     //generate and insert token in tokens table

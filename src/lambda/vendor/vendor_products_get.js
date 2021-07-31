@@ -51,9 +51,7 @@ exports.handler = async (event, context) => {
             )
         }
 
-        const products = data.filter(p => p.is_deleted === 0)
-
-        return handler.returner([true, products], api_name, 200)
+        return handler.returner([true, data], api_name, 200)
     } catch (e) {
         if (e === error_one || e === error_two) {
             return handler.returner([false, e], api_name, 404)

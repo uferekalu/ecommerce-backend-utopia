@@ -23,6 +23,7 @@ const custom_errors = [
     "Vendor status is invalid",
     "Vendor create not successful",
     "Something went wrong",
+    "Business Id exists",
 ]
 
 class CustomError extends Error {
@@ -43,6 +44,7 @@ exports.handler = async (event) => {
     try {
         const datetime = await handler.datetime()
         const body = JSON.parse(event.body)
+        console.log("body from vendor create now:", body)
         //error handling
         if (!body || JSON.stringify(body) === "{}") {
             throw `${custom_errors[0]}`
@@ -54,6 +56,7 @@ exports.handler = async (event) => {
             "user_first_name",
             "user_last_name",
             "business_name",
+            "business_abn",
             "vendor_email",
             "vendor_phone_number",
             "vendor_address",
@@ -72,6 +75,7 @@ exports.handler = async (event) => {
             user_first_name,
             user_last_name,
             business_name,
+            business_abn,
             vendor_email,
             vendor_phone_number,
             vendor_address,
@@ -131,6 +135,13 @@ exports.handler = async (event) => {
         if (vendor_exist) {
             throw `${custom_errors[5]}`
         }
+        const vendor_abn_exist = (
+            await db.select_all_with_condition("vendors", { business_abn })
+        )[0]
+
+        if (vendor_abn_exist) {
+            throw `${custom_errors[9]}`
+        }
 
         const vendorStatusId = (
             await db.select_all_with_condition("vendor_statuses", {
@@ -167,6 +178,7 @@ exports.handler = async (event) => {
 
         const vendorData = {
             business_name,
+            business_abn,
             vendor_phone_number,
             vendor_address,
             vendor_short_desc,

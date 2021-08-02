@@ -113,12 +113,14 @@ exports.handler = async (event, context) => {
                     vendor_address, user_email
                 })
 
-                await send.email({
+                const result = await send.email({
                     user_first_name: `Sales`,
                     user_email: process.env.SALES_EMAIL,
                     subject: `New Vendor Registration (${business_name})`,
                     message: html
                 })
+
+                console.log(result, 'EMAIL Result')
             }
 
         }

@@ -68,7 +68,10 @@ exports.handler = async (event, context) => {
             )
         }
 
-        return handler.returner([true, data], api_name)
+        const result = data.filter(product => product.is_deleted === 0) || []
+        
+        return handler.returner([true, result], api_name)
+
     } catch (e) {
         return handler.returner([false], api_name, 500)
     }

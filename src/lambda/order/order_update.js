@@ -135,16 +135,16 @@ exports.handler = async (event, context) => {
                 //Send email
                 await send.email(email_info)
 
-                email_info.user_email = await db.select_all_from_join3_with_condition(
+                email_info.user_email = (await db.select_all_from_join3_with_condition(
                     "products_m2m_vendors",
                     "orders_m2m_products",
                     "users",
                     "id_product_m2m_vendor",
                     "id_vendor",
                     { id_order }
-                )[0].user_email;
+                ))[0].user_email;
 
-                //Send email to vendior
+                //Send email to vendor
                 await send.email(email_info)
 
                 await db.update_with_condition("orders", data, { id_order })
@@ -183,7 +183,7 @@ exports.handler = async (event, context) => {
                     email_info.message = `The order with an ID of ${id_order} has been returned successfully!`
                     message = `Your order with ID ${id_order} has been returned successfully!`
                 }
-
+                
                 //Send email
                 await send.email(email_info)
                 // await send.email_result("customercare@utopiatech.io", email_info)

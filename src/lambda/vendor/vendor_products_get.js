@@ -25,12 +25,6 @@ exports.handler = async (event, context) => {
             throw `${error_one}`
         }
 
-        if (vendor.id_vendor_status !== 2) {
-            data = [`${error_two}`]
-            // throw `${error_two}`
-            return handler.returner([true, data], api_name, 200)
-        }
-
         let data = []
 
         if (inactive && vendor) {
@@ -57,7 +51,9 @@ exports.handler = async (event, context) => {
             )
         }
 
-        return handler.returner([true, data], api_name, 200)
+        const products = data?.filter(product => product.is_deleted === 0);
+
+        return handler.returner([true, products], api_name, 200)
     } catch (e) {
         if (e === error_one || e === error_two) {
             return handler.returner([false, e], api_name, 404)

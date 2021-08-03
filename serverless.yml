@@ -69,6 +69,14 @@ functions:
     #-------------------------------------------------------------------------
     #   >>>PRODUCT ROUTES
     #-------------------------------------------------------------------------------
+    product_delete:
+        handler: src/lambda/product/product_delete.handler
+        events:
+            - http:
+                  path: /api/product_delete
+                  method: post
+        cors: true
+        origin: "*"
     product_update:
         handler: src/lambda/product/product_update.handler
         events:

@@ -245,6 +245,24 @@ module.exports = {
         )
         return result
     },
+    select_all_from_join4_with_conditionB_and_order: async (
+        table1,
+        table2,
+        table3,
+        table4,
+        joint1,
+        joint2,
+        joint3,
+        condition,
+        order_by,
+        dir
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table3}.${joint3} = ${table4}.${joint3} WHERE ? ORDER BY ${order_by} ${dir}`,
+            [condition]
+        )
+        return result
+    },
     select_all_from_join5_with_conditionB_and_order: async (
         table1,
         table2,
@@ -265,6 +283,7 @@ module.exports = {
         )
         return result
     },
+
     select_all_from_join4_with_conditions_and_order: async (
         table1,
         table2,

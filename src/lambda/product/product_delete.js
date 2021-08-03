@@ -2,14 +2,8 @@ const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const auth_token = require("../../middleware/token_handler")
 
-const api_name = "User orders"
-const custom_errors = ["body is empty", "authentication required"]
-class CustomError extends Error {
-    constructor(message) {
-        super(message)
-        this.name = "utopiaError"
-    }
-}
+const api_name = "product delete handler"
+const custom_errors = ["authentication required","no product found"]
 
 exports.handler = async (event, context) => {
     try {
@@ -21,36 +15,36 @@ exports.handler = async (event, context) => {
 
         const all_fields = Object.keys(body)
 
-        //more error handling
-        const required_fields = ["token"]
+        const required_fields = ["token", "id_product_m2m_vendor"];
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
         if (missing_fields.length > 0) {
-            throw new CustomError(missing_fields)
+            throw new Error(missing_fields)
         }
 
-        const { token } = body
+        const { token, id_product_m2m_vendor } = body
 
         const id_user = await auth_token.verify(token)
 
-        if (!id_user) {
-            throw `${custom_errors[1]}`
+        if(!id_user){
+            throw new Error(custom_errors[0])
         }
-        const response = await db.select_all_from_join4_with_conditionB_and_order(
-            "orders_m2m_products",
-            "orders",
+
+        const product = await db.search_one(
             "products_m2m_vendors",
-            "products",
-            "id_order",
             "id_product_m2m_vendor",
-            "id_product",
-            { id_user },
-            "orders.id_order",
-            "DESC"
+            id_product_m2m_vendor
         )
 
-        return handler.returner([true, response], api_name)
+        if (product.length === 0) {
+            throw new custom_errors[1]
+        }
+
+        await db.update_one("products_m2m_vendors", {is_deleted: product[0].is_deleted === 0 ? 1 : 0},
+         "id_product_m2m_vendor", id_product_m2m_vendor)
+
+        return handler.returner([true, product], api_name, 200)
     } catch (e) {
         let errors = await handler.required_field_error(e)
         if (custom_errors.includes(e)) {
@@ -59,6 +53,7 @@ exports.handler = async (event, context) => {
         if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
+        console.log(e)
         return handler.returner([false], api_name, 500)
     }
 }

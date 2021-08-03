@@ -73,10 +73,9 @@ exports.handler = async (event, context) => {
             product_thumbnail,
             p2v_promo_off,
             is_sale,
+            is_active,
             ...other
         } = updated_data
-
-        let is_active = 0
 
         if (others.product_thumbnail?.url) {
             const success = await db.update_with_condition(
@@ -86,8 +85,6 @@ exports.handler = async (event, context) => {
                     id_product_thumbnail,
                 }
             )
-
-            success ? (is_active = 1) : (is_active = 0)
         }
 
         let array_shipping_locations
@@ -120,8 +117,6 @@ exports.handler = async (event, context) => {
             id_product_m2m_vendor,
         })
         await db.update_with_condition("products", product_data, { id_product })
-
-        //   await db.update_one("users", updated_data, "id_vendor", id_vendor)
 
         return handler.returner([true, updated_data], api_name, 201)
     } catch (e) {

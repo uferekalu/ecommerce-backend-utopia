@@ -108,9 +108,11 @@ exports.handler = async (event, context) => {
                     total: Number(Number(total) + Number(vshippings[idx])).toFixed(2),
                     shipping: vshippings[idx],
                     id_user,
-                    // id_vendor: vcode[idx],
                     order_created_at: datetime,
                     paymentMethod,
+                    id_order_status: JSON.stringify([
+                        { id_order_status: 1, order_status: "Unpaid", datetime_updated: datetime },
+                    ]),
                 },
                 "orders"
             )

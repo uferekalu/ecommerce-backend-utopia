@@ -3,9 +3,7 @@ const nodemailer = require("nodemailer")
 
 let htmlTemplate = (email_info) => {
     return `
-                    <br />
-                    <br />
-                    <div style="width:80%; margin:auto; font-size:2.5rem">
+                    <div style="width:80%; margin:auto;">
                         <h3 style="text-align:center">${email_info.subject}</h3>
                         <p>Hello ${email_info.user_first_name},</p>
                         <p>${email_info.message}</p>

@@ -443,6 +443,14 @@ functions:
                   method: post
         cors: true
         origin: "*"
+    vendor_document_verify:
+        handler: src/lambda/vendor/vendor_document_verify.handler
+        events:
+            - http:
+                  path: /api/verify/documents/{token}
+                  method: get
+        cors: true
+        origin: "*"
     #-------------------------------------------------------------------------
 
     #   >>>WISHLIST ROUTES

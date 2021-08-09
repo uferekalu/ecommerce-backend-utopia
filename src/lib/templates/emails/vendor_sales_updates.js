@@ -15,6 +15,10 @@ const vendor_sales_html = (vendor) => {
                         <td>${vendor?.vendor_address}</td>
                     </tr>
                     <tr>
+                        <td>Country :</td>
+                        <td>${vendor?.vendor_country === 'AU' ? 'Australia' : (vendor?.vendor_country === 'IN' ? 'India' : vendor?.vendor_country)}</td>
+                    </tr>
+                    <tr>
                         <td>Business ID :</td>
                         <td>${vendor?.business_abn}</td>
                     </tr>
@@ -28,6 +32,33 @@ const vendor_sales_html = (vendor) => {
                     </tr>
                 </tbody>
             </table>
+
+            <h4>Documents to be verified</h4>
+            <ul>
+                ${
+                    (vendor?.vendor_country === 'AU') ?
+                    `
+                        <li>Australian Business Number (ABN)</li>
+                        <li>New Mobile Numbers</li>
+                        <li>New Email Addresses</li>
+                        <li>Bank Details</li>
+                    ` : ''
+                }
+
+                ${
+                    (vendor?.vendor_country === 'IN') ?
+                    `
+                        <li>GST Registration</li>
+                        <li>PAN Card</li>
+                        <li>Aadhar Card</li>
+                        <li>New Email Addresses</li>
+                        <li>Bank Details</li>
+                    `: ''
+                }
+                
+            </ul>
+            <div>Note: please use following link to verify vendor after successfull document screening.</div>
+            <div><a href="${vendor.verification_link}" rel="noopener noreferrer">Click here once all documents are verified</div>
         
         </div>
 

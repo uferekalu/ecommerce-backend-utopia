@@ -5,6 +5,7 @@ const secret = process.env.mySecret
 const auth_token = require("../../middleware/token_handler");
 const send = require("../../lib/services/email/send_email");
 const vendor_sales_html = require("../../lib/templates/emails/vendor_sales_updates");
+const uuid = require('uuid');
 
 const api_name = "User Email or Phone verify"
 const custom_errors = ["body is empty", "user not found", "invalid verification code"]
@@ -93,9 +94,9 @@ exports.handler = async (event, context) => {
 
         if (user?.id_vendor) {
 
-            const { id_vendor , user_email} = user;
+            const { id_vendor, user_email } = user;
 
-            await db.update_one("vendors", {id_vendor_status : 2}, "id_vendor", id_vendor);
+            await db.update_one("vendors", { id_vendor_status: 2 }, "id_vendor", id_vendor);
 
             const vendor = (
                 await db.select_all_with_condition(
@@ -103,18 +104,24 @@ exports.handler = async (event, context) => {
                     { id_vendor }
                 )
             )[0]
-            
-            if(vendor){
-                const {business_name, business_abn, vendor_phone_number,
-                vendor_address} = vendor;
+
+            if (vendor) {
+                const { business_name, business_abn, vendor_phone_number,
+                    vendor_address, vendor_country } = vendor;
+
+                const token = uuid.v4();
+
+                await db.update_one("vendors", { token }, "id_vendor", id_vendor);
 
                 const html = vendor_sales_html({
-                    business_name, business_abn, vendor_phone_number, 
-                    vendor_address, user_email
+                    business_name, business_abn, vendor_phone_number,
+                    vendor_address, user_email,
+                    vendor_country: vendor_country,
+                    verification_link: process.env.BASE_URL + `/verify/documents/${token}`
                 })
 
                 const result = await send.email({
-                    user_first_name: `Sales`,
+                    user_first_name: `Sales Team`,
                     user_email: process.env.SALES_EMAIL,
                     subject: `New Vendor Registration (${business_name})`,
                     message: html
@@ -125,39 +132,6 @@ exports.handler = async (event, context) => {
 
         }
 
-        // if (user_phone_number) {
-        //     //generate and insert token in tokens table
-        //     const created_token = await auth_token.create(user_exist.id_user)
-
-        //     let data = {
-        //         id_user,
-        //         token: created_token,
-        //         ut_datetime_created: await handler.datetime(),
-        //     }
-
-        //     await db.insert_new(data, "user_tokens")
-
-        //     //add token to response
-        //     response.token = created_token
-
-        //     //generate access level array
-        //     const id_user_access_level = user.id_user_access_level
-
-        //     let access_level_arr = [4, 5]
-        //     if (id_user_access_level == 1) {
-        //         access_level_arr.push(2, 3) // [2, 3, 4, 5]
-        //     } else if (id_user_access_level == 2) {
-        //         access_level_arr.push(1, 2, 3) //[1, 2, 3, 4, 5]
-        //     } else if (id_user_access_level == 3) {
-        //         access_level_arr.push(0, 1, 2, 3) //[0, 1, 2, 3, 4, 5]
-        //     }
-
-        //     //add access level to response
-        //     response.access_level = access_level_arr
-
-        //     return handler.returner([true, response], api_name, 201)
-        // }
-
         return handler.returner([true, { message: "email verified successfully" }], api_name, 201)
     } catch (e) {
         let errors = await handler.required_field_error(e)
@@ -167,6 +141,7 @@ exports.handler = async (event, context) => {
         if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
+        console.log(e.message)
         return handler.returner([false], api_name, 500)
     }
 }

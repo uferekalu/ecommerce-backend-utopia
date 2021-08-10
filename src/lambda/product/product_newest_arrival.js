@@ -21,7 +21,7 @@ exports.handler = async (event) => {
                 "id_product",
                 "id_product_thumbnail",
                 "id_vendor",
-                "products_m2m_vendors.is_active = 1",
+                "products_m2m_vendors.is_active = 1 AND products_m2m_vendors.is_deleted = 0",
                 "vendors.id_vendor_status = 2",
                 "products_m2m_vendors.created_at",
                 limit,
@@ -38,7 +38,7 @@ exports.handler = async (event) => {
                 "id_product",
                 "id_product_thumbnail",
                 "id_vendor",
-                "products_m2m_vendors.is_active = 1",
+                "products_m2m_vendors.is_active = 1 AND products_m2m_vendors.is_deleted = 0",
                 "vendors.id_vendor_status = 2",
                 "products_m2m_vendors.created_at",
                 "DESC"

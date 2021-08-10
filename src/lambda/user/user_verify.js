@@ -2,7 +2,10 @@ require("dotenv").config()
 const handler = require("../../middleware/handler")
 const db = require("../../lib/database/query")
 const secret = process.env.mySecret
-const auth_token = require("../../middleware/token_handler")
+const auth_token = require("../../middleware/token_handler");
+const send = require("../../lib/services/email/send_email");
+const vendor_sales_html = require("../../lib/templates/emails/vendor_sales_updates");
+const uuid = require('uuid');
 
 const api_name = "User Email or Phone verify"
 const custom_errors = ["body is empty", "user not found", "invalid verification code"]
@@ -89,43 +92,45 @@ exports.handler = async (event, context) => {
 
         await db.update_with_condition("users", update, { id_user })
 
-        // if (user?.id_vendor && user?.business_name) {
-        //     const { business_name, id_vendor } = user
-        //     response = { ...others, business_name, id_vendor }
-        // }
+        if (user?.id_vendor) {
 
-        // if (user_phone_number) {
-        //     //generate and insert token in tokens table
-        //     const created_token = await auth_token.create(user_exist.id_user)
+            const { id_vendor, user_email } = user;
 
-        //     let data = {
-        //         id_user,
-        //         token: created_token,
-        //         ut_datetime_created: await handler.datetime(),
-        //     }
+            await db.update_one("vendors", { id_vendor_status: 2 }, "id_vendor", id_vendor);
 
-        //     await db.insert_new(data, "user_tokens")
+            const vendor = (
+                await db.select_all_with_condition(
+                    "vendors",
+                    { id_vendor }
+                )
+            )[0]
 
-        //     //add token to response
-        //     response.token = created_token
+            if (vendor) {
+                const { business_name, business_abn, vendor_phone_number,
+                    vendor_address, vendor_country } = vendor;
 
-        //     //generate access level array
-        //     const id_user_access_level = user.id_user_access_level
+                const token = uuid.v4();
 
-        //     let access_level_arr = [4, 5]
-        //     if (id_user_access_level == 1) {
-        //         access_level_arr.push(2, 3) // [2, 3, 4, 5]
-        //     } else if (id_user_access_level == 2) {
-        //         access_level_arr.push(1, 2, 3) //[1, 2, 3, 4, 5]
-        //     } else if (id_user_access_level == 3) {
-        //         access_level_arr.push(0, 1, 2, 3) //[0, 1, 2, 3, 4, 5]
-        //     }
+                await db.update_one("vendors", { token }, "id_vendor", id_vendor);
 
-        //     //add access level to response
-        //     response.access_level = access_level_arr
+                const html = vendor_sales_html({
+                    business_name, business_abn, vendor_phone_number,
+                    vendor_address, user_email,
+                    vendor_country: vendor_country,
+                    verification_link: process.env.BASE_URL + `/verify/documents/${token}`
+                })
 
-        //     return handler.returner([true, response], api_name, 201)
-        // }
+                const result = await send.email({
+                    user_first_name: `Sales Team`,
+                    user_email: process.env.SALES_EMAIL,
+                    subject: `New Vendor Registration (${business_name})`,
+                    message: html
+                })
+
+                console.log(result, 'EMAIL Result')
+            }
+
+        }
 
         return handler.returner([true, { message: "email verified successfully" }], api_name, 201)
     } catch (e) {
@@ -136,6 +141,7 @@ exports.handler = async (event, context) => {
         if (errors) {
             return handler.returner([false, errors], api_name, 400)
         }
+        console.log(e.message)
         return handler.returner([false], api_name, 500)
     }
 }

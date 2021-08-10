@@ -93,7 +93,7 @@ module.exports = {
             })
             const mailOptions = {
                 from: process.env.EMAIL_ADDRESS,
-                to: "moezzain94@gmail.com",
+                to: "vendor-support@utopiatech.io",
                 subject: email_info.subject,
                 html: htmlLiveHelpTemplate(email_info),
             }

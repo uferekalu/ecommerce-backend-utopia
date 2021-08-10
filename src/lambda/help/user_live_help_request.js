@@ -17,15 +17,18 @@ class CustomError extends Error {
 const email_info = {
     user_email: "",
     user_first_name: "",
-    subject: "Email Verification",
-    message: "Here is your verification code ",
+    subject: "Live Help Request ",
+    user_email: "",
+    user_phone_number: "",
+    order_number: "",
+    message: "",
 }
 
 exports.handler = async (event, context) => {
     try {
         let datetime = await handler.datetime()
 
-        const required_fields = ["user_email"]
+        const required_fields = ["user_email", "user_first_name", "user_last_name"]
 
         const body = JSON.parse(event.body)
         const all_fields = Object.keys(body)
@@ -36,12 +39,13 @@ exports.handler = async (event, context) => {
             throw new CustomError(missing_fields)
         }
 
-        const { user_email } = body
+        const { user_first_name, user_last_name, user_email, user_phone_number, order_number } = body
 
-        email_info.user_first_name = email_exist.user_first_name
+        email_info.user_first_name = user_first_name
+        email_info.user_last_name = user_last_name
         email_info.user_email = user_email
-        email_info.message += `<b>${verification_code}</b>`
-
+        email_info.user_phone_number = user_phone_number
+        email_info.order_number = order_number
         const email_sent = await send.liveHelpMail(email_info)
 
         if (!email_sent) throw `${custom_errors[3]}`

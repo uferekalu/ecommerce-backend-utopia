@@ -344,12 +344,13 @@ functions:
                   method: post
         cors: true
         origin: "*"
-    #-------------------------------------------------------------------------
-        user_live_help_request:
+            #-------------------------------------------------------------------------
+
+    user_live_help_request:
         handler: src/lambda/help/user_live_help_request.handler
         events:
             - http:
-                  path: /api/user_resend_verification
+                  path: /api/user_live_help_request
                   method: post
         cors: true
         origin: "*"

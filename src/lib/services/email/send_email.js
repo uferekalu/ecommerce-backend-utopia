@@ -3,8 +3,8 @@ const nodemailer = require("nodemailer")
 
 let htmlTemplate = (email_info) => {
     return `
-                    <div style="width:80%; margin:auto;">
-                        <h3 style="text-align:center">${email_info.subject}</h3>
+    <div style="width:80%; margin:auto; font-size:2.5rem">
+    <h3 style="text-align:center">${email_info.subject}</h3>
                         <p>Hello ${email_info.user_first_name},</p>
                         <p>${email_info.message}</p>
                         <br />
@@ -23,22 +23,16 @@ let htmlLiveHelpTemplate = (email_info) => {
     return `
                     <br />
                     <br />
-                    <div style="width:80%; margin:auto; font-size:2.5rem">
+                    <div style="width:80%; margin:auto; font-size:1.5rem">
                         <h3 style="text-align:center">${email_info.subject}</h3>
                         <p>Hello</p>
-                        <p>${email_info.user_first_name}${email_info.user_last_name} is requesting a
-                            live help ${email_info.user_order_number ? "with an order number "+email_info.user_order_number : ""},
-                            please contact him via this email ${email_info.user_phone_number ? "or phone number "+email_info.user_phone_number : ""}
+                        <p>${email_info.user_first_name + " "}${email_info.user_last_name} is requesting a
+                            live help ${email_info.order_number ? "with order number " + email_info.order_number : ""},
+                            please contact him via this email ${email_info.user_email} ${email_info.user_phone_number ? "or phone number " + email_info.user_phone_number : ""}
                         </p>
-                        <p>${email_info.message}</p>
                         <br />
                         <p>Thank you.</p>
-                        <p>The Utopia Team.</p>
-                        <br />
-                        <div style="background-color:#84d9b3; text-align:center; padding:1rem">
-                            <p>If you have any questions please contact us via</p>
-                            <br>admin@utopiatech.io</br>
-                        </div>
+                        <p>Chat Bot.</p>
                     </div>
                     `
 }
@@ -78,8 +72,8 @@ module.exports = {
                     resolve([
                         true,
                         JSON.stringify(info) +
-                            "---------------------------------------" +
-                            info.response,
+                        "---------------------------------------" +
+                        info.response,
                     ])
                 }
             })
@@ -115,8 +109,8 @@ module.exports = {
                     resolve([
                         true,
                         JSON.stringify(info) +
-                            "---------------------------------------" +
-                            info.response,
+                        "---------------------------------------" +
+                        info.response,
                     ])
                 }
             })

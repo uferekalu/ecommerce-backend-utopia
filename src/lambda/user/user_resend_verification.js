@@ -25,7 +25,7 @@ const email_info = {
     user_email: "",
     user_first_name: "",
     subject: "Email Verification",
-    message: "Here is your verification code ",
+    message: "",
 }
 
 exports.handler = async (event, context) => {

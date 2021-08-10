@@ -27,7 +27,7 @@ let htmlLiveHelpTemplate = (email_info) => {
                         <h3 style="text-align:center">${email_info.subject}</h3>
                         <p>Hello</p>
                         <p>${email_info.user_first_name + " "}${email_info.user_last_name} is requesting a
-                            live help ${email_info.order_number ? "with order number " + email_info.order_number : ""},
+                            live help ${email_info.order_number ? "with an order, number " + email_info.order_number : ""},
                             please contact him via this email ${email_info.user_email} ${email_info.user_phone_number ? "or phone number " + email_info.user_phone_number : ""}
                         </p>
                         <br />

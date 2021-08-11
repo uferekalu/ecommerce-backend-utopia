@@ -447,6 +447,14 @@ module.exports = {
         return result
     },
 
+    aaron_select_all_with_condition: async (table, condition) => {
+        console.log("a string: ",`SELECT * FROM ${table} WHERE `, condition)
+        const a = `SELECT * FROM ${table} WHERE `+ condition
+        let result = await connection.query(a)
+        console.log("mmmmmmmmm: ")
+        return result
+    },
+
     select_one_with_condition: async (table, column, condition) => {
         let result = await connection.query(
             `SELECT ${column} FROM ${table} WHERE ? ORDER BY ${column}`,

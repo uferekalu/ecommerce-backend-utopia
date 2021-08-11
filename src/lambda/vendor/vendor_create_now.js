@@ -75,7 +75,6 @@ exports.handler = async (event) => {
             user_first_name,
             user_last_name,
             business_name,
-            business_abn,
             vendor_email,
             vendor_phone_number,
             vendor_address,

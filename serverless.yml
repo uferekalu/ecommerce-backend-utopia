@@ -3,7 +3,7 @@ provider:
     name: aws
     runtime: nodejs14.x
     region: ${file(./secret.json):DefaultRegion}
-    stage: dev
+    stage: prod
 
 functions:
     #-------------------------------------------------------------------------------

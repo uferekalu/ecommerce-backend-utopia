@@ -19,6 +19,24 @@ let htmlTemplate = (email_info) => {
                     `
 }
 
+let htmlLiveHelpTemplate = (email_info) => {
+    return `
+                    <br />
+                    <br />
+                    <div style="width:80%; margin:auto; font-size:1.5rem">
+                        <h3 style="text-align:center">${email_info.subject}</h3>
+                        <p>Hello</p>
+                        <p>${email_info.user_first_name + " "}${email_info.user_last_name} is requesting a
+                            live help ${email_info.order_number ? "with an order, number " + email_info.order_number : ""},
+                            please contact him via this email ${email_info.user_email} ${email_info.user_phone_number ? "or phone number " + email_info.user_phone_number : ""}
+                        </p>
+                        <br />
+                        <p>Thank you.</p>
+                        <p>Chat Bot.</p>
+                    </div>
+                    `
+}
+
 module.exports = {
     email: async (email_info) => {
         return new Promise((resolve, reject) => {
@@ -54,8 +72,45 @@ module.exports = {
                     resolve([
                         true,
                         JSON.stringify(info) +
-                            "---------------------------------------" +
-                            info.response,
+                        "---------------------------------------" +
+                        info.response,
+                    ])
+                }
+            })
+        })
+    },
+    liveHelpMail: async (email_info) => {
+        return new Promise((resolve, reject) => {
+            const transporter = nodemailer.createTransport({
+                host: "sub5.mail.dreamhost.com",
+                // port: 467,
+                port: 587,
+                secure: false,
+                auth: {
+                    user: process.env.EMAIL_ADDRESS,
+                    pass: process.env.EMAIL_PASS,
+                },
+            })
+            const mailOptions = {
+                from: process.env.EMAIL_ADDRESS,
+                to: "vendor-support@utopiatech.io",
+                subject: email_info.subject,
+                html: htmlLiveHelpTemplate(email_info),
+            }
+            let resp = false
+
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    console.log("error is " + error)
+
+                    resolve(false, error) // or use rejcet(false) but then you will have to handle errors
+                } else {
+                    console.log("Email sent: " + JSON.stringify(info))
+                    resolve([
+                        true,
+                        JSON.stringify(info) +
+                        "---------------------------------------" +
+                        info.response,
                     ])
                 }
             })

@@ -20,12 +20,15 @@ exports.handler = async (event, context) => {
 
         //condition 1
         if (id_category && id_category > 1 && !keyword) {
-            data = await db.select_all_from_join3_with_condition(
+            data = await db.select_all_from_join4_with_2conditions(
                 "products",
                 "products_m2m_vendors",
                 "product_thumbnails",
+                "vendors",
                 "id_product",
                 "id_product_thumbnail",
+                "id_vendor",
+                "products_m2m_vendors.is_active = 1 AND products_m2m_vendors.is_deleted = 0 AND vendors.id_vendor_status = 2",
                 { id_category }
             )
         }
@@ -46,12 +49,16 @@ exports.handler = async (event, context) => {
 
         //condition 3
         if (id_category && id_category <= 1 && !keyword) {
-            data = await db.select_all_from_join3(
+            data = await db.select_all_from_join4_with_conditions(
                 "products",
                 "products_m2m_vendors",
                 "product_thumbnails",
+                "vendors",
                 "id_product",
-                "id_product_thumbnail"
+                "id_product_thumbnail",
+                "id_vendor",
+                "products_m2m_vendors.is_active = 1 AND products_m2m_vendors.is_deleted = 0",
+                "vendors.id_vendor_status = 2"
             )
         }
 

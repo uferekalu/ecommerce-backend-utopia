@@ -229,6 +229,23 @@ module.exports = {
         )
         return result
     },
+    select_all_from_join4_with_2conditions: async (
+        table1,
+        table2,
+        table3,
+        table4,
+        joint1,
+        joint2,
+        joint3,
+        condition1,
+        condition2
+    ) => {
+        let result = await connection.query(
+            `SELECT * FROM ${table1} JOIN ${table2} ON ${table1}.${joint1} = ${table2}.${joint1} JOIN ${table3} ON ${table1}.${joint2} = ${table3}.${joint2} JOIN ${table4} ON ${table2}.${joint3} = ${table4}.${joint3} WHERE ${condition1} AND ?`,
+            [condition2]
+        )
+        return result
+    },
     select_all_from_join4_with_conditionB: async (
         table1,
         table2,

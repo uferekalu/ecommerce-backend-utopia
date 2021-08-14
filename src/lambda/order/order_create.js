@@ -28,7 +28,7 @@ exports.handler = async (event, context) => {
         const all_fields = Object.keys(body)
 
         //more error handling
-        const required_fields = ["id_user", "id_product_m2m_vendor", "paymentMethod"]
+        const required_fields = ["id_user", "id_product_m2m_vendor", "shipping_cost_product_ids", "paymentMethod"]
 
         const missing_fields = required_fields.filter((field) => !all_fields.includes(field))
 
@@ -36,7 +36,7 @@ exports.handler = async (event, context) => {
             throw new CustomError(missing_fields)
         }
 
-        const { id_user, id_product_m2m_vendor, paymentMethod } = body
+        const { id_user, id_product_m2m_vendor, shipping_cost_product_ids = [], paymentMethod } = body
 
         // ensure user exists
         const user_exist = await db.search_one("users", "id_user", id_user)
@@ -50,7 +50,7 @@ exports.handler = async (event, context) => {
             await db.search_get_one_column_oncondition("users", "country", "id_user", id_user)
         )[0].country
 
-        const vcode = []
+        const products_unique_list = []
         const vsubtotal = []
         const vshippings = []
         const vproducts = []
@@ -68,39 +68,38 @@ exports.handler = async (event, context) => {
 
             const price = res.p2v_promo_price ?? res.p2v_price
 
-            if (!vcode.includes(res.id_vendor)) {
-                vcode.push(res.id_vendor)
+            if (!products_unique_list.includes(_id)) {
+                products_unique_list.push(_id)
                 vsubtotal.push(price)
                 quantity.push(1)
                 vproducts.push([res.id_product_m2m_vendor])
 
                 vshippings.push(
-                    country === res.vendor_country
-                        ? res.shipping_cost_local ?? 0
-                        : res.shipping_cost_intl ?? 0
+                    shipping_cost_product_ids.includes(_id) ?
+                        (
+                            country === res.vendor_country
+                                ? res.shipping_cost_local ?? 0
+                                : res.shipping_cost_intl ?? 0
+                        ) : 0
                 )
 
                 return
             }
 
-            if (vcode.includes(res.id_vendor)) {
-                const idx = vcode.indexOf(res.id_vendor)
+            if (products_unique_list.includes(_id)) {
 
-                if (vproducts.flat().includes(res.id_product_m2m_vendor)) {
-                    const qty = quantity[idx] + 1
-                    vsubtotal[idx] = price * qty
-                    quantity[idx]++
-                } else {
-                    vsubtotal[idx] + price
-                    quantity.push(1)
-                    vproducts[idx].push(res.id_product_m2m_vendor)
-                }
+                const idx = products_unique_list.indexOf(_id)
+
+                const qty = quantity[idx] + 1;
+                vsubtotal.splice(idx, 1, (price * qty))
+                quantity.splice(idx, 1, qty)
+
                 return
             }
         })
 
-        const prices = await Promise.all(mapped_prices)
-        const total = prices.reduce((sum, price) => sum + price)
+        const prices = await Promise.all(mapped_prices);
+        const total = prices.reduce((sum, price) => sum + price);
 
         const mapped_new_order = vsubtotal.map(async (total, idx) => {
             const res = await db.insert_new(
@@ -120,6 +119,7 @@ exports.handler = async (event, context) => {
         })
 
         const new_orders = await Promise.all(mapped_new_order)
+
         const values = vproducts.map((product, index) => {
             const arr = product.map((_id) => [_id, new_orders[index], quantity[index]])
             return arr.flat()

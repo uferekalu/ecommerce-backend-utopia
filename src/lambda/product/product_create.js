@@ -35,7 +35,6 @@ exports.handler = async (event, context) => {
             "product_title",
             "product_desc",
             "shipping_locations",
-            "SKU",
             "is_active",
         ]
 
@@ -52,7 +51,7 @@ exports.handler = async (event, context) => {
             product_title,
             product_desc,
             shipping_locations,
-            SKU,
+            is_combined_shipping = 0,
             p2v_promo_off,
             is_sale,
             is_active,
@@ -166,7 +165,8 @@ exports.handler = async (event, context) => {
                     id_vendor,
                     p2v_price,
                     shipping_locations: array_shipping_locations,
-                    SKU,
+                    is_combined_shipping,
+                    SKU: others?.SKU,
                     id_product: new_product_id,
                     is_active,
                     inventory: others.inventory,
